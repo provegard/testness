@@ -1,0 +1,6 @@
+TestNess is a tool for measuring quality of unit test cases in .NET. It is 
+intended to work with a number of unit test frameworks, such as Visual
+Studio's own, NUnit, MbUnit and XUnit.
+
+Author: Per Rovegård
+Contact: per@rovegard.se
