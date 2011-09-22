@@ -5,6 +5,8 @@
 *.DS_Store
 
 #Visual Studio files
+*.testsettings
+*.vsmdi
 *.[Oo]bj
 *.user
 *.aps
@@ -22,6 +24,7 @@
 *.ilk
 *.log
 *.lib
+!*.lib/
 *.sbr
 *.sdf
 *.opensdf
