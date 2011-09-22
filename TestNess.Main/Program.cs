@@ -9,7 +9,7 @@ namespace TestNess.Main
     {
         static void Main(string[] args)
         {
-            this won't compile
+
         }
     }
 }
