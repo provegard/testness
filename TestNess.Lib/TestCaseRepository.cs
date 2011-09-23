@@ -105,7 +105,7 @@ namespace TestNess.Lib
             {
                 throw new NotATestMethodException(testMethodName);
             }
-            return method; //TODO: return a TestCase here!
+            return new TestCase(method);
         }
     }
 }

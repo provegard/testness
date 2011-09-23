@@ -21,6 +21,7 @@
  */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestNess.Lib;
 
 namespace TestNess.Lib.Test
 {
@@ -40,7 +41,7 @@ namespace TestNess.Lib.Test
             var method = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
 
             // Then
-            Assert.IsNotNull(method);
+            Assert.IsInstanceOfType(method, typeof(TestCase));
         }
 
         [TestMethod]
