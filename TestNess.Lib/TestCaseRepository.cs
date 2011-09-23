@@ -95,10 +95,10 @@ namespace TestNess.Lib
         /// </summary>
         /// <param name="testMethodName">The full name (excluding return type) of the test method that contains
         /// the test case.</param>
-        /// <returns>A test case object.</returns>
+        /// <returns>A test case instance.</returns>
         /// <exception cref="NotATestMethodException">If the method name does not refer to a recognized test method,
         /// or if there is no method at all by that name.</exception>
-        public object GetTestCaseByName(string testMethodName)
+        public TestCase GetTestCaseByName(string testMethodName)
         {
             TestCase testCase;
             if (!_testMethods.TryGetValue(testMethodName, out testCase))

@@ -38,10 +38,10 @@ namespace TestNess.Lib.Test
             var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
 
             // When
-            var method = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
 
             // Then
-            Assert.IsInstanceOfType(method, typeof(TestCase));
+            Assert.IsInstanceOfType(testCase, typeof(TestCase));
         }
 
         [TestMethod]
