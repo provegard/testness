@@ -35,7 +35,27 @@ namespace TestNess.Lib
     /// </summary>
     public class TestCase
     {
-        private MethodDefinition _method;
+        /// <summary>
+        /// The test method that contains this test case.
+        /// </summary>
+        public MethodDefinition TestMethod { get; private set; }
+
+        /// <summary>
+        /// The name of this test case. The name is the name of the test method without the return type.
+        /// </summary>
+        public string Name
+        {
+            get { return GetTestCaseName(TestMethod); }
+        }
+
+        internal static string GetTestCaseName(MethodDefinition method)
+        {
+            // FullName includes the return type, which is not interesting from
+            // an identification perspective, so lets strip it!
+            var name = method.FullName;
+            name = name.Substring(name.IndexOf(' ') + 1);
+            return name;
+        }
 
         /// <summary>
         /// Creates an instance of this class based on a method. The method is assumed to be a test method.
@@ -43,7 +63,25 @@ namespace TestNess.Lib
         /// <param name="method">The method that contains/defines the test case.</param>
         public TestCase(MethodDefinition method)
         {
-            _method = method;
+            TestMethod = method;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == this)
+                return true;
+            if (obj == null || !(obj is TestCase))
+                return false;
+            var testCase = (TestCase)obj;
+            return testCase.TestMethod == TestMethod;
+        }
+
+        public override int GetHashCode()
+        {
+            const int prime = 31;
+            var hashCode = 1;
+            hashCode += prime * TestMethod.GetHashCode();
+            return hashCode;
         }
     }
 }

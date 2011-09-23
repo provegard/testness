@@ -37,6 +37,15 @@ namespace TestNess.Target
             DoAssertEqual(3, actual);
         }
 
+        public virtual void TestSubtractBasic()
+        {
+            var calculator = new IntegerCalculator();
+
+            var actual = calculator.Subtract(1, 2);
+
+            DoAssertEqual(-1, actual);
+        }
+
         protected abstract void DoAssertEqual(int expected, int actual);
     }
 }

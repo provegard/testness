@@ -36,6 +36,12 @@ namespace TestNess.Target
             base.TestAddBasic();
         }
 
+        [TestMethod]
+        public override void TestSubtractBasic()
+        {
+            base.TestSubtractBasic();
+        }
+
         protected override void DoAssertEqual(int expected, int actual)
         {
             Assert.AreEqual(expected, actual);

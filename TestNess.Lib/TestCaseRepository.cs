@@ -57,17 +57,8 @@ namespace TestNess.Lib
 
             foreach (var method in methods)
             {
-                _testMethods.Add(GetMethodNameWithoutReturnType(method), new TestCase(method));
+                _testMethods.Add(TestCase.GetTestCaseName(method), new TestCase(method));
             }
-        }
-
-        private string GetMethodNameWithoutReturnType(MethodDefinition method)
-        {
-            // FullName includes the return type, which is not interesting from
-            // an identification perspective, so lets strip it!
-            var name = method.FullName;
-            name = name.Substring(name.IndexOf(' ') + 1);
-            return name;
         }
 
         private bool IsTestMethod(MethodDefinition method)
