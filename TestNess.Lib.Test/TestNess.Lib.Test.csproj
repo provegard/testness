@@ -34,6 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\lib\Mono.Cecil.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -46,8 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCaseRepositoryTest.cs" />
+    <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TestNess.Lib\TestNess.Lib.csproj">
+      <Project>{F5E06955-D551-437D-8C05-66DE17E1A68E}</Project>
+      <Name>TestNess.Lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TestNess.Target\TestNess.Target.csproj">
       <Project>{C88A08F0-0667-4498-8D3A-2505F728513A}</Project>
       <Name>TestNess.Target</Name>
