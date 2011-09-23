@@ -83,5 +83,10 @@ namespace TestNess.Lib
             hashCode += prime * TestMethod.GetHashCode();
             return hashCode;
         }
+
+        public override string ToString()
+        {
+            return string.Format("TestCase [{0}]", Name);
+        }
     }
 }

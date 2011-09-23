@@ -120,6 +120,19 @@ namespace TestNess.Lib.Test
             Assert.AreNotEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
+        [TestMethod]
+        public void TestThatToStringIncludesName()
+        {
+            // Given
+            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+
+            // When
+            var str = testCase.ToString();
+
+            // Then
+            StringAssert.Contains(str, testCase.Name);
+        }
+
         private TestCase FindTestCase(string testMethodName)
         {
             return new TestCaseRepository(TestHelper.GetTargetAssembly()).GetTestCaseByName(testMethodName);
