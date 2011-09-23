@@ -40,7 +40,7 @@ namespace TestNess.Lib.Test
         public static AssemblyDefinition GetTargetAssembly()
         {
             var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTestBase));
-            var target = GlobalAssemblyResolver.Instance.Resolve(assembly.FullName);
+            var target = AssemblyDefinition.ReadAssembly(assembly.Location);
             return target;
         }
     }
