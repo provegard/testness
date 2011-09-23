@@ -20,7 +20,10 @@
  * THE SOFTWARE.
  */
 
+using System;
+using System.Reflection;
 using Mono.Cecil;
+using TestNess.Target;
 
 namespace TestNess.Lib.Test
 {
@@ -36,7 +39,8 @@ namespace TestNess.Lib.Test
         /// <returns>An assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
         public static AssemblyDefinition GetTargetAssembly()
         {
-            var target = new DefaultAssemblyResolver().Resolve("TestNess.Target, Version=1.0.0.0");
+            var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTestBase));
+            var target = GlobalAssemblyResolver.Instance.Resolve(assembly.FullName);
             return target;
         }
     }
