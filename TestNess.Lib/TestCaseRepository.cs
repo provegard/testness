@@ -21,6 +21,7 @@
  */
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Mono.Cecil;
 
@@ -35,7 +36,7 @@ namespace TestNess.Lib
     public class TestCaseRepository
     {
         private readonly AssemblyDefinition _assembly;
-        private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>(); 
+        private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>();
 
         /// <summary>
         /// Creates a new test case repository that fetches test cases from the given assembly.
@@ -107,6 +108,18 @@ namespace TestNess.Lib
         public ICollection<TestCase> GetAllTestCases()
         {
             return _testCases.Values;
+        }
+
+        /// <summary>
+        /// Loads a test case repository from file. More precisely, loads an assembly from file and creates a 
+        /// test case repository for the assembly.
+        /// </summary>
+        /// <param name="fileName">The path to the assembly file.</param>
+        /// <returns>A test case repository that fetches test cases from the loaded assembly.</returns>
+        public static TestCaseRepository LoadFromFile(string fileName)
+        {
+            var assemblyDef = AssemblyDefinition.ReadAssembly(fileName);
+            return new TestCaseRepository(assemblyDef);
         }
     }
 }

@@ -20,13 +20,71 @@
  * THE SOFTWARE.
  */
 
+using System;
+using System.Reflection;
+using System.IO;
+using TestNess.Lib;
+
 namespace TestNess.Main
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+            PrintHeader();
+            var arguments = Arguments.Parse(args);
+            if (!arguments.HasAssemblyFileName)
+            {
+                PrintUsage();
+                return 1;
+            }
 
+            TestCaseRepository repo;
+            try
+            {
+                repo = TestCaseRepository.LoadFromFile(arguments.AssemblyFileName);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.Error.WriteLine("Failed to load the assembly file: {0}", e.Message);
+                return 2;
+            }
+
+            PrintTestCases(repo);
+            return 0;
+        }
+
+        private static void PrintTestCases(TestCaseRepository repo)
+        {
+            Console.WriteLine("All test cases found in the assembly:");
+            foreach (var testCase in repo.GetAllTestCases())
+            {
+                Console.WriteLine(testCase.Name);
+            }
+        }
+
+        private static void PrintUsage()
+        {
+            var exeName = new FileInfo(Environment.GetCommandLineArgs()[0]).Name;
+            Console.WriteLine("Usage: {0} <assembly file>", exeName);
+            Console.WriteLine();
+        }
+
+        private static void PrintHeader()
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            Console.WriteLine("{0} v{1} - {2}", GetProductName(assembly), assembly.GetName().Version, GetCopyright(assembly));
+            Console.WriteLine();
+        }
+
+        private static string GetCopyright(Assembly assembly)
+        {
+            return ((AssemblyCopyrightAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyCopyrightAttribute))).Copyright;
+        }
+
+        private static string GetProductName(Assembly assembly)
+        {
+            return ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
         }
     }
 }

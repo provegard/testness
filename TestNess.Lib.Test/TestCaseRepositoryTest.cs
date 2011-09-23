@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
@@ -125,6 +126,19 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, testCases.Count);
         }
 
+        [TestMethod]
+        public void TestThatRepositoryCanBeLoadedFromFile()
+        {
+            // Given
+            var assembly = Assembly.GetCallingAssembly();
+
+            // When
+            var repo = TestCaseRepository.LoadFromFile(assembly.Location);
+
+            // Then
+            Assert.IsNotNull(repo);
+        }
+        
         private static TestCaseRepository CreateTestCaseRepository()
         {
             return new TestCaseRepository(TestHelper.GetTargetAssembly());
