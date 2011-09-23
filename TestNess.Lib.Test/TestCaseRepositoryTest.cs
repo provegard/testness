@@ -20,8 +20,11 @@
  * THE SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestNess.Lib;
+using Mono.Cecil;
 
 namespace TestNess.Lib.Test
 {
@@ -35,7 +38,7 @@ namespace TestNess.Lib.Test
         public void TestThatMsTestCaseCanBeRetrievedFromRepository()
         {
             // Given
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+            var repo = CreateTestCaseRepository();
 
             // When
             var testCase = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
@@ -49,7 +52,7 @@ namespace TestNess.Lib.Test
         public void TestThatRetrievalByNameFromRepositoryThrowsForNonTestMethod()
         {
             // Given
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+            var repo = CreateTestCaseRepository();
 
             // When, should throw!
             repo.GetTestCaseByName("TestNess.Target.IntegerCalculator::Add(System.Int32,System.Int32)");
@@ -60,7 +63,7 @@ namespace TestNess.Lib.Test
         public void TestThatRetrievalByNameFromRepositoryThrowsForMissingMethod()
         {
             // Given
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+            var repo = CreateTestCaseRepository();
 
             // When, should throw!
             repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::NoSuchMethod()");
@@ -70,14 +73,61 @@ namespace TestNess.Lib.Test
         public void TestThatRepositoryCachesTestCaseInstances()
         {
             // Given
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+            var repo = CreateTestCaseRepository();
 
             // When
-            var method1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            var method2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
 
             // Then
-            Assert.AreSame(method1, method2);
+            Assert.AreSame(testCase1, testCase2);
+        }
+
+        [TestMethod]
+        public void TestThatAllTestCasesCanBeRetrievedFromRepository()
+        {
+            // Given
+            var repo = CreateTestCaseRepository();
+
+            // When
+            var testCases = repo.GetAllTestCases();
+            var testCase1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
+
+            // Then (let's leave it at checking if at least some test cases are included)
+            CollectionAssert.IsSubsetOf(new List<TestCase> {testCase1, testCase2}, testCases.AsNonGeneric());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void TestThatCollectionOfAllTestCasesIsImmutable()
+        {
+            // Given
+            var repo = CreateTestCaseRepository();
+            var testCases = repo.GetAllTestCases();
+
+            // When (should throw)
+            testCases.Clear();
+        }
+
+        [TestMethod]
+        public void TestThatCollectionOfAllTestCasesIsEmptyIfNoTestCases()
+        {
+            // Given
+            var assembly = Assembly.GetCallingAssembly();
+            var assemblyDef = AssemblyDefinition.ReadAssembly(assembly.Location);
+            var repo = new TestCaseRepository(assemblyDef);
+            
+            // When
+            var testCases = repo.GetAllTestCases();
+
+            // Then
+            Assert.AreEqual(0, testCases.Count);
+        }
+
+        private static TestCaseRepository CreateTestCaseRepository()
+        {
+            return new TestCaseRepository(TestHelper.GetTargetAssembly());
         }
     }
 }

@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Mono.Cecil;
 using TestNess.Target;
@@ -42,6 +44,18 @@ namespace TestNess.Lib.Test
             var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTestBase));
             var target = AssemblyDefinition.ReadAssembly(assembly.Location);
             return target;
+        }
+
+        /// <summary>
+        /// Converts a generic collection of type T to a non-generic collection. This is useful since Visual Studio's
+        /// unit testing framework doesn't have an assertion class that works with generic collections.
+        /// </summary>
+        /// <typeparam name="T">The type of the generic collection.</typeparam>
+        /// <param name="collection">The generic collection.</param>
+        /// <returns>A non-generic collection that contains the items in the generic collection.</returns>
+        public static ICollection AsNonGeneric<T>(this ICollection<T> collection)
+        {
+            return new List<T>(collection);
         }
     }
 }
