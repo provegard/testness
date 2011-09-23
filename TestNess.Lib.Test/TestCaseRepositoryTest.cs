@@ -66,5 +66,18 @@ namespace TestNess.Lib.Test
             repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::NoSuchMethod()");
         }
 
+        [TestMethod]
+        public void TestThatRepositoryCachesTestCaseInstances()
+        {
+            // Given
+            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+
+            // When
+            var method1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var method2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+
+            // Then
+            Assert.AreSame(method1, method2);
+        }
     }
 }

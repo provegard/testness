@@ -35,7 +35,7 @@ namespace TestNess.Lib
     public class TestCaseRepository
     {
         private readonly AssemblyDefinition _assembly;
-        private readonly IDictionary<string, MethodDefinition> _testMethods = new Dictionary<string, MethodDefinition>(); 
+        private readonly IDictionary<string, TestCase> _testMethods = new Dictionary<string, TestCase>(); 
 
         /// <summary>
         /// Creates a new test case repository that fetches test cases from the given assembly.
@@ -57,7 +57,7 @@ namespace TestNess.Lib
 
             foreach (var method in methods)
             {
-                _testMethods.Add(GetMethodNameWithoutReturnType(method), method);
+                _testMethods.Add(GetMethodNameWithoutReturnType(method), new TestCase(method));
             }
         }
 
@@ -100,12 +100,12 @@ namespace TestNess.Lib
         /// or if there is no method at all by that name.</exception>
         public object GetTestCaseByName(string testMethodName)
         {
-            MethodDefinition method;
-            if (!_testMethods.TryGetValue(testMethodName, out method))
+            TestCase testCase;
+            if (!_testMethods.TryGetValue(testMethodName, out testCase))
             {
                 throw new NotATestMethodException(testMethodName);
             }
-            return new TestCase(method);
+            return testCase;
         }
     }
 }
