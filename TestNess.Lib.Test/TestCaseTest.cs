@@ -24,116 +24,78 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestNess.Lib.Test
 {
-    /// <summary>
-    /// This class defines unit test cases for the <see cref="TestCase"/> class.
-    ///</summary>
     [TestClass]
     public class TestCaseTest
     {
         [TestMethod]
         public void TestThatTestCaseExposesTestCaseName()
         {
-            // Given
             var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-
-            // When
-            var name = testCase.Name;
-
-            // Then
-            Assert.AreEqual("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()", name);
+            Assert.AreEqual("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()", testCase.Name);
         }
 
         [TestMethod]
         public void TestThatTestCaseExposesTestMethod()
         {
-            // Given
             var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-
-            // When
-            var method = testCase.TestMethod;
-
-            // Then
-            Assert.IsTrue(method.FullName.Contains("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()"));
+            StringAssert.Contains(testCase.TestMethod.FullName, "TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
         }
 
         [TestMethod]
         public void TestThatTestCaseIsNotEqualToNull()
         {
-            // Given
             var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-
-            // Then
             Assert.IsFalse(testCase.Equals(null));
         }
 
         [TestMethod]
         public void TestThatTestCaseIsNotEqualToNonTestCase()
         {
-            // Given
             var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-
-            // Then
             Assert.IsFalse(testCase.Equals("string"));
         }
 
         [TestMethod]
         public void TestThatTestCasesAreEqualBasedOnTestMethod()
         {
-            // Given
             var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
             var testCase2 = new TestCase(testCase1.TestMethod);
-
-            // Then
             Assert.AreEqual(testCase1, testCase2);
         }
 
         [TestMethod]
         public void TestThatTestCasesWithSameTestMethodHaveSameHashCode()
         {
-            // Given
             var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
             var testCase2 = new TestCase(testCase1.TestMethod);
-
-            // Then
             Assert.AreEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
         [TestMethod]
         public void TestThatTestCasesWithDifferentTestMethodsAreNotEqual()
         {
-            // Given
             var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
             var testCase2 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
-
-            // Then
             Assert.AreNotEqual(testCase1, testCase2);
         }
 
         [TestMethod]
         public void TestThatTestCasesWithDifferentTestMethodsHaveDifferentHashCode()
         {
-            // Given
             var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
             var testCase2 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
-
-            // Then
             Assert.AreNotEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
         [TestMethod]
         public void TestThatToStringIncludesName()
         {
-            // Given
             var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-
-            // When
             var str = testCase.ToString();
-
-            // Then
             StringAssert.Contains(str, testCase.Name);
         }
 
-        private TestCase FindTestCase(string testMethodName)
+        private static TestCase FindTestCase(string testMethodName)
         {
             return new TestCaseRepository(TestHelper.GetTargetAssembly()).GetTestCaseByName(testMethodName);
         }

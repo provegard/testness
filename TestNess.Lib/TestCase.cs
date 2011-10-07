@@ -68,10 +68,8 @@ namespace TestNess.Lib
 
         public override bool Equals(object obj)
         {
-            if (obj == this)
-                return true;
-            if (obj == null || !(obj is TestCase))
-                return false;
+            if (obj == this) return true;
+            if (obj == null || !(obj is TestCase)) return false;
             var testCase = (TestCase)obj;
             return testCase.TestMethod == TestMethod;
         }
