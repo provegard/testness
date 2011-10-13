@@ -105,5 +105,41 @@ namespace GraphBuilder
                    where _digraph[key].Contains(head)
                    select key;
         }
+
+        public IEnumerable<IList<TNode>> FindPaths(TNode start, TNode end)
+        {
+            var paths = new List<IList<TNode>>();
+            var visited = new List<TNode> {start};
+            Bfs(visited, end, paths);
+            return paths;
+        }
+
+        private void Bfs(IList<TNode> visited, TNode end, ICollection<IList<TNode>> paths)
+        {
+            var nodes = HeadsFor(visited.Last()).ToList();
+            // examine adjacent nodes
+            foreach (var node in nodes)
+            {
+                if (visited.Contains(node))
+                    continue;
+
+                if (node.Equals(end))
+                {
+                    visited.Add(node);
+                    paths.Add(new List<TNode>(visited));
+                    visited.RemoveAt(visited.Count - 1);
+                    break;
+                }
+            }
+            // in breadth-first, recursion needs to come after visiting adjacent nodes
+            foreach (var node in nodes)
+            {
+                if (visited.Contains(node) || node.Equals(end))
+                    continue;
+                visited.Add(node);
+                Bfs(visited, end, paths);
+                visited.RemoveAt(visited.Count - 1);
+            }
+        }
     }
 }

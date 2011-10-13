@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -155,7 +157,7 @@ namespace GraphBuilder.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForHeadsForUnknownNodeThrows()
         {
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(new SimpleNode("root"));
@@ -163,7 +165,7 @@ namespace GraphBuilder.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForHeadByIndexForUnknownNodeThrows()
         {
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(new SimpleNode("root"));
@@ -171,11 +173,61 @@ namespace GraphBuilder.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForOutDegreeForUnknownNodeThrows()
         {
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(new SimpleNode("root"));
             graph.OutDegreeOf(new SimpleNode("dummy")); // should throw
+        }
+
+        [TestMethod]
+        public void ThatThatThereIsNoPathBetweenNodeAndItself()
+        {
+            var root = new SimpleNode("root");
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var paths = graph.FindPaths(root, root);
+            Assert.AreEqual("", DescribePaths(paths));
+        }
+
+        [TestMethod]
+        public void ThatThatPathBetweenNodeAndChildContainsNodeAndChild()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var paths = graph.FindPaths(root, child);
+            Assert.AreEqual("root child", DescribePaths(paths));
+        }
+
+        [TestMethod]
+        public void TestThatTwoPathsAreFoundInDiamondGraph()
+        {
+            var root = new SimpleNode("root");
+            var child1 = new SimpleNode("child1");
+            var child2 = new SimpleNode("child2");
+            var end = new SimpleNode("end");
+            root.AddChild(child1);
+            root.AddChild(child2);
+            child1.AddChild(end);
+            child2.AddChild(end);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var paths = graph.FindPaths(root, end);
+            Assert.AreEqual("root child1 end\nroot child2 end", DescribePaths(paths));
+        }
+
+        private static string DescribePaths(IEnumerable<IList<SimpleNode>> paths)
+        {
+            var strPaths = "";
+            foreach (var path in paths)
+            {
+                var strPath = path.Aggregate("", (str, node) => str += node.ToString() + " ").TrimEnd();
+                strPaths += strPath + "\n";
+            }
+            return strPaths.TrimEnd();
         }
     }
 }
