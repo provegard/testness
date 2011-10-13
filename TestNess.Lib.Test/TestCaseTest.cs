@@ -20,7 +20,9 @@
  * THE SOFTWARE.
  */
 
+using GraphBuilder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Cecil;
 
 namespace TestNess.Lib.Test
 {
@@ -93,6 +95,33 @@ namespace TestNess.Lib.Test
             var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             var str = testCase.ToString();
             StringAssert.Contains(str, testCase.Name);
+        }
+
+        [TestMethod]
+        public void TestThatTestCaseExposesCallGraph()
+        {
+            var tc = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            Assert.AreEqual(typeof(Graph<MethodReference>), tc.CallGraph.GetType());
+        }
+
+        [TestMethod]
+        public void TestThatTestCaseCallGraphContainsMethodCalls()
+        {
+            var tc = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var graph = tc.CallGraph;
+            var result = "";
+            graph.Walk(reference => result += reference.Name + "\n");
+            StringAssert.StartsWith(result, "TestAddBasic\nAdd\nAreEqual\n");
+        }
+
+        [TestMethod]
+        public void TestThatTestCaseCallGraphContainsResolvedMethodsWherePossible()
+        {
+            var tc = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var graph = tc.CallGraph;
+            var result = "";
+            graph.Walk(reference => result += string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
+            StringAssert.StartsWith(result, "TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n");
         }
 
         private static TestCase FindTestCase(string testMethodName)

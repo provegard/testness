@@ -20,6 +20,9 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
+using System.Linq;
+using GraphBuilder;
 using Mono.Cecil;
 
 namespace TestNess.Lib
@@ -39,6 +42,12 @@ namespace TestNess.Lib
         /// The test method that contains this test case.
         /// </summary>
         public MethodDefinition TestMethod { get; private set; }
+
+        /// <summary>
+        /// Exposes the call graph for the test method that contains this test case. The root of the
+        /// call graph is the test method.
+        /// </summary>
+        public Graph<MethodReference> CallGraph { get; private set; }
 
         /// <summary>
         /// The name of this test case. The name is the name of the test method without the return type.
@@ -64,6 +73,32 @@ namespace TestNess.Lib
         public TestCase(MethodDefinition method)
         {
             TestMethod = method;
+            CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
+        }
+
+        private static IEnumerable<MethodReference> CalledMethodsFinder(MethodReference reference)
+        {
+            if (!reference.IsDefinition)
+                return new MethodReference[0]; // no body to parse anyway
+            var definition = (MethodDefinition) reference;
+            return definition.CalledMethods().Where(r => !r.Name.Equals(".ctor")).Select(TryResolve);
+        }
+
+        private static MethodReference TryResolve(MethodReference reference)
+        {
+            if (reference.IsDefinition)
+                return reference;
+            MethodReference result;
+            try
+            {
+                result = reference.Resolve();
+            }
+            catch (AssemblyResolutionException)
+            {
+                // resolution is best-effort, keep the reference
+                result = reference;
+            }
+            return result;
         }
 
         public override bool Equals(object obj)
