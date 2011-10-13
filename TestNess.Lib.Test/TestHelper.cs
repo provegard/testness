@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using Mono.Cecil;
 using TestNess.Target;
 
@@ -34,6 +33,9 @@ namespace TestNess.Lib.Test
     /// </summary>
     public static class TestHelper
     {
+        private static readonly IDictionary<string, AssemblyDefinition> Assemblies = new Dictionary<string, AssemblyDefinition>();
+        private static readonly IDictionary<string, TestCaseRepository> Repositories = new Dictionary<string, TestCaseRepository>(); 
+
         /// <summary>
         /// Returns the assembly which TestNess unit tests use for testing the evaluation capabilities of
         /// TestNess.
@@ -41,8 +43,7 @@ namespace TestNess.Lib.Test
         /// <returns>An assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
         public static AssemblyDefinition GetTargetAssembly()
         {
-            var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTest));
-            return AssemblyDefinition.ReadAssembly(assembly.Location);
+            return typeof (IntegerCalculatorTest).GetAssemblyDefinition();
         }
 
         /// <summary>
@@ -53,7 +54,26 @@ namespace TestNess.Lib.Test
         public static AssemblyDefinition GetAssemblyDefinition(this Type type)
         {
             var assembly = type.Assembly;
-            return AssemblyDefinition.ReadAssembly(assembly.Location);
+            AssemblyDefinition assemblyDef;
+            if (!Assemblies.TryGetValue(assembly.Location, out assemblyDef))
+            {
+                assemblyDef = AssemblyDefinition.ReadAssembly(assembly.Location);
+                Assemblies.Add(assembly.Location, assemblyDef);
+            }
+            return assemblyDef;
+        }
+
+        public static TestCase FindTestCase(this Type type, string methodSignature)
+        {
+            var assemblyDef = type.GetAssemblyDefinition();
+            TestCaseRepository repository;
+            if (!Repositories.TryGetValue(assemblyDef.FullName, out repository))
+            {
+                repository = new TestCaseRepository(assemblyDef);
+                Repositories.Add(assemblyDef.FullName, repository);
+            }
+            var fullName = type.FullName + "::" + methodSignature;
+            return repository.GetTestCaseByName(fullName);
         }
 
         /// <summary>
