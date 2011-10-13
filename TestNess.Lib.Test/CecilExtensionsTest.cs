@@ -34,7 +34,7 @@ namespace TestNess.Lib.Test
         [ClassInitialize]
         public static void ClassSetup(TestContext ctx)
         {
-            var assemblyDef = AssemblyDefinition.ReadAssembly(typeof(TesterClass).Assembly.Location);
+            var assemblyDef = typeof(TesterClass).GetAssemblyDefinition();
             _typeDefinition = (from m in assemblyDef.Modules
                                from t in m.Types
                                where t.Name.Equals(typeof(TesterClass).Name)
