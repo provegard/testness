@@ -43,10 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CecilExtensions.cs" />
     <Compile Include="NotATestMethodException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">
+      <Project>{BBFF7561-3653-4DAB-B251-374B934D738F}</Project>
+      <Name>GraphBuilder</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
