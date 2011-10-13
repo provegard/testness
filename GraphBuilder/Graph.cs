@@ -98,5 +98,12 @@ namespace GraphBuilder
             }
             return heads;
         }
+
+        public IEnumerable<TNode> TailsFor(TNode head)
+        {
+            return from key in _digraph.Keys
+                   where _digraph[key].Contains(head)
+                   select key;
+        }
     }
 }

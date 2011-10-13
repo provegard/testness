@@ -69,6 +69,16 @@ namespace GraphBuilder.Test
         }
 
         [TestMethod]
+        public void TestThatNodeTailsAreReachableThroughEnumeration()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+            CollectionAssert.Contains(new List<SimpleNode>(graph.TailsFor(child)), root);
+        }
+
+        [TestMethod]
         public void TestThatRootHeadsAreReachableThroughIndex()
         {
             var root = new SimpleNode("root");
