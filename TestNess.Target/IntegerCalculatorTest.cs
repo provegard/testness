@@ -20,32 +20,29 @@
  * THE SOFTWARE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace TestNess.Target
 {
-    /// <summary>
-    /// This is the base class for test case classes. Unattributed test methods are placed in this class, while sub
-    /// classes add custom attributes specific for a particular unit test framework. 
-    /// </summary>
-    public abstract class IntegerCalculatorTestBase
+    [TestClass]
+    public class IntegerCalculatorTest
     {
-        public virtual void TestAddBasic()
+        [TestMethod]
+        public void TestAddBasic()
         {
             var calculator = new IntegerCalculator();
-
             var actual = calculator.Add(1, 2);
 
-            DoAssertEqual(3, actual);
+            Assert.AreEqual(3, actual);
         }
 
-        public virtual void TestSubtractBasic()
+        [TestMethod]
+        public void TestSubtractBasic()
         {
             var calculator = new IntegerCalculator();
-
             var actual = calculator.Subtract(1, 2);
 
-            DoAssertEqual(-1, actual);
+            Assert.AreEqual(-1, actual);
         }
-
-        protected abstract void DoAssertEqual(int expected, int actual);
     }
 }

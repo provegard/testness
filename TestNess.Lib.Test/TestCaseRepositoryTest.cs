@@ -35,7 +35,7 @@ namespace TestNess.Lib.Test
         public void TestThatMsTestCaseCanBeRetrievedFromRepository()
         {
             var repo = CreateTestCaseRepository();
-            var testCase = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             Assert.IsInstanceOfType(testCase, typeof(TestCase));
         }
 
@@ -52,15 +52,15 @@ namespace TestNess.Lib.Test
         public void TestThatRetrievalByNameFromRepositoryThrowsForMissingMethod()
         {
             var repo = CreateTestCaseRepository();
-            repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::NoSuchMethod()"); // should throw
+            repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::NoSuchMethod()"); // should throw
         }
 
         [TestMethod]
         public void TestThatRepositoryCachesTestCaseInstances()
         {
             var repo = CreateTestCaseRepository();
-            var testCase1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            var testCase2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase1 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             Assert.AreSame(testCase1, testCase2);
         }
 
@@ -69,8 +69,8 @@ namespace TestNess.Lib.Test
         {
             var repo = CreateTestCaseRepository();
             var testCases = repo.GetAllTestCases();
-            var testCase1 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            var testCase2 = repo.GetTestCaseByName("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
+            var testCase1 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestSubtractBasic()");
             // Let's leave it at checking if at least some test cases are included
             CollectionAssert.IsSubsetOf(new List<TestCase> {testCase1, testCase2}, testCases.AsNonGeneric());
         }

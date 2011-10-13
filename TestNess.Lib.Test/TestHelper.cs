@@ -41,9 +41,19 @@ namespace TestNess.Lib.Test
         /// <returns>An assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
         public static AssemblyDefinition GetTargetAssembly()
         {
-            var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTestBase));
-            var target = AssemblyDefinition.ReadAssembly(assembly.Location);
-            return target;
+            var assembly = Assembly.GetAssembly(typeof (IntegerCalculatorTest));
+            return AssemblyDefinition.ReadAssembly(assembly.Location);
+        }
+
+        /// <summary>
+        /// Extension method that returns a Cecil <see cref="AssemblyDefinition"/> instance for the 
+        /// assembly that contains the given type.
+        /// </summary>
+        /// <returns>The type's assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
+        public static AssemblyDefinition GetAssemblyDefinition(this Type type)
+        {
+            var assembly = type.Assembly;
+            return AssemblyDefinition.ReadAssembly(assembly.Location);
         }
 
         /// <summary>

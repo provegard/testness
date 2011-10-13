@@ -42,8 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntegerCalculator.cs" />
-    <Compile Include="IntegerCalculatorTestBase.cs" />
-    <Compile Include="MSTestIntegerCalculatorTest.cs" />
+    <Compile Include="IntegerCalculatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

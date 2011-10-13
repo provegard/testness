@@ -30,35 +30,35 @@ namespace TestNess.Lib.Test
         [TestMethod]
         public void TestThatTestCaseExposesTestCaseName()
         {
-            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            Assert.AreEqual("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()", testCase.Name);
+            var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            Assert.AreEqual("TestNess.Target.IntegerCalculatorTest::TestAddBasic()", testCase.Name);
         }
 
         [TestMethod]
         public void TestThatTestCaseExposesTestMethod()
         {
-            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            StringAssert.Contains(testCase.TestMethod.FullName, "TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            StringAssert.Contains(testCase.TestMethod.FullName, "TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
         }
 
         [TestMethod]
         public void TestThatTestCaseIsNotEqualToNull()
         {
-            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             Assert.IsFalse(testCase.Equals(null));
         }
 
         [TestMethod]
         public void TestThatTestCaseIsNotEqualToNonTestCase()
         {
-            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             Assert.IsFalse(testCase.Equals("string"));
         }
 
         [TestMethod]
         public void TestThatTestCasesAreEqualBasedOnTestMethod()
         {
-            var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase1 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             var testCase2 = new TestCase(testCase1.TestMethod);
             Assert.AreEqual(testCase1, testCase2);
         }
@@ -66,7 +66,7 @@ namespace TestNess.Lib.Test
         [TestMethod]
         public void TestThatTestCasesWithSameTestMethodHaveSameHashCode()
         {
-            var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase1 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             var testCase2 = new TestCase(testCase1.TestMethod);
             Assert.AreEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
@@ -74,23 +74,23 @@ namespace TestNess.Lib.Test
         [TestMethod]
         public void TestThatTestCasesWithDifferentTestMethodsAreNotEqual()
         {
-            var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            var testCase2 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
+            var testCase1 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestSubtractBasic()");
             Assert.AreNotEqual(testCase1, testCase2);
         }
 
         [TestMethod]
         public void TestThatTestCasesWithDifferentTestMethodsHaveDifferentHashCode()
         {
-            var testCase1 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
-            var testCase2 = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestSubtractBasic()");
+            var testCase1 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            var testCase2 = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestSubtractBasic()");
             Assert.AreNotEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
         [TestMethod]
         public void TestThatToStringIncludesName()
         {
-            var testCase = FindTestCase("TestNess.Target.MsTestIntegerCalculatorTest::TestAddBasic()");
+            var testCase = FindTestCase("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
             var str = testCase.ToString();
             StringAssert.Contains(str, testCase.Name);
         }
