@@ -100,5 +100,77 @@ namespace GraphBuilder.Test
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
             Assert.AreEqual(2, graph.Order);
         }
+
+        [TestMethod]
+        public void TestThatGraphCanBeWalkedFromRoot()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var result = "";
+            graph.Walk(node => result += node.ToString());
+            Assert.AreEqual("rootchild", result);
+        }
+
+        [TestMethod]
+        public void TestThatGraphWithCycleCanBeWalked()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            child.AddChild(root);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var result = "";
+            graph.Walk(node => result += node.ToString());
+            Assert.AreEqual("rootchild", result);
+        }
+
+        [TestMethod]
+        public void TestThatWalkingIsDepthFirst()
+        {
+            var root = new SimpleNode("root");
+            var child11 = new SimpleNode("child11");
+            var child12 = new SimpleNode("child12");
+            var child111 = new SimpleNode("child111");
+            root.AddChild(child11);
+            root.AddChild(child12);
+            child11.AddChild(child111);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var result = "";
+            graph.Walk(node => result += node.ToString());
+            Assert.AreEqual("rootchild11child111child12", result);
+        }
+
+        [TestMethod]
+        public void TestThatHeadsAreOrderedBasedOnInput()
+        {
+            var root = new SimpleNode("root");
+            var child1 = new SimpleNode("child1");
+            var child2 = new SimpleNode("child2");
+            root.AddChild(child1);
+            root.AddChild(child2);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            Assert.AreSame(child1, graph.HeadByIndex(root, 0));
+        }
+
+        [TestMethod]
+        public void TestThatWalkingCanStartWithAnyNode()
+        {
+            var root = new SimpleNode("root");
+            var child11 = new SimpleNode("child11");
+            var child111 = new SimpleNode("child111");
+            root.AddChild(child11);
+            child11.AddChild(child111);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var result = "";
+            graph.Walk(node => result += node.ToString(), child11);
+            Assert.AreEqual("child11child111", result);
+        }
     }
 }

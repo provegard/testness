@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GraphBuilder
 {
-    public class GraphBuilder<TNode>
+    public class GraphBuilder<TNode> where TNode : class
     {
         private readonly HeadFinder _headFinder;
 
