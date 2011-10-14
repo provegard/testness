@@ -181,13 +181,13 @@ namespace GraphBuilder.Test
         }
 
         [TestMethod]
-        public void ThatThatThereIsNoPathBetweenNodeAndItself()
+        public void ThatThatThereIsSinglePathBetweenNodeAndItself()
         {
             var root = new SimpleNode("root");
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
 
             var paths = graph.FindPaths(root, root);
-            Assert.AreEqual("", DescribePaths(paths));
+            Assert.AreEqual("root", DescribePaths(paths));
         }
 
         [TestMethod]
@@ -217,6 +217,43 @@ namespace GraphBuilder.Test
 
             var paths = graph.FindPaths(root, end);
             Assert.AreEqual("root child1 end\nroot child2 end", DescribePaths(paths));
+        }
+
+        [TestMethod]
+        public void TestThatHeadsForRootWithTwoEdgesToChildIncludesChildTwice()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            Assert.AreEqual(2, graph.HeadsFor(root).Count());
+        }
+
+        [TestMethod]
+        public void TestThatTailsForChildWithTwoEdgesToRootIncludesRootTwice()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            Assert.AreEqual(2, graph.TailsFor(child).Count());
+        }
+
+        [TestMethod]
+        public void TestThatTwoPathsAreFoundForTwoEdgesBetweenVertices()
+        {
+            var root = new SimpleNode("root");
+            var child = new SimpleNode("child");
+            root.AddChild(child);
+            root.AddChild(child);
+            var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
+
+            var paths = graph.FindPaths(root, child);
+            Assert.AreEqual("root child\nroot child", DescribePaths(paths));
         }
 
         private static string DescribePaths(IEnumerable<IList<SimpleNode>> paths)

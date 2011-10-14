@@ -26,6 +26,10 @@ using System.Linq;
 
 namespace GraphBuilder
 {
+    /// <summary>
+    /// A graph of nodes (vertices). This is in fact a directed multigraph.
+    /// </summary>
+    /// <typeparam name="TNode">The type of nodes (vertices) in this graph.</typeparam>
     public class Graph<TNode> where TNode: class
     {
         private readonly IDictionary<TNode, IList<TNode>> _digraph;
@@ -102,44 +106,43 @@ namespace GraphBuilder
         public IEnumerable<TNode> TailsFor(TNode head)
         {
             return from key in _digraph.Keys
-                   where _digraph[key].Contains(head)
-                   select key;
+                   let headCount = _digraph[key].Count(node => node.Equals(head))
+                   where headCount > 0
+                   from repeatedKey in Enumerable.Repeat(key, headCount)
+                   select repeatedKey;
         }
 
         public IEnumerable<IList<TNode>> FindPaths(TNode start, TNode end)
         {
             var paths = new List<IList<TNode>>();
-            var visited = new List<TNode> {start};
-            Bfs(visited, end, paths);
+            FindPaths(start, end, new List<Edge>(), paths);
             return paths;
         }
 
-        private void Bfs(IList<TNode> visited, TNode end, ICollection<IList<TNode>> paths)
+        private void FindPaths(TNode start, TNode end, ICollection<Edge> visitedEdges, ICollection<IList<TNode>> paths)
         {
-            var nodes = HeadsFor(visited.Last()).ToList();
-            // examine adjacent nodes
-            foreach (var node in nodes)
+            if (start.Equals(end))
             {
-                if (visited.Contains(node))
-                    continue;
+                var path = visitedEdges.Select(edge => edge.Source).ToList();
+                path.Add(end);
+                paths.Add(path);
+                return;
+            }
 
-                if (node.Equals(end))
-                {
-                    visited.Add(node);
-                    paths.Add(new List<TNode>(visited));
-                    visited.RemoveAt(visited.Count - 1);
-                    break;
-                }
-            }
-            // in breadth-first, recursion needs to come after visiting adjacent nodes
-            foreach (var node in nodes)
+            var edges = HeadsFor(start).Select(head => new Edge {Source = start, Target = head}).Where(e => !visitedEdges.Contains(e));
+            foreach (var edge in edges)
             {
-                if (visited.Contains(node) || node.Equals(end))
-                    continue;
-                visited.Add(node);
-                Bfs(visited, end, paths);
-                visited.RemoveAt(visited.Count - 1);
+                visitedEdges.Add(edge);
+                var target = edge.Target;
+                FindPaths(target, end, visitedEdges, paths);
+                visitedEdges.Remove(edge);
             }
+        }
+
+        private struct Edge
+        {
+            internal TNode Source;
+            internal TNode Target;
         }
     }
 }
