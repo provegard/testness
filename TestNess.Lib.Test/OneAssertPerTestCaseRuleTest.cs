@@ -20,38 +20,40 @@
  * THE SOFTWARE.
  */
 
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestNess.Target;
 
-namespace TestNess.Target
+namespace TestNess.Lib.Test
 {
     [TestClass]
-    public class IntegerCalculatorTest
+    public class OneAssertPerTestCaseRuleTest
     {
         [TestMethod]
-        public void TestAddTwoAsserts()
+        public void TestThatNoViolationIsGeneratedForTestMethodWithOneAssert()
         {
-            var calculator = new IntegerCalculator();
+            var tc = typeof (IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            var rule = new OneAssertPerTestCaseRule();
+            var violations = rule.Apply(tc);
 
-            Assert.AreEqual(3, calculator.Add(1, 2));
-            Assert.AreEqual(10, calculator.Add(1, 9));
+            Assert.AreEqual(0, violations.Count());
         }
 
         [TestMethod]
-        public void TestAddBasic()
+        public void TestThatViolationIsGeneratedForTestMethodWithTwoAsserts()
         {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Add(1, 2);
+            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
+            var rule = new OneAssertPerTestCaseRule();
+            var violations = rule.Apply(tc);
 
-            Assert.AreEqual(3, actual);
+            Assert.AreEqual(1, violations.Count());
         }
 
         [TestMethod]
-        public void TestSubtractBasic()
+        public void TestThatToStringDescribesRule()
         {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Subtract(1, 2);
-
-            Assert.AreEqual(-1, actual);
+            var rule = new OneAssertPerTestCaseRule();
+            Assert.AreEqual("a test case should have a single assert", rule.ToString());
         }
     }
 }

@@ -20,38 +20,43 @@
  * THE SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestNess.Target;
 
-namespace TestNess.Target
+namespace TestNess.Lib.Test
 {
     [TestClass]
-    public class IntegerCalculatorTest
+    public class ViolationTest
     {
         [TestMethod]
-        public void TestAddTwoAsserts()
+        public void TestThatViolationExposesRule()
         {
-            var calculator = new IntegerCalculator();
+            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            var rule = new SomeRule();
 
-            Assert.AreEqual(3, calculator.Add(1, 2));
-            Assert.AreEqual(10, calculator.Add(1, 9));
+            var violation = new Violation(rule, tc);
+
+            Assert.AreSame(rule, violation.Rule);
         }
 
         [TestMethod]
-        public void TestAddBasic()
+        public void TestThatViolationExposesTestCase()
         {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Add(1, 2);
+            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
 
-            Assert.AreEqual(3, actual);
+            var violation = new Violation(new SomeRule(), tc);
+
+            Assert.AreSame(tc, violation.TestCase);
         }
 
-        [TestMethod]
-        public void TestSubtractBasic()
+        private class SomeRule : IRule
         {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Subtract(1, 2);
-
-            Assert.AreEqual(-1, actual);
+            public IEnumerable<Violation> Apply(TestCase testCase)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

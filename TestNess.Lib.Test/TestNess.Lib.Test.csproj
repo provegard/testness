@@ -54,10 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CecilExtensionsTest.cs" />
+    <Compile Include="OneAssertPerTestCaseRuleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCaseRepositoryTest.cs" />
     <Compile Include="TestCaseTest.cs" />
     <Compile Include="TestHelper.cs" />
+    <Compile Include="ViolationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">

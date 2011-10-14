@@ -20,38 +20,17 @@
  * THE SOFTWARE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace TestNess.Target
+namespace TestNess.Lib
 {
-    [TestClass]
-    public class IntegerCalculatorTest
+    public class Violation
     {
-        [TestMethod]
-        public void TestAddTwoAsserts()
+        public IRule Rule { get; private set; }
+        public TestCase TestCase { get; private set; }
+
+        public Violation(IRule rule, TestCase testCase)
         {
-            var calculator = new IntegerCalculator();
-
-            Assert.AreEqual(3, calculator.Add(1, 2));
-            Assert.AreEqual(10, calculator.Add(1, 9));
-        }
-
-        [TestMethod]
-        public void TestAddBasic()
-        {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Add(1, 2);
-
-            Assert.AreEqual(3, actual);
-        }
-
-        [TestMethod]
-        public void TestSubtractBasic()
-        {
-            var calculator = new IntegerCalculator();
-            var actual = calculator.Subtract(1, 2);
-
-            Assert.AreEqual(-1, actual);
+            Rule = rule;
+            TestCase = testCase;
         }
     }
 }
