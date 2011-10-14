@@ -31,6 +31,7 @@ namespace TestNess.Main
     {
         static int Main(string[] args)
         {
+            TestCaseRepository repo;
             PrintHeader();
             var arguments = Arguments.Parse(args);
             if (!arguments.HasAssemblyFileName)
@@ -38,29 +39,45 @@ namespace TestNess.Main
                 PrintUsage();
                 return 1;
             }
+            if (!LoadRepository(arguments.AssemblyFileName, out repo))
+            {
+                return 2;
+            }
 
-            TestCaseRepository repo;
+            AnalyzeTestCases(repo);
+            return 0;
+        }
+
+        private static bool LoadRepository(string fileName, out TestCaseRepository repository)
+        {
             try
             {
-                repo = TestCaseRepository.LoadFromFile(arguments.AssemblyFileName);
+                repository = TestCaseRepository.LoadFromFile(fileName);
             }
             catch (FileNotFoundException e)
             {
                 Console.Error.WriteLine("Failed to load the assembly file: {0}", e.Message);
-                return 2;
+                repository = null;
             }
-
-            PrintTestCases(repo);
-            return 0;
+            return repository != null;
         }
 
-        private static void PrintTestCases(TestCaseRepository repo)
+        private static void AnalyzeTestCases(TestCaseRepository repo)
         {
-            Console.WriteLine("All test cases found in the assembly:");
-            foreach (var testCase in repo.GetAllTestCases())
+            var analyzer = new Analyzer(repo);
+            analyzer.AddRule(new OneAssertPerTestCaseRule());
+            analyzer.AddRule(new NonConditionalTestCaseRule());
+            analyzer.Analyze();
+            
+            Console.WriteLine("Violations:");
+            foreach (var violation in analyzer.Violations)
             {
-                Console.WriteLine(testCase.Name);
+                Console.WriteLine("  Test case {0} violates rule \"{1}\"", violation.TestCase, violation.Rule);
             }
+
+            Console.WriteLine();
+
+            Console.WriteLine("Total score = {0}", analyzer.Score);
         }
 
         private static void PrintUsage()
