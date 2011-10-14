@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestNess.Target
@@ -27,6 +28,71 @@ namespace TestNess.Target
     [TestClass]
     public class IntegerCalculatorTest
     {
+        [TestMethod]
+        public void TestAddWithIf()
+        {
+            var calculator = new IntegerCalculator();
+
+            if (DateTime.Now.Ticks > 0)
+            {
+                Assert.AreEqual(3, calculator.Add(1, 2));
+            }
+        }
+
+        [TestMethod]
+        public void TestAddWithFor()
+        {
+            var calculator = new IntegerCalculator();
+
+            for (var i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(0, calculator.Add(i, -i));
+            }
+        }
+
+        [TestMethod]
+        public void TestAddWithWhile()
+        {
+            var calculator = new IntegerCalculator();
+
+            var i = 0;
+            while (i < 3)
+            {
+                Assert.AreEqual(0, calculator.Add(i, -i));
+                i++;
+            }
+        }
+
+        [TestMethod]
+        public void TestAddWithDoWhile()
+        {
+            var calculator = new IntegerCalculator();
+
+            var i = 0;
+            do
+            {
+                Assert.AreEqual(0, calculator.Add(i, -i));
+                i++;
+            } while (i < 3);
+        }
+
+        [TestMethod]
+        public void TestAddWithSwitchCase()
+        {
+            var calculator = new IntegerCalculator();
+
+            var i = new Random().Next(2);
+            switch (i)
+            {
+                case 0:
+                    Assert.AreEqual(3, calculator.Add(1, 2));
+                    break;
+                case 1:
+                    Assert.AreEqual(10, calculator.Add(5, 5));
+                    break;
+            }
+        }
+
         [TestMethod]
         public void TestAddTwoAsserts()
         {

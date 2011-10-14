@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="IRule.cs" />
+    <Compile Include="NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
     <Compile Include="OneAssertPerTestCaseRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
