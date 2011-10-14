@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analyzer.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="CompoundRule.cs" />
     <Compile Include="IRule.cs" />
