@@ -29,6 +29,18 @@ namespace TestNess.Target
     public class IntegerCalculatorTest
     {
         [TestMethod]
+        public void TestAddWithConditionalAndMultiAssert()
+        {
+            var calculator = new IntegerCalculator();
+
+            if (DateTime.Now.Ticks > 0)
+            {
+                Assert.AreEqual(3, calculator.Add(1, 2));
+                Assert.AreEqual(3, calculator.Add(0, 3));
+            }
+        }
+
+        [TestMethod]
         public void TestAddWithIf()
         {
             var calculator = new IntegerCalculator();
