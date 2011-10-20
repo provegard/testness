@@ -21,7 +21,6 @@
  */
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mono.Cecil;
 
@@ -37,6 +36,7 @@ namespace TestNess.Lib
     {
         private readonly AssemblyDefinition _assembly;
         private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>();
+        private readonly ITestFramework _framework;
 
         /// <summary>
         /// Creates a new test case repository that fetches test cases from the given assembly.
@@ -45,6 +45,7 @@ namespace TestNess.Lib
         public TestCaseRepository(AssemblyDefinition assembly)
         {
             _assembly = assembly;
+            _framework = new TestFrameworks();
             BuildTestMethodDictionary();
         }
 
@@ -53,29 +54,13 @@ namespace TestNess.Lib
             var methods = from module in _assembly.Modules
                           from type in module.Types
                           from method in type.Methods
-                          where IsTestMethod(method)
+                          where _framework.IsTestMethod(method)
                           select method;
 
             foreach (var method in methods)
             {
                 _testCases.Add(TestCase.GetTestCaseName(method), new TestCase(method));
             }
-        }
-
-        private bool IsTestMethod(MethodDefinition method)
-        {
-            return HasTestAttribute(method);
-        }
-
-        private static bool HasTestAttribute(MethodDefinition method)
-        {
-            return method.CustomAttributes.Where(IsTestAttribute).Count() > 0;
-        }
-
-        private static bool IsTestAttribute(CustomAttribute attr)
-        {
-            // TODO: hard-coded for now, but will be refactored later
-            return "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute".Equals(attr.AttributeType.FullName);
         }
 
         /// <summary>

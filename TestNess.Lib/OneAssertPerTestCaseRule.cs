@@ -30,6 +30,8 @@ namespace TestNess.Lib
 {
     public class OneAssertPerTestCaseRule : IRule
     {
+        private readonly ITestFramework _framework = new TestFrameworks();
+
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
             IList<IList<MethodReference>> paths = new List<IList<MethodReference>>();
@@ -42,9 +44,9 @@ namespace TestNess.Lib
             yield return new Violation(this, testCase);
         }
 
-        private static void AddPathsToRoot(TestCase testCase, MethodReference reference, ICollection<IList<MethodReference>> listOfPaths)
+        private void AddPathsToRoot(TestCase testCase, MethodReference reference, ICollection<IList<MethodReference>> listOfPaths)
         {
-            if (CountAssertions(reference) <= 0)
+            if (!DoesContainAssertion(reference))
                 return;
             var graph = testCase.CallGraph;
             // Create a graph with edges in the other direction so we can
@@ -58,33 +60,11 @@ namespace TestNess.Lib
             }
         }
 
-        private static int CountAssertions(MethodReference method)
+        private bool DoesContainAssertion(MethodReference method)
         {
-            MethodDefinition methodDef;
-            var count = 0;
-            if (method.IsDefinition && (methodDef = (MethodDefinition) method).HasBody)
-            {
-                var assertions = methodDef.Body.Instructions.Where(IsAssertion);
-                count = assertions.Count();
-            }
-            return count;
-        }
-
-        private static bool IsAssertion(Instruction inst)
-        {
-            var isAssert = false;
-            if (inst.OpCode == OpCodes.Throw)
-            {
-                var prev = inst.Previous;
-                if (prev.OpCode == OpCodes.Newobj)
-                {
-                    var reference = (MethodReference) prev.Operand;
-                    //TODO: hard-coded to MsTest for now!
-                    isAssert = "Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException".Equals(
-                        reference.DeclaringType.FullName);
-                }
-            }
-            return isAssert;
+            if (!method.IsDefinition || !((MethodDefinition)method).HasBody)
+                return false;
+            return _framework.DoesContainAssertion((MethodDefinition) method);
         }
 
         public override string ToString()
