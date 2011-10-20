@@ -23,23 +23,23 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
+using NUnit.Framework;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class TestCaseRepositoryTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatMsTestCaseCanBeRetrievedFromRepository()
         {
             var repo = CreateTestCaseRepository();
             var testCase = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
-            Assert.IsInstanceOfType(testCase, typeof(TestCase));
+            Assert.IsInstanceOf(typeof(TestCase), testCase);
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof(NotATestMethodException))]
         public void TestThatRetrievalByNameFromRepositoryThrowsForNonTestMethod()
         {
@@ -47,7 +47,7 @@ namespace TestNess.Lib.Test
             repo.GetTestCaseByName("TestNess.Target.IntegerCalculator::Add(System.Int32,System.Int32)"); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof(NotATestMethodException))]
         public void TestThatRetrievalByNameFromRepositoryThrowsForMissingMethod()
         {
@@ -55,7 +55,7 @@ namespace TestNess.Lib.Test
             repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::NoSuchMethod()"); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRepositoryCachesTestCaseInstances()
         {
             var repo = CreateTestCaseRepository();
@@ -64,7 +64,7 @@ namespace TestNess.Lib.Test
             Assert.AreSame(testCase1, testCase2);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatAllTestCasesCanBeRetrievedFromRepository()
         {
             var repo = CreateTestCaseRepository();
@@ -75,7 +75,7 @@ namespace TestNess.Lib.Test
             CollectionAssert.IsSubsetOf(new List<TestCase> {testCase1, testCase2}, testCases.AsNonGeneric());
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof(NotSupportedException))]
         public void TestThatCollectionOfAllTestCasesIsImmutable()
         {
@@ -84,7 +84,7 @@ namespace TestNess.Lib.Test
             testCases.Clear(); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatCollectionOfAllTestCasesIsEmptyIfNoTestCases()
         {
             var assembly = Assembly.GetCallingAssembly();
@@ -94,7 +94,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, testCases.Count);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRepositoryCanBeLoadedFromFile()
         {
             var assembly = Assembly.GetCallingAssembly();

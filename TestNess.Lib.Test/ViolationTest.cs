@@ -22,15 +22,15 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class ViolationTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationExposesRule()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -41,7 +41,7 @@ namespace TestNess.Lib.Test
             Assert.AreSame(rule, violation.Rule);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationExposesTestCase()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");

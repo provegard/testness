@@ -22,13 +22,12 @@
 
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace GraphBuilder.Test
 {
-    [TestClass]
+    [TestFixture]
     public class GraphTest
     {
         private static IEnumerable<SimpleNode> GetChildren(SimpleNode node)
@@ -36,7 +35,7 @@ namespace GraphBuilder.Test
             return node.GetChildren();
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatGraphExposesRootNode()
         {
             var root = new SimpleNode("root");
@@ -44,7 +43,7 @@ namespace GraphBuilder.Test
             Assert.AreSame(root, graph.Root);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatGraphCanBeWalkedFromRoot()
         {
             var root = new SimpleNode("root");
@@ -57,7 +56,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("rootchild", result);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatGraphWithCycleCanBeWalked()
         {
             var root = new SimpleNode("root");
@@ -71,7 +70,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("rootchild", result);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatWalkingIsDepthFirst()
         {
             var root = new SimpleNode("root");
@@ -88,7 +87,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("rootchild11child111child12", result);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatHeadsAreOrderedBasedOnInput()
         {
             var root = new SimpleNode("root");
@@ -101,7 +100,7 @@ namespace GraphBuilder.Test
             Assert.AreSame(child1, graph.HeadByIndex(root, 0));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatWalkingCanStartWithAnyNode()
         {
             var root = new SimpleNode("root");
@@ -116,7 +115,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("child11child111", result);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRootHeadsAreReachableThroughEnumeration()
         {
             var root = new SimpleNode("root");
@@ -126,7 +125,7 @@ namespace GraphBuilder.Test
             CollectionAssert.Contains(new List<SimpleNode>(graph.HeadsFor(root)), child);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatNodeTailsAreReachableThroughEnumeration()
         {
             var root = new SimpleNode("root");
@@ -136,7 +135,7 @@ namespace GraphBuilder.Test
             CollectionAssert.Contains(new List<SimpleNode>(graph.TailsFor(child)), root);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRootHeadsAreReachableThroughIndex()
         {
             var root = new SimpleNode("root");
@@ -146,7 +145,7 @@ namespace GraphBuilder.Test
             Assert.AreSame(child, graph.HeadByIndex(root, 0));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRootHasOutDegree()
         {
             var root = new SimpleNode("root");
@@ -156,7 +155,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(1, graph.OutDegreeOf(root));
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForHeadsForUnknownNodeThrows()
         {
@@ -164,7 +163,7 @@ namespace GraphBuilder.Test
             graph.HeadsFor(new SimpleNode("dummy")); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForHeadByIndexForUnknownNodeThrows()
         {
@@ -172,7 +171,7 @@ namespace GraphBuilder.Test
             graph.HeadByIndex(new SimpleNode("dummy"), 0); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof (ArgumentException))]
         public void TestThatRequestForOutDegreeForUnknownNodeThrows()
         {
@@ -180,7 +179,7 @@ namespace GraphBuilder.Test
             graph.OutDegreeOf(new SimpleNode("dummy")); // should throw
         }
 
-        [TestMethod]
+        [TestCase]
         public void ThatThatThereIsSinglePathBetweenNodeAndItself()
         {
             var root = new SimpleNode("root");
@@ -190,7 +189,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("root", DescribePaths(paths));
         }
 
-        [TestMethod]
+        [TestCase]
         public void ThatThatPathBetweenNodeAndChildContainsNodeAndChild()
         {
             var root = new SimpleNode("root");
@@ -202,7 +201,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("root child", DescribePaths(paths));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTwoPathsAreFoundInDiamondGraph()
         {
             var root = new SimpleNode("root");
@@ -219,7 +218,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual("root child1 end\nroot child2 end", DescribePaths(paths));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatHeadsForRootWithTwoEdgesToChildIncludesChildTwice()
         {
             var root = new SimpleNode("root");
@@ -231,7 +230,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(2, graph.HeadsFor(root).Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTailsForChildWithTwoEdgesToRootIncludesRootTwice()
         {
             var root = new SimpleNode("root");
@@ -243,7 +242,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(2, graph.TailsFor(child).Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTwoPathsAreFoundForTwoEdgesBetweenVertices()
         {
             var root = new SimpleNode("root");

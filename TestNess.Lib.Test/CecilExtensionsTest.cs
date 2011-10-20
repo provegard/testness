@@ -21,18 +21,18 @@
  */
 
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Mono.Cecil;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class CecilExtensionsTest
     {
         private static TypeDefinition _typeDefinition;
 
-        [ClassInitialize]
-        public static void ClassSetup(TestContext ctx)
+        [TestFixtureSetUp]
+        public void ClassSetup()
         {
             var assemblyDef = typeof(TesterClass).GetAssemblyDefinition();
             _typeDefinition = (from m in assemblyDef.Modules
@@ -48,14 +48,14 @@ namespace TestNess.Lib.Test
                     select m).First();
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatCalledMethodCanBeExtracted()
         {
             var calledMethods = GetReferringMethod("ReferringMethod").CalledMethods();
             CollectionAssert.Contains(calledMethods.Select(m => m.Name).ToList(), "AMethod");
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatCalledMethodsFromAbstractClassAreEmpty()
         {
             var calledMethods = GetReferringMethod("AnAbstractMethod").CalledMethods();

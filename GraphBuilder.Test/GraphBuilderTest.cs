@@ -21,11 +21,11 @@
  */
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace GraphBuilder.Test
 {
-    [TestClass]
+    [TestFixture]
     public class GraphBuilderTest
     {
         private static IEnumerable<SimpleNode> GetChildren(SimpleNode node)
@@ -33,14 +33,14 @@ namespace GraphBuilder.Test
             return node.GetChildren();
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatGraphCanBeCreatedWithSingleValueNode()
         {
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(new SimpleNode("root"));
             Assert.AreEqual(1, graph.Order);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatGraphCanBeCreatedWithTwoConnectedNodes()
         {
             var root = new SimpleNode("root");
@@ -49,7 +49,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(2, graph.Order);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatBuilderHandlesCycle()
         {
             var root = new SimpleNode("root");

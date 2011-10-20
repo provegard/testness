@@ -21,44 +21,44 @@
  */
 
 using GraphBuilder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
+using NUnit.Framework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class TestCaseTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseExposesTestCaseName()
         {
             var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             Assert.AreEqual("TestNess.Target.IntegerCalculatorTest::TestAddBasic()", testCase.Name);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseExposesTestMethod()
         {
             var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
-            StringAssert.Contains(testCase.TestMethod.FullName, "TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
+            StringAssert.Contains("TestNess.Target.IntegerCalculatorTest::TestAddBasic()", testCase.TestMethod.FullName);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseIsNotEqualToNull()
         {
             var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             Assert.IsFalse(testCase.Equals(null));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseIsNotEqualToNonTestCase()
         {
             var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             Assert.IsFalse(testCase.Equals("string"));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCasesAreEqualBasedOnTestMethod()
         {
             var testCase1 = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -66,7 +66,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(testCase1, testCase2);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCasesWithSameTestMethodHaveSameHashCode()
         {
             var testCase1 = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -74,7 +74,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsAreNotEqual()
         {
             var testCase1 = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -82,7 +82,7 @@ namespace TestNess.Lib.Test
             Assert.AreNotEqual(testCase1, testCase2);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsHaveDifferentHashCode()
         {
             var testCase1 = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -90,39 +90,39 @@ namespace TestNess.Lib.Test
             Assert.AreNotEqual(testCase1.GetHashCode(), testCase2.GetHashCode());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatToStringIncludesName()
         {
             var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             var str = testCase.ToString();
-            StringAssert.Contains(str, testCase.Name);
+            StringAssert.Contains(testCase.Name, str);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseExposesCallGraph()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             Assert.AreEqual(typeof(Graph<MethodReference>), tc.CallGraph.GetType());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseCallGraphContainsMethodCalls()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             var graph = tc.CallGraph;
             var result = "";
             graph.Walk(reference => result += reference.Name + "\n");
-            StringAssert.StartsWith(result, "TestAddBasic\nAdd\nAreEqual\n");
+            StringAssert.StartsWith("TestAddBasic\nAdd\nAreEqual\n", result);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatTestCaseCallGraphContainsResolvedMethodsWherePossible()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
             var graph = tc.CallGraph;
             var result = "";
             graph.Walk(reference => result += string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
-            StringAssert.StartsWith(result, "TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n");
+            StringAssert.StartsWith("TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n", result);
         }
     }
 }

@@ -22,15 +22,15 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class NonConditionalTestCaseRuleTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatNoViolationIsGeneratedForTestMethodWithoutCondition()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -40,42 +40,42 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithIf()
         {
             var violations = FindViolations("TestAddWithIf()");
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithFor()
         {
             var violations = FindViolations("TestAddWithFor()");
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithWhile()
         {
             var violations = FindViolations("TestAddWithWhile()");
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithDoWhile()
         {
             var violations = FindViolations("TestAddWithDoWhile()");
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithSwitchCase()
         {
             var violations = FindViolations("TestAddWithSwitchCase()");
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatToStringDescribesRule()
         {
             var rule = new NonConditionalTestCaseRule();

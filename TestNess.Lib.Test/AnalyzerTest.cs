@@ -21,14 +21,14 @@
  */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class AnalyzerTest
     {
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof(NotSupportedException))]
         public void TestThatRuleCollectionIsReadOnly()
         {
@@ -38,7 +38,7 @@ namespace TestNess.Lib.Test
             analyzer.Rules.Clear();
         }
 
-        [TestMethod]
+        [TestCase]
         [ExpectedException(typeof(NotSupportedException))]
         public void TestThatViolationCollectionIsReadOnly()
         {
@@ -49,7 +49,7 @@ namespace TestNess.Lib.Test
         }
 
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRuleCanBeAddedToAnalyzer()
         {
             var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
@@ -60,7 +60,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(1, analyzer.Rules.Count);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatScoreIsInitiallyNegative()
         {
             var analyzer = CreateAnalyzer();
@@ -68,7 +68,7 @@ namespace TestNess.Lib.Test
             Assert.IsTrue(analyzer.Score < 0);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationListIsInitiallyEmpty()
         {
             var analyzer = CreateAnalyzer();
@@ -76,7 +76,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, analyzer.Violations.Count);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatAnalyzingSetsScore()
         {
             var analyzer = CreateAnalyzer();
@@ -85,7 +85,7 @@ namespace TestNess.Lib.Test
             Assert.IsTrue(analyzer.Score > 0);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatAnalyzingFillsViolations()
         {
             var analyzer = CreateAnalyzer();

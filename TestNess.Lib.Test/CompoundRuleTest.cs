@@ -21,22 +21,22 @@
  */
 
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class CompoundRuleTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatRulesAreInitiallyEmpty()
         {
             var rule = new CompoundRule();
             Assert.AreEqual(0, rule.Rules.Count);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatRuleCanBeAdded()
         {
             var rule = new CompoundRule();
@@ -44,7 +44,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(1, rule.Rules.Count);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatCompoundRuleReturnsViolationsFromAllSubRules()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");

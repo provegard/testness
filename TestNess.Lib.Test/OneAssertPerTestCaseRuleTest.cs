@@ -21,15 +21,15 @@
  */
 
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestNess.Target;
+using NUnit.Framework;
 
 namespace TestNess.Lib.Test
 {
-    [TestClass]
+    [TestFixture]
     public class OneAssertPerTestCaseRuleTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestThatNoViolationIsGeneratedForTestMethodWithOneAssert()
         {
             var tc = typeof (IntegerCalculatorTest).FindTestCase("TestAddBasic()");
@@ -39,7 +39,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatViolationIsGeneratedForTestMethodWithTwoAsserts()
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
@@ -49,7 +49,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(1, violations.Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestThatToStringDescribesRule()
         {
             var rule = new OneAssertPerTestCaseRule();

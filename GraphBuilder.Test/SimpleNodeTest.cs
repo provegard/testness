@@ -22,28 +22,28 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace GraphBuilder.Test
 {
-    [TestClass]
+    [TestFixture]
     public class SimpleNodeTest
     {
-        [TestMethod]
+        [TestCase]
         public void TestNodeHasValue()
         {
             var sn = new SimpleNode("test");
             Assert.AreEqual("test", sn.Value);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestNodeToStringIsValue()
         {
             var sn = new SimpleNode("test");
             Assert.AreEqual("test", sn.ToString());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestNodesWithSameValueAreEqual()
         {
             var sn1 = new SimpleNode("test");
@@ -51,7 +51,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(sn1, sn2);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestNodesWithDifferentValuesAreNotEqual()
         {
             var sn1 = new SimpleNode("test");
@@ -59,7 +59,7 @@ namespace GraphBuilder.Test
             Assert.AreNotEqual(sn1, sn2);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestNodesWithSameValueHaveSameHashCode()
         {
             var sn1 = new SimpleNode("test");
@@ -67,7 +67,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(sn1.GetHashCode(), sn2.GetHashCode());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestNodesWithDifferentValuesHaveDifferentHashCodes()
         {
             var sn1 = new SimpleNode("test");
@@ -75,14 +75,14 @@ namespace GraphBuilder.Test
             Assert.AreNotEqual(sn1.GetHashCode(), sn2.GetHashCode());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestChildListIsInitiallyEmpty()
         {
             var sn1 = new SimpleNode("test");
             Assert.AreEqual(0, sn1.GetChildren().Count());
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestAddedNodeIsReturnedInChildEnumeration()
         {
             var child = new SimpleNode("child");
