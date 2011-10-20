@@ -30,49 +30,17 @@ namespace TestNess.Lib.Test
     [TestFixture]
     public class NonConditionalTestCaseRuleTest
     {
-        [TestCase]
-        public void TestThatNoViolationIsGeneratedForTestMethodWithoutCondition()
+        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddWithIf()", 1)]
+        [TestCase("TestAddWithFor()", 1)]
+        [TestCase("TestAddWithWhile()", 1)]
+        [TestCase("TestAddWithDoWhile()", 1)]
+        [TestCase("TestAddWithSwitchCase()", 1)]
+        [TestCase("TestAddWithIf()", 1)]
+        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
-            var rule = new NonConditionalTestCaseRule();
-            var violations = rule.Apply(tc);
-
-            Assert.AreEqual(0, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithIf()
-        {
-            var violations = FindViolations("TestAddWithIf()");
-            Assert.AreEqual(1, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithFor()
-        {
-            var violations = FindViolations("TestAddWithFor()");
-            Assert.AreEqual(1, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithWhile()
-        {
-            var violations = FindViolations("TestAddWithWhile()");
-            Assert.AreEqual(1, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithDoWhile()
-        {
-            var violations = FindViolations("TestAddWithDoWhile()");
-            Assert.AreEqual(1, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithSwitchCase()
-        {
-            var violations = FindViolations("TestAddWithSwitchCase()");
-            Assert.AreEqual(1, violations.Count());
+            var violations = FindViolations(method);
+            Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
         [TestCase]
@@ -82,7 +50,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual("a test case should not be conditional", rule.ToString());
         }
 
-        private IEnumerable<Violation> FindViolations(string method)
+        private static IEnumerable<Violation> FindViolations(string method)
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase(method);
             var rule = new NonConditionalTestCaseRule();
