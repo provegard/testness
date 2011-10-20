@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
 using System.Linq;
 using TestNess.Target;
 using NUnit.Framework;
@@ -29,24 +30,12 @@ namespace TestNess.Lib.Test
     [TestFixture]
     public class OneAssertPerTestCaseRuleTest
     {
-        [TestCase]
-        public void TestThatNoViolationIsGeneratedForTestMethodWithOneAssert()
+        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddTwoAsserts()", 1)]
+        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
-            var tc = typeof (IntegerCalculatorTest).FindTestCase("TestAddBasic()");
-            var rule = new OneAssertPerTestCaseRule();
-            var violations = rule.Apply(tc);
-
-            Assert.AreEqual(0, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatViolationIsGeneratedForTestMethodWithTwoAsserts()
-        {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
-            var rule = new OneAssertPerTestCaseRule();
-            var violations = rule.Apply(tc);
-
-            Assert.AreEqual(1, violations.Count());
+            var violations = FindViolations(method);
+            Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
         [TestCase]
@@ -54,6 +43,13 @@ namespace TestNess.Lib.Test
         {
             var rule = new OneAssertPerTestCaseRule();
             Assert.AreEqual("a test case should have a single assert", rule.ToString());
+        }
+
+        private static IEnumerable<Violation> FindViolations(string method)
+        {
+            var tc = typeof(IntegerCalculatorTest).FindTestCase(method);
+            var rule = new OneAssertPerTestCaseRule();
+            return rule.Apply(tc);
         }
     }
 }
