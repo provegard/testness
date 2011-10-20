@@ -1,0 +1,8 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="GraphBuilder.Test\bin\Debug\GraphBuilder.Test.dll" />
+    <assembly path="TestNess.Lib.Test\bin\Debug\TestNess.Lib.Test.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto" />
+</NUnitProject>
