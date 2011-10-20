@@ -47,12 +47,15 @@
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="CompoundRule.cs" />
     <Compile Include="IRule.cs" />
+    <Compile Include="ITestFramework.cs" />
+    <Compile Include="MSTestTestFramework.cs" />
     <Compile Include="NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
     <Compile Include="OneAssertPerTestCaseRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseRepository.cs" />
+    <Compile Include="TestFrameworks.cs" />
     <Compile Include="Violation.cs" />
   </ItemGroup>
   <ItemGroup>

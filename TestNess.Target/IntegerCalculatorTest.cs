@@ -131,5 +131,14 @@ namespace TestNess.Target
 
             Assert.AreEqual(-1, actual);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DivideByZeroException))]
+        public void TestDivideWithException()
+        {
+            var calculator = new IntegerCalculator();
+
+            calculator.Divide(5, 0);
+        }
     }
 }

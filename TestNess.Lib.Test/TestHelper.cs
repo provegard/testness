@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 using TestNess.Target;
 
@@ -74,6 +75,25 @@ namespace TestNess.Lib.Test
             }
             var fullName = type.FullName + "::" + methodSignature;
             return repository.GetTestCaseByName(fullName);
+        }
+
+        /// <summary>
+        /// Extension method that returns a Cecil <see cref="MethodDefinition" /> instances for a method
+        /// in a type with the given method signature (excluding return type).
+        /// </summary>
+        /// <param name="type">The type that contains the method.</param>
+        /// <param name="methodSignature">The signature of the method, excluding return type.</param>
+        /// <returns>A <see cref="MethodDefinition" /> instance or <c>null</c>.</returns>
+        public static MethodDefinition FindMethod(this Type type, string methodSignature)
+        {
+            var assemblyDef = type.GetAssemblyDefinition();
+            var nameSuffix = type.FullName + "::" + methodSignature;
+            var method = (from module in assemblyDef.Modules
+                          from t in module.Types
+                          from m in t.Methods
+                          where m.FullName.EndsWith(nameSuffix)
+                          select m).FirstOrDefault();
+            return method;
         }
 
         /// <summary>
