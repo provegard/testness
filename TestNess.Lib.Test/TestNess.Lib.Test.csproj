@@ -56,6 +56,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractRuleTest.cs" />
     <Compile Include="AnalyzerTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />
     <Compile Include="CompoundRuleTest.cs" />

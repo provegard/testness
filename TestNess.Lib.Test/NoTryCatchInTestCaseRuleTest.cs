@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using TestNess.Target;
@@ -28,7 +27,7 @@ using TestNess.Target;
 namespace TestNess.Lib.Test
 {
     [TestFixture]
-    public class NoTryCatchInTestCaseRuleTest
+    public class NoTryCatchInTestCaseRuleTest : AbstractRuleTest<NoTryCatchInTestCaseRule, IntegerCalculatorTest>
     {
         [TestCase("TestAddBasic()", 0)]
         [TestCase("DivideByZeroWithTryCatch()", 1)]
@@ -43,13 +42,6 @@ namespace TestNess.Lib.Test
         {
             var rule = new NoTryCatchInTestCaseRule();
             Assert.AreEqual("a test case should not contain try-catch", rule.ToString());
-        }
-
-        private static IEnumerable<Violation> FindViolations(string method)
-        {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase(method);
-            var rule = new NoTryCatchInTestCaseRule();
-            return rule.Apply(tc);
         }
     }
 }

@@ -20,33 +20,17 @@
  * THE SOFTWARE.
  */
 
-using System.Linq;
-using NUnit.Framework;
-using TestNess.Target;
+using System.Collections.Generic;
 
 namespace TestNess.Lib.Test
 {
-    [TestFixture]
-    public class NonConditionalTestCaseRuleTest : AbstractRuleTest<NonConditionalTestCaseRule, IntegerCalculatorTest>
+    public abstract class AbstractRuleTest<TRule, TTestClass> where TRule : IRule, new()
     {
-        [TestCase("TestAddBasic()", 0)]
-        [TestCase("TestAddWithIf()", 1)]
-        [TestCase("TestAddWithFor()", 1)]
-        [TestCase("TestAddWithWhile()", 1)]
-        [TestCase("TestAddWithDoWhile()", 1)]
-        [TestCase("TestAddWithSwitchCase()", 1)]
-        [TestCase("TestAddWithIf()", 1)]
-        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
+        protected IEnumerable<Violation> FindViolations(string method)
         {
-            var violations = FindViolations(method);
-            Assert.AreEqual(expectedViolationCount, violations.Count());
-        }
-
-        [TestCase]
-        public void TestThatToStringDescribesRule()
-        {
-            var rule = new NonConditionalTestCaseRule();
-            Assert.AreEqual("a test case should not be conditional", rule.ToString());
+            var tc = typeof(TTestClass).FindTestCase(method);
+            var rule = new TRule();
+            return rule.Apply(tc);
         }
     }
 }

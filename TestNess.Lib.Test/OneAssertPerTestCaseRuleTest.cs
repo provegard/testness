@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
 using System.Linq;
 using TestNess.Target;
 using NUnit.Framework;
@@ -28,7 +27,7 @@ using NUnit.Framework;
 namespace TestNess.Lib.Test
 {
     [TestFixture]
-    public class OneAssertPerTestCaseRuleTest
+    public class OneAssertPerTestCaseRuleTest : AbstractRuleTest<OneAssertPerTestCaseRule, IntegerCalculatorTest>
     {
         [TestCase("TestAddBasic()", 0)]
         [TestCase("TestAddTwoAsserts()", 1)]
@@ -45,13 +44,6 @@ namespace TestNess.Lib.Test
         {
             var rule = new OneAssertPerTestCaseRule();
             Assert.AreEqual("a test case should have a single assert", rule.ToString());
-        }
-
-        private static IEnumerable<Violation> FindViolations(string method)
-        {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase(method);
-            var rule = new OneAssertPerTestCaseRule();
-            return rule.Apply(tc);
         }
     }
 }
