@@ -23,7 +23,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
 using GraphBuilder;
 
 namespace TestNess.Lib
@@ -36,11 +35,11 @@ namespace TestNess.Lib
         {
             IList<IList<MethodReference>> paths = new List<IList<MethodReference>>();
             testCase.CallGraph.Walk(reference => AddPathsToRoot(testCase, reference, paths));
-            var calledMethodsForAsserting = paths.Select(path => path[path.Count - 2]);
-            if (calledMethodsForAsserting.Count() == 1)
-            {
-                yield break;
-            }
+            var assertMethodCount = paths.Select(path => path[path.Count - 2]).Count();
+            if (assertMethodCount == 1)
+                yield break; // no violation
+            if (assertMethodCount == 0 && _framework.HasExpectedException(testCase.TestMethod))
+                yield break; // no violation
             yield return new Violation(this, testCase);
         }
 

@@ -137,8 +137,18 @@ namespace TestNess.Target
         public void TestDivideWithException()
         {
             var calculator = new IntegerCalculator();
-
-            calculator.Divide(5, 0);
+            calculator.Divide(5, 0); // should throw
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DivideByZeroException))]
+        public void TestMultiAssertWithExpectedException()
+        {
+            var calculator = new IntegerCalculator();
+            Assert.AreEqual(1, calculator.Divide(1, 1));
+            Assert.AreEqual(2, calculator.Divide(4, 2));
+            calculator.Divide(5, 0); // should throw
+        }
+
     }
 }

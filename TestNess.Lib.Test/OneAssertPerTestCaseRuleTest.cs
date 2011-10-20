@@ -32,6 +32,8 @@ namespace TestNess.Lib.Test
     {
         [TestCase("TestAddBasic()", 0)]
         [TestCase("TestAddTwoAsserts()", 1)]
+        [TestCase("TestDivideWithException()", 0, Description = "No assert needed when there is an expected exception!")]
+        [TestCase("TestMultiAssertWithExpectedException()", 1, Description = "Violation due to multiple asserts, expected exception doesn't change the picture!")]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);
