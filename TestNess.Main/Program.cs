@@ -67,6 +67,7 @@ namespace TestNess.Main
             var analyzer = new Analyzer(repo);
             analyzer.AddRule(new OneAssertPerTestCaseRule());
             analyzer.AddRule(new NonConditionalTestCaseRule());
+            analyzer.AddRule(new NoTryCatchInTestCaseRule());
             analyzer.Analyze();
             
             Console.WriteLine("Violations:");

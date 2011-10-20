@@ -150,5 +150,19 @@ namespace TestNess.Target
             calculator.Divide(5, 0); // should throw
         }
 
+        [TestMethod]
+        public void DivideByZeroWithTryCatch()
+        {
+            var calculator = new IntegerCalculator();
+            try
+            {
+                calculator.Divide(5, 0); // should throw
+                Assert.Fail("Should've thrown!");
+            }
+            catch (DivideByZeroException)
+            {
+                // expected
+            }
+        }
     }
 }

@@ -51,6 +51,7 @@
     <Compile Include="MSTestTestFramework.cs" />
     <Compile Include="NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
+    <Compile Include="NoTryCatchInTestCaseRule.cs" />
     <Compile Include="OneAssertPerTestCaseRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCase.cs" />
