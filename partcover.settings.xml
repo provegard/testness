@@ -2,6 +2,6 @@
   <Target>c:\program files\nunit 2.5.10\bin\net-2.0\nunit-console.exe</Target>
   <TargetArgs>/noshadow testness.nunit</TargetArgs>
   <Output>coverage.xml</Output>
-  <Rule>+[TestNess.*]*</Rule>
-  <Rule>+[GraphBuilder.*]*</Rule>
+  <Rule>+[TestNess.Lib]*</Rule>
+  <Rule>+[GraphBuilder]*</Rule>
 </PartCoverSettings>
