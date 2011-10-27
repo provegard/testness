@@ -99,7 +99,7 @@ namespace TestNess.Main
             Console.WriteLine("Violations:");
             foreach (var violation in analyzer.Violations)
             {
-                Console.WriteLine("  Test case {0} violates rule \"{1}\"", violation.TestCase, violation.Rule);
+                Console.WriteLine("  Test case {0} violates rule \"{1}\"", violation.TestCase.Name, violation.Rule);
             }
 
             Console.WriteLine();
