@@ -52,6 +52,11 @@ namespace TestNess.Main
             {
                 ret = ex.ExitCode;
             }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("An error occurred: {0}", ex.Message);
+                ret = 3;
+            }
             return ret;
         }
 
