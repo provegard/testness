@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Linq;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -28,7 +29,7 @@ using NUnit.Framework;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class OneAssertPerTestCaseRuleTest : AbstractRuleTest<OneAssertPerTestCaseRule, IntegerCalculatorTest>
+    public class LimitAssertsPerTestCaseRuleTest : AbstractRuleTest<LimitAssertsPerTestCaseRule, IntegerCalculatorTest>
     {
         [TestCase("TestAddBasic()", 0)]
         [TestCase("TestAddTwoAsserts()", 1)]
@@ -43,8 +44,41 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatToStringDescribesRule()
         {
-            var rule = new OneAssertPerTestCaseRule();
-            Assert.AreEqual("a test case should have a single assert", rule.ToString());
+            var rule = new LimitAssertsPerTestCaseRule();
+            Assert.AreEqual("a test case should have 1 assert or expect an exception", rule.ToString());
         }
+
+        [TestCase]
+        public void TestThatToStringDescribesConfiguredRule()
+        {
+            var rule = new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 2 };
+            Assert.AreEqual("a test case should have 1 to 2 asserts or expect an exception", rule.ToString());
+        }
+
+
+        [TestCase]
+        public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
+        {
+            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
+            var rule = new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 2 };
+
+            Assert.AreEqual(0, rule.Apply(tc).Count());
+        }
+
+        [TestCase, ExpectedException(typeof(ArgumentException))]
+        public void TestThatRuleCannotBeConfiguredWithZeroAsserts()
+        {
+            // should throw
+            new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 0 };
+        }
+
+        [TestCase]
+        public void TestThatAcceptableAssertsIsOneByDefault()
+        {
+            var rule = new LimitAssertsPerTestCaseRule();
+
+            Assert.AreEqual(1, rule.MaxNumberOfAsserts);
+        }
+
     }
 }

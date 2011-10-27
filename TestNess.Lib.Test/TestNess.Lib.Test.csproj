@@ -63,7 +63,7 @@
     <Compile Include="MSTestTestFrameworkTest.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRuleTest.cs" />
     <Compile Include="Rule\NoTryCatchInTestCaseRuleTest.cs" />
-    <Compile Include="Rule\OneAssertPerTestCaseRuleTest.cs" />
+    <Compile Include="Rule\LimitAssertsPerTestCaseRuleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule\RulesTest.cs" />
     <Compile Include="TestCaseRepositoryTest.cs" />

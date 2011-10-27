@@ -52,7 +52,7 @@
     <Compile Include="Rule\NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
     <Compile Include="Rule\NoTryCatchInTestCaseRule.cs" />
-    <Compile Include="Rule\OneAssertPerTestCaseRule.cs" />
+    <Compile Include="Rule\LimitAssertsPerTestCaseRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule\Rules.cs" />
     <Compile Include="TestCase.cs" />

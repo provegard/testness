@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
@@ -27,16 +28,37 @@ using GraphBuilder;
 
 namespace TestNess.Lib.Rule
 {
-    public class OneAssertPerTestCaseRule : IRule
+    public class LimitAssertsPerTestCaseRule : IRule
     {
         private readonly ITestFramework _framework = new TestFrameworks();
+        private int _maxAsserts;
+
+        public LimitAssertsPerTestCaseRule()
+        {
+            _maxAsserts = 1;
+        }
+
+        /// <summary>
+        /// The maximum number of acceptable asserts that a test case can contain. By default, this value
+        /// is 1. It cannot be set to a values less than 1.
+        /// </summary>
+        public int MaxNumberOfAsserts
+        {
+            get { return _maxAsserts; }
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentException("Value must be >= 1");
+                _maxAsserts = value;
+            }
+        }
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
             IList<IList<MethodReference>> paths = new List<IList<MethodReference>>();
             testCase.CallGraph.Walk(reference => AddPathsToRoot(testCase, reference, paths));
             var assertMethodCount = paths.Select(path => path[path.Count - 2]).Count();
-            if (assertMethodCount == 1)
+            if (0 < assertMethodCount && assertMethodCount <= _maxAsserts)
                 yield break; // no violation
             if (assertMethodCount == 0 && _framework.HasExpectedException(testCase.TestMethod))
                 yield break; // no violation
@@ -68,7 +90,9 @@ namespace TestNess.Lib.Rule
 
         public override string ToString()
         {
-            return "a test case should have a single assert";
+            var range = _maxAsserts == 1 ? "1" : "1 to " + _maxAsserts;
+            var plural = _maxAsserts == 1 ? "" : "s";
+            return string.Format("a test case should have {0} assert{1} or expect an exception", range, plural);
         }
     }
 }

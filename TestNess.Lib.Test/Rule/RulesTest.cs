@@ -46,7 +46,7 @@ namespace TestNess.Lib.Test.Rule
             var foundRules = rules.AllRules;
 
             // Rules are not singleton, so find by type...
-            var soughtRule = foundRules.Where(r => r.GetType() == typeof(OneAssertPerTestCaseRule));
+            var soughtRule = foundRules.Where(r => r.GetType() == typeof(LimitAssertsPerTestCaseRule));
             Assert.IsNotNull(soughtRule.FirstOrDefault());
         }
 
@@ -55,7 +55,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var rules = new Rules(typeof(IRule).Assembly);
 
-            var soughtRule = rules.RuleByName("OneAssertPerTestCaseRule");
+            var soughtRule = rules.RuleByName("LimitAssertsPerTestCaseRule");
 
             Assert.IsNotNull(soughtRule);
         }
@@ -65,7 +65,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var rules = new Rules(typeof(IRule).Assembly);
 
-            var soughtRule = rules.RuleByName("OneAssertPerTestCase");
+            var soughtRule = rules.RuleByName("LimitAssertsPerTestCase");
 
             Assert.IsNotNull(soughtRule);
         }

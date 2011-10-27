@@ -41,7 +41,7 @@ namespace TestNess.Lib.Test.Rule
         public void TestThatRuleCanBeAdded()
         {
             var rule = new CompoundRule();
-            rule.Rules.Add(new OneAssertPerTestCaseRule());
+            rule.Rules.Add(new LimitAssertsPerTestCaseRule());
             Assert.AreEqual(1, rule.Rules.Count);
         }
 
@@ -50,7 +50,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");
             var rule = new CompoundRule();
-            rule.Rules.Add(new OneAssertPerTestCaseRule());
+            rule.Rules.Add(new LimitAssertsPerTestCaseRule());
             rule.Rules.Add(new NonConditionalTestCaseRule());
             var violations = rule.Apply(tc);
             Assert.AreEqual(2, violations.Count());
