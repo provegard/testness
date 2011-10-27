@@ -32,40 +32,68 @@ namespace TestNess.Main
     {
         static int Main(string[] args)
         {
-            TestCaseRepository repo;
-            PrintHeader();
-            var arguments = Arguments.Parse(args);
-            if (!arguments.HasAssemblyFileName)
-            {
-                PrintUsage();
-                return 1;
-            }
-            if (!LoadRepository(arguments.AssemblyFileName, out repo))
-            {
-                return 2;
-            }
-
-            AnalyzeTestCases(repo);
-            return 0;
-        }
-
-        private static bool LoadRepository(string fileName, out TestCaseRepository repository)
-        {
+            var ret = 0;
             try
             {
-                repository = TestCaseRepository.LoadFromFile(fileName);
+                var program = new Program(args);
+                program.Run();
             }
-            catch (FileNotFoundException e)
+            catch (ArgumentException ex)
             {
-                Console.Error.WriteLine("Failed to load the assembly file: {0}", e.Message);
-                repository = null;
+                Console.Error.WriteLine(ex.Message);
+                ret = 1;
             }
-            return repository != null;
+            catch (FileNotFoundException ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                ret = 2;                                    
+            }
+            catch (ExitException ex)
+            {
+                ret = ex.ExitCode;
+            }
+            return ret;
         }
 
-        private static void AnalyzeTestCases(TestCaseRepository repo)
+        private readonly Arguments _arguments;
+
+        private Program(string[] args)
         {
-            var analyzer = new Analyzer(repo, new Rules(typeof(IRule).Assembly));
+            _arguments = Arguments.Parse(args);
+        }
+
+        internal void Run()
+        {
+            PrintHeader();
+            if (!_arguments.HasAssemblyFileName)
+            {
+                PrintUsage();
+                throw new ExitException(1);
+            }
+            var repo = TestCaseRepository.LoadFromFile(_arguments.AssemblyFileName);
+            var rules = new Rules(typeof (IRule).Assembly);
+            if (_arguments.HasConfigurationFileName)
+            {
+                var config = ReadFileContents(_arguments.ConfigurationFileName);
+                var configurator = new RuleConfigurator();
+                configurator.ReadConfiguration(config);
+                configurator.ApplyConfiguration(rules);
+            }
+
+            AnalyzeTestCases(repo, rules);
+        }
+
+        private string ReadFileContents(string file)
+        {
+            using (var stream = new StreamReader(file))
+            {
+                return stream.ReadToEnd();
+            }
+        }
+
+        private void AnalyzeTestCases(TestCaseRepository repo, Rules rules)
+        {
+            var analyzer = new Analyzer(repo, rules);
             analyzer.Analyze();
             
             Console.WriteLine("Violations:");
@@ -82,7 +110,7 @@ namespace TestNess.Main
         private static void PrintUsage()
         {
             var exeName = new FileInfo(Environment.GetCommandLineArgs()[0]).Name;
-            Console.WriteLine("Usage: {0} <assembly file>", exeName);
+            Console.WriteLine("Usage: {0} [-c <config file>] <assembly file>", exeName);
             Console.WriteLine();
         }
 
@@ -101,6 +129,16 @@ namespace TestNess.Main
         private static string GetProductName(Assembly assembly)
         {
             return ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
+        }
+    }
+
+    class ExitException : Exception
+    {
+        internal int ExitCode { get; private set; }
+
+        internal ExitException(int code)
+        {
+            ExitCode = code;
         }
     }
 }
