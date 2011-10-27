@@ -21,63 +21,62 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class AnalyzerTest
+    public class RulesTest
     {
-        private Analyzer _analyzer;
-
-        [SetUp]
-        public void WithAnalyzer()
+        [TestCase, ExpectedException(typeof(ArgumentException))]
+        public void TestAtLeastOneAssemblyIsRequired()
         {
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
-            _analyzer = new Analyzer(repo, new Rules(typeof(IRule).Assembly));
+            new Rules(); // should throw
         }
 
         [TestCase]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void TestThatRuleCollectionIsReadOnly()
+        public void TestFindRulesInSuppliedAssembly()
         {
-            _analyzer.Rules.Clear();
+            var rules = new Rules(typeof(IRule).Assembly);
+
+            var foundRules = rules.AllRules;
+
+            // Rules are not singleton, so find by type...
+            var soughtRule = foundRules.Where(r => r.GetType() == typeof(OneAssertPerTestCaseRule));
+            Assert.IsNotNull(soughtRule.FirstOrDefault());
         }
 
         [TestCase]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void TestThatViolationCollectionIsReadOnly()
+        public void TestFindRuleByName()
         {
-            _analyzer.Violations.Clear();
-        }
-        
-        [TestCase]
-        public void TestThatScoreIsInitiallyNegative()
-        {
-            Assert.IsTrue(_analyzer.Score < 0);
+            var rules = new Rules(typeof(IRule).Assembly);
+
+            var soughtRule = rules.RuleByName("OneAssertPerTestCaseRule");
+
+            Assert.IsNotNull(soughtRule);
         }
 
         [TestCase]
-        public void TestThatViolationListIsInitiallyEmpty()
+        public void TestFindRuleByNameWithoutRuleSuffix()
         {
-            Assert.AreEqual(0, _analyzer.Violations.Count);
+            var rules = new Rules(typeof(IRule).Assembly);
+
+            var soughtRule = rules.RuleByName("OneAssertPerTestCase");
+
+            Assert.IsNotNull(soughtRule);
         }
 
-        [TestCase]
-        public void TestThatAnalyzingSetsScore()
+        [TestCase, ExpectedException(typeof(NoSuchRuleException))]
+        public void TestFindingMissingRuleThrows()
         {
-            _analyzer.Analyze();
+            var rules = new Rules(typeof(IRule).Assembly);
 
-            Assert.That(_analyzer.Score > 0);
+            rules.RuleByName("Dummy"); // should throw
         }
 
-        [TestCase]
-        public void TestThatAnalyzingFillsViolations()
-        {
-            _analyzer.Analyze();
-
-            Assert.AreNotEqual(0, _analyzer.Violations.Count);
-        }
     }
 }

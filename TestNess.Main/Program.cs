@@ -65,10 +65,7 @@ namespace TestNess.Main
 
         private static void AnalyzeTestCases(TestCaseRepository repo)
         {
-            var analyzer = new Analyzer(repo);
-            analyzer.AddRule(new OneAssertPerTestCaseRule());
-            analyzer.AddRule(new NonConditionalTestCaseRule());
-            analyzer.AddRule(new NoTryCatchInTestCaseRule());
+            var analyzer = new Analyzer(repo, new Rules(typeof(IRule).Assembly));
             analyzer.Analyze();
             
             Console.WriteLine("Violations:");

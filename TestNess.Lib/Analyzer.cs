@@ -29,18 +29,19 @@ namespace TestNess.Lib
     public class Analyzer
     {
         private readonly TestCaseRepository _repo;
-        private readonly CompoundRule _rule = new CompoundRule();
         private readonly List<Violation> _violations = new List<Violation>();
+        private readonly Rules _rules;
 
-        public Analyzer(TestCaseRepository repo)
+        public Analyzer(TestCaseRepository repo, Rules rules)
         {
+            _rules = rules;
             _repo = repo;
             Score = -1; // no initial score
         }
 
         public ICollection<IRule> Rules
         {
-            get { return new ReadOnlyCollection<IRule>(new List<IRule>(_rule.Rules));  }
+            get { return _rules.AllRules;  }
         }
 
         public int Score { get; private set; }
@@ -50,19 +51,25 @@ namespace TestNess.Lib
             get { return new ReadOnlyCollection<Violation>(_violations); }
         }
 
-        public void AddRule(IRule rule)
-        {
-            _rule.Rules.Add(rule);
-        }
-
         public void Analyze()
         {
+            var compound = CreateCompoundRule();
             _violations.Clear();
             foreach (var tc in _repo.GetAllTestCases())
             {
-                _violations.AddRange(_rule.Apply(tc));
+                _violations.AddRange(compound.Apply(tc));
             }
             UpdateScore();
+        }
+
+        private IRule CreateCompoundRule()
+        {
+            var compound = new CompoundRule();
+            foreach (var rule in _rules.AllRules)
+            {
+                compound.Rules.Add(rule);
+            }
+            return compound;
         }
 
         private void UpdateScore()

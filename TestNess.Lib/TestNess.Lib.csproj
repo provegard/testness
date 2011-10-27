@@ -54,6 +54,7 @@
     <Compile Include="Rule\NoTryCatchInTestCaseRule.cs" />
     <Compile Include="Rule\OneAssertPerTestCaseRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rule\Rules.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseRepository.cs" />
     <Compile Include="TestFrameworks.cs" />
