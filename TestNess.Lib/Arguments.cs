@@ -20,7 +20,9 @@
  * THE SOFTWARE.
  */
 
-namespace TestNess.Main
+using System;
+
+namespace TestNess.Lib
 {
     /// <summary>
     /// Parser command-line arguments for the TestNess console application, and exposes the arguments in a
@@ -34,6 +36,11 @@ namespace TestNess.Main
         public string AssemblyFileName { get; private set; }
 
         /// <summary>
+        /// Returns the name of the configuration file, if any.
+        /// </summary>
+        public string ConfigurationFileName { get; private set; }
+
+        /// <summary>
         /// Returns <c>true</c> if an assembly file name has been specified, otherwise <c>false</c>.
         /// </summary>
         public bool HasAssemblyFileName
@@ -41,19 +48,53 @@ namespace TestNess.Main
             get { return AssemblyFileName != null; }
         }
 
-        private Arguments(string assemblyFileName)
+        /// <summary>
+        /// Returns <c>true</c> if an configuration file name has been specified, otherwise <c>false</c>.
+        /// </summary>
+        public bool HasConfigurationFileName
         {
-            AssemblyFileName = assemblyFileName;
+            get { return ConfigurationFileName != null; }
+        }
+
+        private Arguments()
+        {
         }
 
         public static Arguments Parse(string[] args)
         {
-            string assemblyFileName = null;
-            if (args.Length > 0)
+            var arguments = new Arguments();
+            var index = 0;
+
+            // Options first
+            while (index < args.Length && args[index].StartsWith("-"))
             {
-                assemblyFileName = args[args.Length - 1];
+                var option = args[index].Substring(1);
+                switch (option)
+                {
+                    case "c":
+                        arguments.ConfigurationFileName = GetOptionValue("c", args, ++index);
+                        break;
+                    default:
+                        throw new ArgumentException(string.Format("Encountered unrecognized option '{0}'.", option));
+                }
+                index++;
             }
-            return new Arguments(assemblyFileName);
+
+            // Then non-options
+            if (index < args.Length)
+            {
+                arguments.AssemblyFileName = args[index];
+            }
+
+            return arguments;
+        }
+
+        private static string GetOptionValue(string opt, string[] args, int index)
+        {
+            var value = index < args.Length ? args[index] : null;
+            if (value == null)
+                throw new ArgumentException(string.Format("Missing value for option '{0}'.", opt));
+            return value;
         }
     }
 }
