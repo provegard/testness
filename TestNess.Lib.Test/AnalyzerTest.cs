@@ -22,6 +22,7 @@
 
 using System;
 using NUnit.Framework;
+using TestNess.Lib.Rule;
 
 namespace TestNess.Lib.Test
 {

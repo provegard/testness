@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using TestNess.Lib.Rule;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test

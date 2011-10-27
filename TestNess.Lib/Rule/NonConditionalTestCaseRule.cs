@@ -20,30 +20,38 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
 using System.Linq;
-using TestNess.Target;
-using NUnit.Framework;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Rule
 {
-    [TestFixture]
-    public class OneAssertPerTestCaseRuleTest : AbstractRuleTest<OneAssertPerTestCaseRule, IntegerCalculatorTest>
+    public class NonConditionalTestCaseRule : IRule
     {
-        [TestCase("TestAddBasic()", 0)]
-        [TestCase("TestAddTwoAsserts()", 1)]
-        [TestCase("TestDivideWithException()", 0, Description = "No assert needed when there is an expected exception!")]
-        [TestCase("TestMultiAssertWithExpectedException()", 1, Description = "Violation due to multiple asserts, expected exception doesn't change the picture!")]
-        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
+        public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var violations = FindViolations(method);
-            Assert.AreEqual(expectedViolationCount, violations.Count());
+            var count = BranchCount(testCase.TestMethod);
+            if (count == 0)
+            {
+                yield break;
+            }
+            yield return new Violation(this, testCase);
         }
 
-        [TestCase]
-        public void TestThatToStringDescribesRule()
+        public static int BranchCount(MethodDefinition method)
         {
-            var rule = new OneAssertPerTestCaseRule();
-            Assert.AreEqual("a test case should have a single assert", rule.ToString());
+            return method.HasBody ? method.Body.Instructions.Where(IsBranchingInstruction).Count() : 0;
+        }
+
+        private static bool IsBranchingInstruction(Instruction inst)
+        {
+            return inst.OpCode.FlowControl == FlowControl.Cond_Branch || inst.OpCode.FlowControl == FlowControl.Branch;
+        }
+
+        public override string ToString()
+        {
+            return "a test case should not be conditional";
         }
     }
 }

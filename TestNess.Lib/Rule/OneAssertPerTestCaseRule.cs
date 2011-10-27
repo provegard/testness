@@ -25,7 +25,7 @@ using System.Linq;
 using Mono.Cecil;
 using GraphBuilder;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Rule
 {
     public class OneAssertPerTestCaseRule : IRule
     {

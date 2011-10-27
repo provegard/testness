@@ -21,37 +21,17 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
+using TestNess.Lib.Rule;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Test.Rule
 {
-    public class NonConditionalTestCaseRule : IRule
+    public abstract class AbstractRuleTest<TRule, TTestClass> where TRule : IRule, new()
     {
-        public IEnumerable<Violation> Apply(TestCase testCase)
+        protected IEnumerable<Violation> FindViolations(string method)
         {
-            var count = BranchCount(testCase.TestMethod);
-            if (count == 0)
-            {
-                yield break;
-            }
-            yield return new Violation(this, testCase);
-        }
-
-        public static int BranchCount(MethodDefinition method)
-        {
-            return method.HasBody ? method.Body.Instructions.Where(IsBranchingInstruction).Count() : 0;
-        }
-
-        private static bool IsBranchingInstruction(Instruction inst)
-        {
-            return inst.OpCode.FlowControl == FlowControl.Cond_Branch || inst.OpCode.FlowControl == FlowControl.Branch;
-        }
-
-        public override string ToString()
-        {
-            return "a test case should not be conditional";
+            var tc = typeof(TTestClass).FindTestCase(method);
+            var rule = new TRule();
+            return rule.Apply(tc);
         }
     }
 }

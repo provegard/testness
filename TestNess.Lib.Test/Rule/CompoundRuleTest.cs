@@ -22,26 +22,38 @@
 
 using System.Linq;
 using NUnit.Framework;
+using TestNess.Lib.Rule;
 using TestNess.Target;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class NoTryCatchInTestCaseRuleTest : AbstractRuleTest<NoTryCatchInTestCaseRule, IntegerCalculatorTest>
+    public class CompoundRuleTest
     {
-        [TestCase("TestAddBasic()", 0)]
-        [TestCase("DivideByZeroWithTryCatch()", 1)]
-        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
+        [TestCase]
+        public void TestThatRulesAreInitiallyEmpty()
         {
-            var violations = FindViolations(method);
-            Assert.AreEqual(expectedViolationCount, violations.Count());
+            var rule = new CompoundRule();
+            Assert.AreEqual(0, rule.Rules.Count);
         }
 
         [TestCase]
-        public void TestThatToStringDescribesRule()
+        public void TestThatRuleCanBeAdded()
         {
-            var rule = new NoTryCatchInTestCaseRule();
-            Assert.AreEqual("a test case should not contain try-catch", rule.ToString());
+            var rule = new CompoundRule();
+            rule.Rules.Add(new OneAssertPerTestCaseRule());
+            Assert.AreEqual(1, rule.Rules.Count);
+        }
+
+        [TestCase]
+        public void TestThatCompoundRuleReturnsViolationsFromAllSubRules()
+        {
+            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");
+            var rule = new CompoundRule();
+            rule.Rules.Add(new OneAssertPerTestCaseRule());
+            rule.Rules.Add(new NonConditionalTestCaseRule());
+            var violations = rule.Apply(tc);
+            Assert.AreEqual(2, violations.Count());
         }
     }
 }

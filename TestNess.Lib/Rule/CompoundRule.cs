@@ -20,27 +20,24 @@
  * THE SOFTWARE.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Mono.Cecil.Cil;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Rule
 {
-    public class NoTryCatchInTestCaseRule : IRule
+    public class CompoundRule : IRule
     {
-        public IEnumerable<Violation> Apply(TestCase testCase)
+        public ICollection<IRule> Rules { get; private set; }
+
+        public CompoundRule()
         {
-            var method = testCase.TestMethod;
-            if (!method.Body.HasExceptionHandlers)
-                yield break; // no violation
-            yield return new Violation(this, testCase);
+            Rules = new List<IRule>();
         }
 
-        public override string ToString()
+        public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            return "a test case should not contain try-catch";
+            IEnumerable<Violation> list = new List<Violation>();
+            return Rules.Aggregate(list, (l, rule) => l.Concat(rule.Apply(testCase)));
         }
     }
 }

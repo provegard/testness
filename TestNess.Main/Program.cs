@@ -24,6 +24,7 @@ using System;
 using System.Reflection;
 using System.IO;
 using TestNess.Lib;
+using TestNess.Lib.Rule;
 
 namespace TestNess.Main
 {

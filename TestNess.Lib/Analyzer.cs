@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using TestNess.Lib.Rule;
 
 namespace TestNess.Lib
 {

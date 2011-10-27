@@ -20,24 +20,34 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using TestNess.Lib.Rule;
+using TestNess.Target;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Test.Rule
 {
-    public class CompoundRule : IRule
+    [TestFixture]
+    public class NonConditionalTestCaseRuleTest : AbstractRuleTest<NonConditionalTestCaseRule, IntegerCalculatorTest>
     {
-        public ICollection<IRule> Rules { get; private set; }
-
-        public CompoundRule()
+        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddWithIf()", 1)]
+        [TestCase("TestAddWithFor()", 1)]
+        [TestCase("TestAddWithWhile()", 1)]
+        [TestCase("TestAddWithDoWhile()", 1)]
+        [TestCase("TestAddWithSwitchCase()", 1)]
+        [TestCase("TestAddWithIf()", 1)]
+        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
-            Rules = new List<IRule>();
+            var violations = FindViolations(method);
+            Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        public IEnumerable<Violation> Apply(TestCase testCase)
+        [TestCase]
+        public void TestThatToStringDescribesRule()
         {
-            IEnumerable<Violation> list = new List<Violation>();
-            return Rules.Aggregate(list, (l, rule) => l.Concat(rule.Apply(testCase)));
+            var rule = new NonConditionalTestCaseRule();
+            Assert.AreEqual("a test case should not be conditional", rule.ToString());
         }
     }
 }

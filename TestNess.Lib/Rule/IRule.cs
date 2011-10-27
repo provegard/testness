@@ -20,39 +20,12 @@
  * THE SOFTWARE.
  */
 
-using System.Linq;
-using NUnit.Framework;
-using TestNess.Target;
+using System.Collections.Generic;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Rule
 {
-    [TestFixture]
-    public class CompoundRuleTest
+    public interface IRule
     {
-        [TestCase]
-        public void TestThatRulesAreInitiallyEmpty()
-        {
-            var rule = new CompoundRule();
-            Assert.AreEqual(0, rule.Rules.Count);
-        }
-
-        [TestCase]
-        public void TestThatRuleCanBeAdded()
-        {
-            var rule = new CompoundRule();
-            rule.Rules.Add(new OneAssertPerTestCaseRule());
-            Assert.AreEqual(1, rule.Rules.Count);
-        }
-
-        [TestCase]
-        public void TestThatCompoundRuleReturnsViolationsFromAllSubRules()
-        {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");
-            var rule = new CompoundRule();
-            rule.Rules.Add(new OneAssertPerTestCaseRule());
-            rule.Rules.Add(new NonConditionalTestCaseRule());
-            var violations = rule.Apply(tc);
-            Assert.AreEqual(2, violations.Count());
-        }
+        IEnumerable<Violation> Apply(TestCase testCase);
     }
 }

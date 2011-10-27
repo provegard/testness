@@ -20,12 +20,31 @@
  * THE SOFTWARE.
  */
 
-using System.Collections.Generic;
+using System.Linq;
+using TestNess.Lib.Rule;
+using TestNess.Target;
+using NUnit.Framework;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Test.Rule
 {
-    public interface IRule
+    [TestFixture]
+    public class OneAssertPerTestCaseRuleTest : AbstractRuleTest<OneAssertPerTestCaseRule, IntegerCalculatorTest>
     {
-        IEnumerable<Violation> Apply(TestCase testCase);
+        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddTwoAsserts()", 1)]
+        [TestCase("TestDivideWithException()", 0, Description = "No assert needed when there is an expected exception!")]
+        [TestCase("TestMultiAssertWithExpectedException()", 1, Description = "Violation due to multiple asserts, expected exception doesn't change the picture!")]
+        public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
+        {
+            var violations = FindViolations(method);
+            Assert.AreEqual(expectedViolationCount, violations.Count());
+        }
+
+        [TestCase]
+        public void TestThatToStringDescribesRule()
+        {
+            var rule = new OneAssertPerTestCaseRule();
+            Assert.AreEqual("a test case should have a single assert", rule.ToString());
+        }
     }
 }

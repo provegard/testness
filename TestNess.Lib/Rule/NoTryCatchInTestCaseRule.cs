@@ -22,15 +22,21 @@
 
 using System.Collections.Generic;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Rule
 {
-    public abstract class AbstractRuleTest<TRule, TTestClass> where TRule : IRule, new()
+    public class NoTryCatchInTestCaseRule : IRule
     {
-        protected IEnumerable<Violation> FindViolations(string method)
+        public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var tc = typeof(TTestClass).FindTestCase(method);
-            var rule = new TRule();
-            return rule.Apply(tc);
+            var method = testCase.TestMethod;
+            if (!method.Body.HasExceptionHandlers)
+                yield break; // no violation
+            yield return new Violation(this, testCase);
+        }
+
+        public override string ToString()
+        {
+            return "a test case should not contain try-catch";
         }
     }
 }
