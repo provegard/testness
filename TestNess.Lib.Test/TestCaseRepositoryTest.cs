@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
 using NUnit.Framework;
@@ -88,8 +89,7 @@ namespace TestNess.Lib.Test
         public void TestThatCollectionOfAllTestCasesIsEmptyIfNoTestCases()
         {
             var assembly = Assembly.GetCallingAssembly();
-            var assemblyDef = AssemblyDefinition.ReadAssembly(assembly.Location);
-            var repo = new TestCaseRepository(assemblyDef);
+            var repo = TestCaseRepository.FromAssembly(assembly);
             var testCases = repo.GetAllTestCases();
             Assert.AreEqual(0, testCases.Count);
         }
@@ -101,10 +101,19 @@ namespace TestNess.Lib.Test
             var repo = TestCaseRepository.LoadFromFile(assembly.Location);
             Assert.IsNotNull(repo);
         }
+
+        [TestCase]
+        public void TestThatTestMethodsInRepositoryContainsSequencePoints()
+        {
+            var repo = TestCaseRepository.FromAssembly(TestHelper.GetTargetAssembly());
+            var tc = repo.GetAllTestCases().First();
+            var nonNullSequencePoints = tc.TestMethod.Body.Instructions.Where(i => i.SequencePoint != null);
+            Assert.AreNotEqual(0, nonNullSequencePoints.Count());
+        }
         
         private static TestCaseRepository CreateTestCaseRepository()
         {
-            return new TestCaseRepository(TestHelper.GetTargetAssembly());
+            return TestCaseRepository.FromAssembly(TestHelper.GetTargetAssembly());
         }
     }
 }

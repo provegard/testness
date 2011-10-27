@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
 using TestNess.Target;
 
@@ -34,44 +35,26 @@ namespace TestNess.Lib.Test
     /// </summary>
     public static class TestHelper
     {
-        private static readonly IDictionary<string, AssemblyDefinition> Assemblies = new Dictionary<string, AssemblyDefinition>();
-        private static readonly IDictionary<string, TestCaseRepository> Repositories = new Dictionary<string, TestCaseRepository>(); 
+        private static readonly IDictionary<Assembly, TestCaseRepository> Repositories = new Dictionary<Assembly, TestCaseRepository>();
 
         /// <summary>
-        /// Returns the assembly which TestNess unit tests use for testing the evaluation capabilities of
+        /// Returns the assembly that unit tests use for testing the evaluation capabilities of
         /// TestNess.
         /// </summary>
-        /// <returns>An assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
-        public static AssemblyDefinition GetTargetAssembly()
+        /// <returns>The assembly that contains the target test cases.</returns>
+        public static Assembly GetTargetAssembly()
         {
-            return typeof (IntegerCalculatorTest).GetAssemblyDefinition();
-        }
-
-        /// <summary>
-        /// Extension method that returns a Cecil <see cref="AssemblyDefinition"/> instance for the 
-        /// assembly that contains the given type.
-        /// </summary>
-        /// <returns>The type's assembly as a Cecil <see cref="AssemblyDefinition"/> instance.</returns>
-        public static AssemblyDefinition GetAssemblyDefinition(this Type type)
-        {
-            var assembly = type.Assembly;
-            AssemblyDefinition assemblyDef;
-            if (!Assemblies.TryGetValue(assembly.Location, out assemblyDef))
-            {
-                assemblyDef = AssemblyDefinition.ReadAssembly(assembly.Location);
-                Assemblies.Add(assembly.Location, assemblyDef);
-            }
-            return assemblyDef;
+            return typeof(IntegerCalculatorTest).Assembly;
         }
 
         public static TestCase FindTestCase(this Type type, string methodSignature)
         {
-            var assemblyDef = type.GetAssemblyDefinition();
+            var assembly = type.Assembly;
             TestCaseRepository repository;
-            if (!Repositories.TryGetValue(assemblyDef.FullName, out repository))
+            if (!Repositories.TryGetValue(assembly, out repository))
             {
-                repository = new TestCaseRepository(assemblyDef);
-                Repositories.Add(assemblyDef.FullName, repository);
+                repository = TestCaseRepository.FromAssembly(assembly);
+                Repositories.Add(assembly, repository);
             }
             var fullName = type.FullName + "::" + methodSignature;
             return repository.GetTestCaseByName(fullName);
@@ -86,7 +69,8 @@ namespace TestNess.Lib.Test
         /// <returns>A <see cref="MethodDefinition" /> instance or <c>null</c>.</returns>
         public static MethodDefinition FindMethod(this Type type, string methodSignature)
         {
-            var assemblyDef = type.GetAssemblyDefinition();
+            var uri = new Uri(type.Assembly.CodeBase);
+            var assemblyDef = AssemblyDefinition.ReadAssembly(uri.LocalPath);
             var nameSuffix = type.FullName + "::" + methodSignature;
             var method = (from module in assemblyDef.Modules
                           from t in module.Types

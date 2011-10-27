@@ -34,7 +34,7 @@ namespace TestNess.Lib.Test
         [SetUp]
         public void WithAnalyzer()
         {
-            var repo = new TestCaseRepository(TestHelper.GetTargetAssembly());
+            var repo = TestCaseRepository.FromAssembly(TestHelper.GetTargetAssembly());
             _analyzer = new Analyzer(repo, new Rules(typeof(IRule).Assembly));
         }
 

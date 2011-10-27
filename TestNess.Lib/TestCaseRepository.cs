@@ -20,9 +20,13 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
+using Mono.Cecil.Pdb;
 
 namespace TestNess.Lib
 {
@@ -42,7 +46,7 @@ namespace TestNess.Lib
         /// Creates a new test case repository that fetches test cases from the given assembly.
         /// </summary>
         /// <param name="assembly">The assembly that contains test cases (in the form of test methods).</param>
-        public TestCaseRepository(AssemblyDefinition assembly)
+        private TestCaseRepository(AssemblyDefinition assembly)
         {
             _assembly = assembly;
             _framework = new TestFrameworks();
@@ -51,8 +55,7 @@ namespace TestNess.Lib
 
         private void BuildTestMethodDictionary()
         {
-            var methods = from module in _assembly.Modules
-                          from type in module.Types
+            var methods = from type in _assembly.MainModule.Types
                           from method in type.Methods
                           where _framework.IsTestMethod(method)
                           select method;
@@ -96,6 +99,24 @@ namespace TestNess.Lib
         }
 
         /// <summary>
+        /// Creates a test case repository from an assembly. The assembly is actually loaded from the
+        /// file pointed out by the code base of the assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly to create a test case repository from.</param>
+        /// <returns>A test case repository that fetches test cases from the given assembly.</returns>
+        public static TestCaseRepository FromAssembly(Assembly assembly)
+        {
+            if (assembly.GetModules().Length > 1)
+                throw new NotImplementedException("Multi-module assemblies not supported yet!");
+            
+            // Prefer CodeBase over Location. When NUnit is run without /noshadow, it copies
+            // the assemblies without the symbol files. CodeBase still points to the original
+            // location though.
+            var uri = new Uri(assembly.CodeBase);
+            return LoadFromFile(uri.LocalPath);
+        }
+
+        /// <summary>
         /// Loads a test case repository from file. More precisely, loads an assembly from file and creates a 
         /// test case repository for the assembly.
         /// </summary>
@@ -103,7 +124,24 @@ namespace TestNess.Lib
         /// <returns>A test case repository that fetches test cases from the loaded assembly.</returns>
         public static TestCaseRepository LoadFromFile(string fileName)
         {
-            var assemblyDef = AssemblyDefinition.ReadAssembly(fileName);
+            var parameters = new ReaderParameters
+            {
+                SymbolReaderProvider = new PdbReaderProvider(),
+                ReadingMode = ReadingMode.Immediate,
+            };
+            AssemblyDefinition assemblyDef;
+            try
+            {
+                assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
+            } 
+            catch (FileNotFoundException)
+            {
+                // Might be the PDB file that is missing!
+                assemblyDef = AssemblyDefinition.ReadAssembly(fileName);
+            }
+            if (assemblyDef.Modules.Count > 1)
+                throw new NotImplementedException("Multi-module assemblies not supported yet!");
+
             return new TestCaseRepository(assemblyDef);
         }
     }

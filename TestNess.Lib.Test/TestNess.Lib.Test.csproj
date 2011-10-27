@@ -37,6 +37,9 @@
     <Reference Include="Mono.Cecil">
       <HintPath>..\lib\Mono.Cecil.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\lib\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\nunit.framework.dll</HintPath>
@@ -60,6 +63,7 @@
     <Compile Include="Rule\AbstractRuleTest.cs" />
     <Compile Include="AnalyzerTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />
+    <Compile Include="Rule\AssertDistributionRuleTest.cs" />
     <Compile Include="Rule\CompoundRuleTest.cs" />
     <Compile Include="MSTestTestFrameworkTest.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRuleTest.cs" />

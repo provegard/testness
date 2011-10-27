@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Mono.Cecil;
@@ -34,9 +35,10 @@ namespace TestNess.Lib.Test
         [TestFixtureSetUp]
         public void ClassSetup()
         {
-            var assemblyDef = typeof(TesterClass).GetAssemblyDefinition();
-            _typeDefinition = (from m in assemblyDef.Modules
-                               from t in m.Types
+            var assembly = typeof(TesterClass).Assembly;
+            var uri = new Uri(assembly.CodeBase);
+            var assemblyDef = AssemblyDefinition.ReadAssembly(uri.LocalPath);
+            _typeDefinition = (from t in assemblyDef.MainModule.Types
                                where t.Name.Equals(typeof(TesterClass).Name)
                                select t).First();
         }

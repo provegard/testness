@@ -34,6 +34,9 @@
     <Reference Include="Mono.Cecil">
       <HintPath>..\lib\Mono.Cecil.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\lib\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +49,7 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="Rule\AssertDistributionRule.cs" />
     <Compile Include="Rule\CompoundRule.cs" />
     <Compile Include="Rule\IRule.cs" />
     <Compile Include="ITestFramework.cs" />
