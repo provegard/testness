@@ -107,18 +107,15 @@ namespace TestNess.Lib
 
         public override bool Equals(object obj)
         {
-            if (obj == this) return true;
-            if (obj == null || !(obj is TestCase)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj) || !(obj is TestCase)) return false;
             var testCase = (TestCase)obj;
-            return testCase.TestMethod == TestMethod;
+            return ReferenceEquals(testCase.TestMethod, TestMethod);
         }
 
         public override int GetHashCode()
         {
-            const int prime = 31;
-            var hashCode = 1;
-            hashCode += prime * TestMethod.GetHashCode();
-            return hashCode;
+            return TestMethod.GetHashCode();
         }
 
         public override string ToString()
