@@ -26,7 +26,7 @@ using NUnit.Framework;
 using TestNess.Lib.Rule;
 using TestNess.Target;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
     public class ViolationTest

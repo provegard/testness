@@ -64,7 +64,7 @@
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseRepository.cs" />
     <Compile Include="TestFrameworks.cs" />
-    <Compile Include="Violation.cs" />
+    <Compile Include="Rule\Violation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">

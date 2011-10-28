@@ -75,7 +75,7 @@
     <Compile Include="TestCaseRepositoryTest.cs" />
     <Compile Include="TestCaseTest.cs" />
     <Compile Include="TestHelper.cs" />
-    <Compile Include="ViolationTest.cs" />
+    <Compile Include="Rule\ViolationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">

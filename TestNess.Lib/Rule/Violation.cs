@@ -20,9 +20,7 @@
  * THE SOFTWARE.
  */
 
-using TestNess.Lib.Rule;
-
-namespace TestNess.Lib
+namespace TestNess.Lib.Rule
 {
     public class Violation
     {
