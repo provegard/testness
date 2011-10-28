@@ -21,6 +21,7 @@
  */
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using GraphBuilder;
 using Mono.Cecil;
@@ -38,6 +39,9 @@ namespace TestNess.Lib
     /// </summary>
     public class TestCase
     {
+        private ICollection<MethodDefinition> _assertingMethods;
+        private readonly ITestFramework _framework = new TestFrameworks();
+
         /// <summary>
         /// The test method that contains this test case.
         /// </summary>
@@ -120,6 +124,48 @@ namespace TestNess.Lib
         public override string ToString()
         {
             return string.Format("TestCase [{0}]", Name);
+        }
+
+        /// <summary>
+        /// Returns a collection of methods that are called by the test method that contains this test case,
+        /// and that eventually contain an assertion. Thus "asserting methods". Note that if the same 
+        /// assering method is called multiple times, it will be included multiple times in the collection.
+        /// </summary>
+        /// <returns>A collection of methods.</returns>
+        public ICollection<MethodDefinition> GetCalledAssertingMethods()
+        {
+            if (_assertingMethods != null)
+                return _assertingMethods;
+            IList<IList<MethodReference>> paths = new List<IList<MethodReference>>();
+            CallGraph.Walk(reference => AddPathsToRoot(reference, paths));
+            // It's safe to cast to MethodDefinition, since if the method wasn't resolved, we
+            // hadn't been able to determine that it was an asserting method.
+            var definitions = paths.Select(path => path[path.Count - 2] as MethodDefinition);
+            _assertingMethods = new ReadOnlyCollection<MethodDefinition>(definitions.ToList());
+            return _assertingMethods;
+        }
+        
+        private void AddPathsToRoot(MethodReference reference, ICollection<IList<MethodReference>> listOfPaths)
+        {
+            if (!DoesContainAssertion(reference))
+                return;
+            var graph = CallGraph;
+            // Create a graph with edges in the other direction so we can
+            // backtrack from this method to the test method (root).
+            var builder = new GraphBuilder<MethodReference>(graph.TailsFor);
+            var backGraph = builder.Build(reference);
+            var paths = backGraph.FindPaths(reference, graph.Root);
+            foreach (var path in paths)
+            {
+                listOfPaths.Add(path);
+            }
+        }
+
+        private bool DoesContainAssertion(MethodReference method)
+        {
+            if (!method.IsDefinition || !((MethodDefinition)method).HasBody)
+                return false;
+            return _framework.DoesContainAssertion((MethodDefinition)method);
         }
     }
 }
