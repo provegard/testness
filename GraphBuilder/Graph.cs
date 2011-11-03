@@ -34,8 +34,6 @@ namespace GraphBuilder
     {
         private readonly IDictionary<TNode, IList<TNode>> _digraph;
 
-        public delegate void Walker(TNode node);
-
         public Graph(IDictionary<TNode, IList<TNode>> digraph, TNode root)
         {
             _digraph = digraph;
@@ -61,13 +59,13 @@ namespace GraphBuilder
             return GetHeads(tail).Count;
         }
 
-        public void Walk(Walker walker, TNode start = null)
+        public IEnumerable<TNode> Walk(TNode start = null)
         {
             var node = start ?? Root;
-            Dfs(node, walker);
+            return Dfs(node);
         }
 
-        private void Dfs(TNode node, Walker walker)
+        private IEnumerable<TNode> Dfs(TNode node)
         {
             var stack = new Stack<TNode>();
             var vertices = _digraph.Keys;
@@ -83,7 +81,7 @@ namespace GraphBuilder
                 if (visited[u])
                     continue;
                 visited[u] = true;
-                walker(u);
+                yield return u;
                 var unvisited = from h in HeadsFor(u) where !visited[h] select h;
                 // Add in reverse order to maintain head order when visiting
                 foreach (var neighbor in unvisited.Reverse())

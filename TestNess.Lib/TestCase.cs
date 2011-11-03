@@ -133,8 +133,7 @@ namespace TestNess.Lib
         {
             if (_assertingMethods != null)
                 return _assertingMethods;
-            IList<IList<MethodReference>> paths = new List<IList<MethodReference>>();
-            CallGraph.Walk(reference => AddPathsToRoot(reference, paths));
+            var paths = CallGraph.Walk().SelectMany(AddPathsToRoot);
             // It's safe to cast to MethodDefinition, since if the method wasn't resolved, we
             // hadn't been able to determine that it was an asserting method.
             var definitions = paths.Select(path => path[path.Count - 2] as MethodDefinition);
@@ -142,20 +141,16 @@ namespace TestNess.Lib
             return _assertingMethods;
         }
         
-        private void AddPathsToRoot(MethodReference reference, ICollection<IList<MethodReference>> listOfPaths)
+        private IEnumerable<IList<MethodReference>> AddPathsToRoot(MethodReference reference)//, ICollection<IList<MethodReference>> listOfPaths)
         {
             if (!DoesContainAssertion(reference))
-                return;
+                return new IList<MethodReference>[0];
             var graph = CallGraph;
             // Create a graph with edges in the other direction so we can
             // backtrack from this method to the test method (root).
             var builder = new GraphBuilder<MethodReference>(graph.TailsFor);
             var backGraph = builder.Build(reference);
-            var paths = backGraph.FindPaths(reference, graph.Root);
-            foreach (var path in paths)
-            {
-                listOfPaths.Add(path);
-            }
+            return backGraph.FindPaths(reference, graph.Root);
         }
 
         private bool DoesContainAssertion(MethodReference method)

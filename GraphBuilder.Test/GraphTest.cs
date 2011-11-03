@@ -51,8 +51,7 @@ namespace GraphBuilder.Test
             root.AddChild(child);
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
 
-            var result = "";
-            graph.Walk(node => result += node.ToString());
+            var result = graph.Walk().Aggregate("", (str, node) => str + node.ToString());
             Assert.AreEqual("rootchild", result);
         }
 
@@ -65,8 +64,7 @@ namespace GraphBuilder.Test
             child.AddChild(root);
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
 
-            var result = "";
-            graph.Walk(node => result += node.ToString());
+            var result = graph.Walk().Aggregate("", (str, node) => str + node.ToString());
             Assert.AreEqual("rootchild", result);
         }
 
@@ -82,8 +80,7 @@ namespace GraphBuilder.Test
             child11.AddChild(child111);
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
 
-            var result = "";
-            graph.Walk(node => result += node.ToString());
+            var result = graph.Walk().Aggregate("", (str, node) => str + node.ToString());
             Assert.AreEqual("rootchild11child111child12", result);
         }
 
@@ -110,8 +107,7 @@ namespace GraphBuilder.Test
             child11.AddChild(child111);
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(root);
 
-            var result = "";
-            graph.Walk(node => result += node.ToString(), child11);
+            var result = graph.Walk(child11).Aggregate("", (str, node) => str + node.ToString());
             Assert.AreEqual("child11child111", result);
         }
 

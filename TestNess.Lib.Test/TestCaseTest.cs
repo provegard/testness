@@ -108,8 +108,7 @@ namespace TestNess.Lib.Test
         public void TestThatTestCaseCallGraphContainsMethodCalls()
         {
             var graph = _testCase.CallGraph;
-            var result = "";
-            graph.Walk(reference => result += reference.Name + "\n");
+            var result = graph.Walk().Aggregate("", (str, reference) => str + reference.Name + "\n");
             StringAssert.StartsWith("TestAddBasic\nAdd\nAreEqual\n", result);
         }
 
@@ -133,8 +132,7 @@ namespace TestNess.Lib.Test
         public void TestThatTestCaseCallGraphContainsResolvedMethodsWherePossible()
         {
             var graph = _testCase.CallGraph;
-            var result = "";
-            graph.Walk(reference => result += string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
+            var result = graph.Walk().Aggregate("", (str, reference) => str + string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
             StringAssert.StartsWith("TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n", result);
         }
     }
