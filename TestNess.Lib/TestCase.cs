@@ -85,7 +85,7 @@ namespace TestNess.Lib
             if (!reference.IsDefinition)
                 return new MethodReference[0]; // no body to parse anyway
             var definition = (MethodDefinition) reference;
-            return definition.CalledMethods().Where(r => !r.Name.Equals(".ctor")).Select(TryResolve);
+            return definition.CalledMethods().Select(cm => cm.Method).Where(r => !r.Name.Equals(".ctor")).Select(TryResolve);
         }
 
         private static MethodReference TryResolve(MethodReference reference)

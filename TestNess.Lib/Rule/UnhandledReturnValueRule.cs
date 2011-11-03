@@ -22,33 +22,26 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.Rule
 {
-    public static class CecilExtensions
+    public class UnhandledReturnValueRule : IRule
     {
-        /// <summary>
-        /// Extension method that finds all methods that are called from the extended method, and 
-        /// for each method returns the call instruction and the method reference.
-        /// </summary>
-        /// <param name="definition">The method to extend.</param>
-        /// <returns>The called methods.</returns>
-        public static IEnumerable<CalledMethod> CalledMethods(this MethodDefinition definition)
+        public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            if (!definition.HasBody)
-                return new CalledMethod[0];
-            return from instruction in definition.Body.Instructions
-                   where instruction.OpCode.FlowControl == FlowControl.Call
-                   select
-                       new CalledMethod { Instruction = instruction, Method = instruction.Operand as MethodReference };
+            // It seems as if unhandled return values are popped off the stack
+            // immediately via an explicit "pop" instruction.
+            var callingNonVoidInstructions = testCase.TestMethod.CalledMethods().Select(cm => cm.Instruction);
+            var unhandled = callingNonVoidInstructions.Where(ins => ins.Next.OpCode == OpCodes.Pop);
+            if (unhandled.Count() == 0)
+                yield break;
+            yield return new Violation(this, testCase);
         }
 
-        public struct CalledMethod
+        public override string ToString()
         {
-            public Instruction Instruction;
-            public MethodReference Method;
+            return "a test case should deal with all method return values";
         }
     }
 }

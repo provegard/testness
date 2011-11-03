@@ -201,5 +201,65 @@ namespace TestNess.Target
 
             Assert.AreEqual(2, calculator.Divide(4, 2));
         }
+
+        [TestMethod]
+        public void TestMultiplyWithUsedReturnValueFromStaticMethod()
+        {
+            var calculator = new IntegerCalculator();
+            var value = StaticMethod();
+            Assert.AreEqual(0, calculator.Multiply(value, 0));
+        }
+
+        [TestMethod]
+        public void TestAddWithUnhandledReturnValueFromStaticMethod()
+        {
+            var calculator = new IntegerCalculator();
+            StaticMethod();
+            Assert.AreEqual(2, calculator.Add(1, 1));
+        }
+
+        [TestMethod]
+        public void TestAddWithUnhandledReturnValueFromInstanceMethod()
+        {
+            var calculator = new IntegerCalculator();
+            InstanceMethod();
+            Assert.AreEqual(2, calculator.Add(1, 1));
+        }
+
+        [TestMethod]
+        public void TestAddWithUnhandledReturnValueFromVirtualMethod()
+        {
+            var calculator = new IntegerCalculator();
+            VirtualMethod();
+            Assert.AreEqual(2, calculator.Add(1, 1));
+        }
+
+        [TestMethod]
+        public void TestAddWithCallToNonReturningMethod()
+        {
+            var calculator = new IntegerCalculator();
+            NonReturningMethod();
+            Assert.AreEqual(2, calculator.Add(1, 1));
+        }
+
+        public int InstanceMethod()
+        {
+            return new Random().Next();
+        }
+
+        public virtual int VirtualMethod()
+        {
+            return new Random().Next();
+        }
+
+        public static int StaticMethod()
+        {
+            return new Random().Next();
+        }
+
+        public static void NonReturningMethod()
+        {
+            StaticMethod();
+        }
     }
 }

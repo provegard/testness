@@ -65,6 +65,7 @@
     <Compile Include="TestCaseRepository.cs" />
     <Compile Include="TestFrameworks.cs" />
     <Compile Include="Rule\Violation.cs" />
+    <Compile Include="Rule\UnhandledReturnValueRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">
