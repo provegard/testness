@@ -49,6 +49,7 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="Cil\TrackerHelper.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
     <Compile Include="Rule\CompoundRule.cs" />
     <Compile Include="Rule\IRule.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="TestFrameworks.cs" />
     <Compile Include="Rule\Violation.cs" />
     <Compile Include="Rule\UnhandledReturnValueRule.cs" />
+    <Compile Include="Cil\MethodValueTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">
