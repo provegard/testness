@@ -35,6 +35,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithUnhandledReturnValueFromInstanceMethod()", 1)]
         [TestCase("TestAddWithUnhandledReturnValueFromVirtualMethod()", 1)]
         [TestCase("TestAddWithCallToNonReturningMethod()", 0)]
+        [TestCase("TestDivideWithException()", 0, Description = "Unhandled value is ok if an exception is expected.")]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);

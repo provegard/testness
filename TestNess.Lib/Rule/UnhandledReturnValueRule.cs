@@ -28,12 +28,16 @@ namespace TestNess.Lib.Rule
 {
     public class UnhandledReturnValueRule : IRule
     {
+        private readonly ITestFramework _framework = new TestFrameworks();
+
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
             // It seems as if unhandled return values are popped off the stack
             // immediately via an explicit "pop" instruction.
             var callingNonVoidInstructions = testCase.TestMethod.CalledMethods().Select(cm => cm.Instruction);
-            var unhandled = callingNonVoidInstructions.Where(ins => ins.Next.OpCode == OpCodes.Pop);
+            var unhandled = callingNonVoidInstructions.Where(ins => ins.Next.OpCode == OpCodes.Pop).ToList();
+            if (unhandled.Count() == 1 && _framework.HasExpectedException(testCase.TestMethod))
+                yield break; // last unhandled value is ok!
             if (unhandled.Count() == 0)
                 yield break;
             yield return new Violation(this, testCase);
