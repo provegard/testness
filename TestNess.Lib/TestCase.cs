@@ -40,7 +40,7 @@ namespace TestNess.Lib
     public class TestCase
     {
         private ICollection<MethodDefinition> _assertingMethods;
-        private readonly ITestFramework _framework = new TestFrameworks();
+        private readonly ITestFramework _framework = TestFrameworks.Instance;
 
         /// <summary>
         /// The test method that contains this test case.

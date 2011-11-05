@@ -49,7 +49,7 @@ namespace TestNess.Lib
         private TestCaseRepository(AssemblyDefinition assembly)
         {
             _assembly = assembly;
-            _framework = new TestFrameworks();
+            _framework = TestFrameworks.Instance;
             BuildTestMethodDictionary();
         }
 

@@ -20,8 +20,10 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
 
 namespace TestNess.Lib
@@ -32,11 +34,31 @@ namespace TestNess.Lib
     /// </summary>
     public class TestFrameworks : ITestFramework
     {
-        private readonly IList<ITestFramework> _frameworks = new List<ITestFramework>();
+        /// <summary>
+        /// Singleton instance.
+        /// </summary>
+        public static readonly TestFrameworks Instance = new TestFrameworks();
 
-        public TestFrameworks()
+        private readonly List<ITestFramework> _frameworks = new List<ITestFramework>();
+
+        private TestFrameworks()
         {
-            _frameworks.Add(new MSTestTestFramework());
+            _frameworks.AddRange(DiscoverRules(GetType().Assembly));
+        }
+
+        private IEnumerable<ITestFramework> DiscoverRules(Assembly assembly)
+        {
+            return assembly.GetTypes().Where(IsTestFramework).Select(NewTestFramework);
+        }
+
+        private ITestFramework NewTestFramework(Type t)
+        {
+            return (ITestFramework) Activator.CreateInstance(t);
+        }
+
+        private bool IsTestFramework(Type t)
+        {
+            return t.IsPublic && typeof(ITestFramework).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && t != GetType();
         }
 
         public bool IsTestMethod(MethodDefinition method)

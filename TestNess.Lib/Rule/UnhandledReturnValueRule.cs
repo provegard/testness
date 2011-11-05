@@ -28,7 +28,7 @@ namespace TestNess.Lib.Rule
 {
     public class UnhandledReturnValueRule : IRule
     {
-        private readonly ITestFramework _framework = new TestFrameworks();
+        private readonly ITestFramework _framework = TestFrameworks.Instance;
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {

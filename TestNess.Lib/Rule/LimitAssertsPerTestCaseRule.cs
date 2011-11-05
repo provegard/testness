@@ -27,7 +27,7 @@ namespace TestNess.Lib.Rule
 {
     public class LimitAssertsPerTestCaseRule : IRule
     {
-        private readonly ITestFramework _framework = new TestFrameworks();
+        private readonly ITestFramework _framework = TestFrameworks.Instance;
         private int _maxAsserts;
 
         public LimitAssertsPerTestCaseRule()
