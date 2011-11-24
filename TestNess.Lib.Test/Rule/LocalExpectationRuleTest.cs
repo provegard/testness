@@ -41,6 +41,10 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithExpectationDerivedFromField()", 1)]
         [TestCase("TestAddWithStaticReadonlyExpectation()", 1, Description = "Static readonly is not treated as Const!")]
         [TestCase("TestAddWithExpectationFromProperty()", 1)]
+        [TestCase("TestAddWithManuallyComparedConstantExpectation()", 0)]
+        [TestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()", 1)]
+        [TestCase("TestAddWithLteComparedExternallyCalculatedExpectation()", 1)]
+        [TestCase("TestAddWithNeqComparedExternallyCalculatedExpectation()", 1)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);

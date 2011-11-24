@@ -65,7 +65,7 @@ namespace TestNess.Lib
 
         public IList<ParameterPurpose> GetParameterPurposes(MethodReference method)
         {
-            var reducedMethod = ReduceToShortestOverload(method);
+            var reducedMethod = method.ReduceToShortestOverload();
             var list = new List<ParameterPurpose>();
             for (var i = 0; i < method.Parameters.Count; i++)
             {
@@ -114,14 +114,7 @@ namespace TestNess.Lib
             }
             return ParameterPurpose.Unknown;
         }
-
-        private static MethodReference ReduceToShortestOverload(MethodReference method)
-        {
-            var type = method.DeclaringType.Resolve();
-            var shortest = type.Methods.Where(m => m.Name.Equals(method.Name)).OrderBy(m => m.Parameters.Count).First();
-            return shortest;
-        }
-
+        
         private static int CountAssertions(MethodDefinition method)
         {
             return method.Body.Instructions.Where(IsAssertion).Count();

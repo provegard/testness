@@ -45,6 +45,19 @@ namespace TestNess.Lib
                        new CalledMethod { Instruction = instruction, Method = instruction.Operand as MethodReference };
         }
 
+        /// <summary>
+        /// Extension method that finds all overloads for the given method and returns the shortest
+        /// one.
+        /// </summary>
+        /// <param name="method">The method for which to find the shortest overload.</param>
+        /// <returns>A method reference.</returns>
+        public static MethodReference ReduceToShortestOverload(this MethodReference method)
+        {
+            var type = method.DeclaringType.Resolve();
+            var shortest = type.Methods.Where(m => m.Name.Equals(method.Name)).OrderBy(m => m.Parameters.Count).First();
+            return shortest;
+        }
+
         public struct CalledMethod
         {
             public Instruction Instruction;

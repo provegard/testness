@@ -355,6 +355,48 @@ namespace TestNess.Target
             Assert.AreEqual(actual, 3);
         }
 
+        [TestMethod]
+        public void TestAddWithManuallyComparedConstantExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+
+            Assert.IsTrue(actual == 3, "Comparison failed");
+        }
+
+        [TestMethod]
+        public void TestAddWithManuallyComparedExternallyCalculatedExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var expected = Add(1, 2);
+
+            Assert.IsTrue(actual == expected, "Comparison failed");
+        }
+
+        [TestMethod]
+        public void TestAddWithLteComparedExternallyCalculatedExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var bigger = Add(2, 2);
+
+            // <= results in two CIL comparisons, cgt followed by ceq!
+            Assert.IsTrue(actual <= bigger, "Comparison failed");
+        }
+
+        [TestMethod]
+        public void TestAddWithNeqComparedExternallyCalculatedExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var expected = Add(1, 2);
+
+            // != results in two CIL comparisons, ceq followed by ceq!
+            Assert.IsFalse(actual != expected, "Comparison failed");
+        }
+
+
         private int Add(int i1, int i2)
         {
             return i1 + i2;

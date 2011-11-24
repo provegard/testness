@@ -20,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
@@ -31,7 +30,9 @@ namespace TestNess.Lib.Rule
 {
     public class LocalExpectationRule : IRule
     {
-        private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> {OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda}; 
+        private static readonly IList<OpCode> BinaryComparisonOpCodes = new List<OpCode> { OpCodes.Ceq, OpCodes.Cgt, OpCodes.Cgt_Un,
+            OpCodes.Clt, OpCodes.Clt_Un};
+        private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda }; 
 
         private readonly ITestFramework _framework = TestFrameworks.Instance;
 
@@ -62,12 +63,21 @@ namespace TestNess.Lib.Rule
                 var paramPurposes = _framework.GetParameterPurposes(cm.Method);
                 if (paramPurposes == null) continue; // unknown method, rule does not apply
 
-                var consumedValues = tracker.GetConsumedValues(cm.Instruction).ToList();
+                IList<MethodValueTracker.Value> consumedValues = tracker.GetConsumedValues(cm.Instruction).ToList();
+
+                IList<MethodValueTracker.Value> binaryComparisonOperands;
+                if (IsSingleTruthCheckingMethod(cm.Method, paramPurposes) && IsProducedByBinaryComparison(consumedValues[0], out binaryComparisonOperands))
+                {
+                    // "Expand" the parameter purposes and consumed values to represent the
+                    // values that were compared using a binary comparison.
+                    consumedValues = binaryComparisonOperands;
+                    paramPurposes = binaryComparisonOperands.Select(x => ParameterPurpose.ExpectedOrActual).ToList();
+                }
+
                 var interestingConsumedValues =
                     consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)]));
 
-                var argLocality = interestingConsumedValues.Select(v => IsLocallyProduced(tracker, v));
-                var hasAtLeastOneLocallyProducedExpectation = argLocality.Any(l => l);
+                var hasAtLeastOneLocallyProducedExpectation = interestingConsumedValues.Any(v => IsLocallyProduced(tracker, v));
 
                 if (!hasAtLeastOneLocallyProducedExpectation)
                 {
@@ -77,6 +87,57 @@ namespace TestNess.Lib.Rule
             }
 
             yield break;
+        }
+
+        private static bool IsProducedByBinaryComparison(MethodValueTracker.Value value, out IList<MethodValueTracker.Value> operands)
+        {
+            var producer = value.Producer;
+            if (IsBinaryComparison(producer))
+            {
+                // Note: <=, => and != result in cgt, lgt and ceq, respectively, followed by 
+                // ceq with one operand being 0 (so produced by ldc.i4.0). Therefore, to handle 
+                // these comparisons, we need to backtrack one value in this particular case.
+                MethodValueTracker.Value originalComparisonOutcome;
+                if (IsProducedByDoubleCilComparison(value, out originalComparisonOutcome))
+                {
+                    // Backtrack to the value produced by the comparison behind ceq!
+                    value = originalComparisonOutcome;
+                }
+                operands = value.Parents.ToList();
+                return true;
+            }
+            operands = null;
+            return false;
+        }
+
+        private static bool IsProducedByDoubleCilComparison(MethodValueTracker.Value value, out MethodValueTracker.Value originalComparisonOutcome)
+        {
+            // Assumption: The instruction is a binary comparison.
+            originalComparisonOutcome = null;
+            var parents = value.Parents.ToList();
+            var producer = value.Producer;
+            if (producer.OpCode != OpCodes.Ceq)
+                return false; // lte/gte/neq = cgt/clt/ceq followed by ceq
+            var ldc0 = parents.Where(v => v.Producer.OpCode == OpCodes.Ldc_I4_0).FirstOrDefault();
+            if (ldc0 == null)
+                return false; // one of the ceq operands should've been produced by ldc.i4.0
+            var other = parents[1 - parents.IndexOf(ldc0)];
+            if (!IsBinaryComparison(other.Producer))
+                return false; // the other operand should've been produced by a binary comparison
+            originalComparisonOutcome = other;
+            return true; // match!
+        }
+
+        private static bool IsBinaryComparison(Instruction i)
+        {
+            return BinaryComparisonOpCodes.Contains(i.OpCode);
+        }
+
+        private static bool IsSingleTruthCheckingMethod(MethodReference method, IList<ParameterPurpose> parameterPurposes)
+        {
+            var reduced = method.ReduceToShortestOverload();
+            return reduced.Parameters.Count == 1 && method.Parameters[0].ParameterType.FullName == "System.Boolean" &&
+                   parameterPurposes[0] == ParameterPurpose.Actual;
         }
 
         private static bool IsPerhapsExpectation(ParameterPurpose parameterType)
