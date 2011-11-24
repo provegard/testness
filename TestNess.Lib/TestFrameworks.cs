@@ -86,5 +86,10 @@ namespace TestNess.Lib
             }
             return list;
         }
+
+        public bool IsDataAccessorMethod(MethodReference method)
+        {
+            return _frameworks.Any(f => f.IsDataAccessorMethod(method));
+        }
     }
 }

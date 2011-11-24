@@ -33,6 +33,10 @@ namespace TestNess.Lib
             "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute";
         private const string ExpectedExceptionAttributeName =
             "Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedExceptionAttribute";
+        private const string AssertExceptionTypeName =
+            "Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException";
+        private const string TestContextTypeName = 
+            "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext";
 
         public bool IsTestMethod(MethodDefinition method)
         {
@@ -71,6 +75,22 @@ namespace TestNess.Lib
                     list.Add(ParameterPurpose.MetaData);
             }
             return list;
+        }
+
+        public bool IsDataAccessorMethod(MethodReference method)
+        {
+            // The call to the test class' own TestContext property must be allowed
+            if ("get_TestContext".Equals(method.Name) && TestContextTypeName.Equals(method.ReturnType.FullName))
+                return true;
+            // The call to the DataRow property on TestContext must be allowed
+            if (TestContextTypeName.Equals(method.DeclaringType.FullName) && "get_DataRow".Equals(method.Name))
+                return true;
+            // Finally, all DataRow instance interaction is allowed
+            if ("System.Data.DataRow".Equals(method.DeclaringType.FullName))
+                return true;
+
+            // All other methods are considered as not related to data access
+            return false;
         }
 
         private static ParameterPurpose DeduceParameterPurpose(MethodReference method, int paramIdx)
@@ -116,8 +136,7 @@ namespace TestNess.Lib
                 if (prev.OpCode == OpCodes.Newobj)
                 {
                     var reference = (MethodReference)prev.Operand;
-                    isAssert = "Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException".Equals(
-                        reference.DeclaringType.FullName);
+                    isAssert = AssertExceptionTypeName.Equals(reference.DeclaringType.FullName);
                 }
             }
             return isAssert;

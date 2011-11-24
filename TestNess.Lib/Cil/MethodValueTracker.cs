@@ -74,8 +74,12 @@ namespace TestNess.Lib.Cil
         {
             // TODO: this method is a mess and needs to be refactored!!
 
+            FailOnBranchInstruction(instruction);
+
             var pushCount = instruction.GetPushCount();
             var popCount = instruction.GetPopCount(_method);
+            if (popCount == Int32.MaxValue)
+                popCount = stack.Count;
             var isCall = instruction.OpCode.FlowControl == FlowControl.Call;
             var callParams = isCall ? (instruction.Operand as MethodReference).Parameters : NoParams;
 
@@ -165,6 +169,13 @@ namespace TestNess.Lib.Cil
             }
         }
 
+        private static void FailOnBranchInstruction(Instruction instruction)
+        {
+            var fc = instruction.OpCode.FlowControl;
+            if (fc == FlowControl.Branch || fc == FlowControl.Cond_Branch)
+                throw new BranchingNotYetSupportedException();
+        }
+
         private Graph<Value> CreateGraph(ICollection<Value> values)
         {
             var allParents = values.SelectMany(v => v.Parents).Distinct();
@@ -250,5 +261,9 @@ namespace TestNess.Lib.Cil
                 _parents.AddRange(parents);
             }
         }
+    }
+
+    public class BranchingNotYetSupportedException : Exception
+    {
     }
 }

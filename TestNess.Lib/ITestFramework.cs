@@ -45,6 +45,17 @@ namespace TestNess.Lib
         /// <param name="method">Supposedly an asserting method from this framework.</param>
         /// <returns>A list of parameter purposes.</returns>
         IList<ParameterPurpose> GetParameterPurposes(MethodReference method);
+
+        /// <summary>
+        /// Determines if the given method is a method that accesses data for a data-driven test.
+        /// MSTest uses <c>TestContext.DataRow</c> rather than method parameters for publishing
+        /// data from a data source. For this reason, we need a way to check if a method call really
+        /// is a way to access data in a data-driven test.
+        /// </summary>
+        /// <param name="method">The method being called.</param>
+        /// <returns>A boolean value indicating if the method is an accessor method for data in a
+        /// data-driven test.</returns>
+        bool IsDataAccessorMethod(MethodReference method);
     }
 
     public enum ParameterPurpose

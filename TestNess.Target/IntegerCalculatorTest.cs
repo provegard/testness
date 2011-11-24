@@ -28,6 +28,12 @@ namespace TestNess.Target
     [TestClass]
     public class IntegerCalculatorTest
     {
+        private static readonly int Eight = 8;
+        private const int Nine = 9;
+        private int _one = 1;
+
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void TestAddWithConditionalAndMultiAssert()
         {
@@ -242,6 +248,118 @@ namespace TestNess.Target
             Assert.AreEqual(2, calculator.Add(1, 1));
         }
 
+        [TestMethod]
+        public void TestAddWithLocallyCalculatedExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+
+            Assert.AreEqual(1 + 2, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExternallyCalculatedExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var expected = Add(1, 2);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExpectationFromProperty()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var expected = new Adder(1, 2).Result;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExpectationDerivedFromField()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+            var expected = _one + 2;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [DeploymentItem("TestNess.Target\\AddTestData.xml")]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.XML",
+                           "|DataDirectory|\\AddTestData.xml",
+                           "Row",
+                            DataAccessMethod.Sequential)]
+        public void TestDataDrivenAdd()
+        {
+            var x = Convert.ToInt32(TestContext.DataRow["x"]);
+            var y = Convert.ToInt32(TestContext.DataRow["y"]);
+            var expected = Convert.ToInt32(TestContext.DataRow["expected"]);
+
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(x, y);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithConstExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(4, 5);
+
+            // There is no ldc.i4.9
+            Assert.AreEqual(Nine, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithStaticReadonlyExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(3, 5);
+
+            Assert.AreEqual(Eight, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWith9To32BitConstExpectation()
+        {
+            const long expectation = 512L;
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(256, 256);
+
+            // Should result in ldc.i4 + conv.i8
+            Assert.AreEqual(expectation, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWith8OrFewerBitConstExpectation()
+        {
+            const long expectation = 128L;
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(64, 64);
+
+            // Should result in ldc.i4.s + conv.i8
+            Assert.AreEqual(expectation, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithSwitchedActualAndExpectation()
+        {
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+
+            Assert.AreEqual(actual, 3);
+        }
+
+        private int Add(int i1, int i2)
+        {
+            return i1 + i2;
+        }
+
         public int InstanceMethod()
         {
             return new Random().Next();
@@ -260,6 +378,16 @@ namespace TestNess.Target
         public static void NonReturningMethod()
         {
             StaticMethod();
+        }
+
+        private class Adder
+        {
+            internal int Result { get; private set; }
+
+            internal Adder(int a, int b)
+            {
+                Result = a + b;
+            }
         }
     }
 }

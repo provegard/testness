@@ -150,6 +150,10 @@ namespace TestNess.Lib.Cil
                 case StackBehaviour.Pop0:
                     count = 0;
                     break;
+                case StackBehaviour.PopAll:
+                    // Signal to the caller that the evaluation stack is emptied.
+                    count = Int32.MaxValue;
+                    break;
                 default:
                     count = 1;
                     break;

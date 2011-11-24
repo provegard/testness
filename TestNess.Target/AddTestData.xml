@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Rows>
+  <Row>
+    <x>1</x>
+    <y>1</y>
+    <expected>2</expected>
+  </Row>
+  <Row>
+    <x>2</x>
+    <y>3</y>
+    <expected>5</expected>
+  </Row>
+</Rows>

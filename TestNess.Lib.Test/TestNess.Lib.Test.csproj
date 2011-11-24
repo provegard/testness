@@ -67,6 +67,7 @@
     <Compile Include="Rule\AssertDistributionRuleTest.cs" />
     <Compile Include="Rule\CompoundRuleTest.cs" />
     <Compile Include="MSTestTestFrameworkTest.cs" />
+    <Compile Include="Rule\LocalExpectationRuleTest.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRuleTest.cs" />
     <Compile Include="Rule\NoTryCatchInTestCaseRuleTest.cs" />
     <Compile Include="Rule\LimitAssertsPerTestCaseRuleTest.cs" />

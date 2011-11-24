@@ -50,6 +50,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
+    <Compile Include="Rule\LocalExpectationRule.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
     <Compile Include="Rule\CompoundRule.cs" />
     <Compile Include="Rule\IRule.cs" />
@@ -75,6 +76,7 @@
       <Name>GraphBuilder</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
