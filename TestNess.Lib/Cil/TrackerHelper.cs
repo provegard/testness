@@ -21,9 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -71,7 +68,7 @@ namespace TestNess.Lib.Cil
             {
                 case Code.Stloc:
                 case Code.Stloc_S:
-                    index = Convert.ToInt32(instruction.Operand);
+                    index = ((VariableDefinition) instruction.Operand).Index;
                     break;
                 case Code.Stloc_0:
                     index = 0;
@@ -100,12 +97,9 @@ namespace TestNess.Lib.Cil
             {
                 case Code.Ldloca:
                 case Code.Ldloca_S:
-                    var vdef = instruction.Operand as VariableDefinition;
-                    index = vdef.Index;
-                    break;
                 case Code.Ldloc:
                 case Code.Ldloc_S:
-                    index = Convert.ToInt32(instruction.Operand);
+                    index = ((VariableDefinition) instruction.Operand).Index;
                     break;
                 case Code.Ldloc_0:
                     index = 0;
@@ -170,7 +164,7 @@ namespace TestNess.Lib.Cil
             {
                 // First simple approach: number of parameters, + 1 if virtual call
                 var calledMethod = instruction.Operand as MethodReference;
-                count = calledMethod.Parameters.Count + (calledMethod.HasThis ? 1 : 0);
+                count = calledMethod.Parameters.Count + (IsObjectMethod(calledMethod) ? 1 : 0);
             }
             else if (instruction.OpCode == OpCodes.Ret)
             {
@@ -181,6 +175,11 @@ namespace TestNess.Lib.Cil
                 throw new ArgumentException("Unhandled instruction: " + instruction.OpCode);
             }
             return count;
+        }
+
+        private static Boolean IsObjectMethod(MethodReference method)
+        {
+            return method.HasThis && !".ctor".Equals(method.Name);
         }
 
         internal static bool IsRef(this ParameterDefinition pdef)

@@ -168,6 +168,16 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }.ToList(), opCodes.ToList());
         }
 
+        [TestCase]
+        public void TestThatObjectConstructionIsHandled()
+        {
+            var method = GetType().FindMethod("ObjectConstruction()");
+            var tracker = new MethodValueTracker(method);
+            var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
+
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Newobj }.ToList(), opCodes.ToList());
+        }
+
         private Instruction LastCall(MethodDefinition method)
         {
             return method.Body.Instructions.Where(i => i.OpCode.FlowControl == FlowControl.Call).Last();
@@ -235,6 +245,11 @@ namespace TestNess.Lib.Test.Cil
             StaticConsumer(result);
         }
 
+        public void ObjectConstruction()
+        {
+            var obj = new MethodValueTrackerTest();
+            StaticObjectConsumer(obj);
+        }
 
         public void UseOfReturnValue()
         {
