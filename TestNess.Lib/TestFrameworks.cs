@@ -75,5 +75,16 @@ namespace TestNess.Lib
         {
             return _frameworks.Any(f => f.DoesContainAssertion(method));
         }
+
+        public IList<ParameterPurpose> GetParameterPurposes(MethodReference method)
+        {
+            IList<ParameterPurpose> list = null;
+            foreach (var fw in _frameworks)
+            {
+                list = fw.GetParameterPurposes(method);
+                if (list != null) break;
+            }
+            return list;
+        }
     }
 }

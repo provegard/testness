@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
 using Mono.Cecil;
 
 namespace TestNess.Lib
@@ -35,5 +36,43 @@ namespace TestNess.Lib
         bool HasExpectedException(MethodDefinition method);
 
         bool DoesContainAssertion(MethodDefinition method);
+
+        /// <summary>
+        /// Returns a list of parameter purposes corresponding to the parameters of the given method.
+        /// If the method is not recognized, the return value is <c>null</c> (as opposed to the empty
+        /// list, which is returned for a recognized method with no parameters).
+        /// </summary>
+        /// <param name="method">Supposedly an asserting method from this framework.</param>
+        /// <returns>A list of parameter purposes.</returns>
+        IList<ParameterPurpose> GetParameterPurposes(MethodReference method);
+    }
+
+    public enum ParameterPurpose
+    {
+        /// <summary>
+        /// The parameter represents the expected value.
+        /// </summary>
+        Expected,
+
+        /// <summary>
+        /// The parameter represents the actual value.
+        /// </summary>
+        Actual,
+
+        /// <summary>
+        /// The parameter can be either the expected or the actual value.
+        /// </summary>
+        ExpectedOrActual,
+
+        /// <summary>
+        /// We don't know what this parameter represents!
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// The parameter is a message, or a message parameter, or something else that has nothing
+        /// to do with the outcome of the assertion.
+        /// </summary>
+        MetaData
     }
 }

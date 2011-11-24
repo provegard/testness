@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -56,6 +57,49 @@ namespace TestNess.Lib
         public bool DoesContainAssertion(MethodDefinition method)
         {
             return CountAssertions(method) > 0;
+        }
+
+        public IList<ParameterPurpose> GetParameterPurposes(MethodReference method)
+        {
+            var reducedMethod = ReduceToShortestOverload(method);
+            var list = new List<ParameterPurpose>();
+            for (var i = 0; i < method.Parameters.Count; i++)
+            {
+                if (i < reducedMethod.Parameters.Count)
+                    list.Add(DeduceParameterPurpose(reducedMethod, i));
+                else
+                    list.Add(ParameterPurpose.MetaData);
+            }
+            return list;
+        }
+
+        private static ParameterPurpose DeduceParameterPurpose(MethodReference method, int paramIdx)
+        {
+            var pc = method.Parameters.Count;
+            switch (pc)
+            {
+                case 1:
+                    return ParameterPurpose.Actual;
+
+                case 2:
+                    if (method.Name.StartsWith("Are") || "Equals".Equals(method.Name))
+                        return paramIdx == 0 ? ParameterPurpose.Expected : ParameterPurpose.Actual;
+                    if ("System.Type".Equals(method.Parameters[1].ParameterType.FullName))
+                        return paramIdx == 0 ? ParameterPurpose.Actual : ParameterPurpose.Expected;
+                    if ("StringAssert".Equals(method.DeclaringType.Name))
+                        return paramIdx == 0 ? ParameterPurpose.Actual : ParameterPurpose.Expected;
+                    if (method.Name.Contains("Subset") || method.Name.Contains("Contain"))
+                        return ParameterPurpose.ExpectedOrActual;
+                    break;
+            }
+            return ParameterPurpose.Unknown;
+        }
+
+        private static MethodReference ReduceToShortestOverload(MethodReference method)
+        {
+            var type = method.DeclaringType.Resolve();
+            var shortest = type.Methods.Where(m => m.Name.Equals(method.Name)).OrderBy(m => m.Parameters.Count).First();
+            return shortest;
         }
 
         private static int CountAssertions(MethodDefinition method)
