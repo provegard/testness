@@ -101,6 +101,16 @@ namespace GraphBuilder
             return heads;
         }
 
+        /// <summary>
+        /// Determines if the given node belongs to this graph.
+        /// </summary>
+        /// <param name="node">A node.</param>
+        /// <returns>A flag indicating whether or not the node belongs to this graph.</returns>
+        public bool Contains(TNode node)
+        {
+            return _digraph.ContainsKey(node);
+        }
+
         public IEnumerable<TNode> TailsFor(TNode head)
         {
             return from key in _digraph.Keys

@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="ArgumentsTest.cs" />
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
+    <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
     <Compile Include="Rule\AbstractRuleTest.cs" />
     <Compile Include="AnalyzerTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />

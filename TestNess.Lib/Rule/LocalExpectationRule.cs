@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using TestNess.Lib.Cil;
@@ -42,17 +43,7 @@ namespace TestNess.Lib.Rule
             // TODO: Resolve needed for Reference -> Definition .. can we get rid of it??
             var calledMethods =
                 testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
-            MethodValueTracker tracker;
-            try
-            {
-                tracker = new MethodValueTracker(testCase.TestMethod);
-            }
-            catch (BranchingNotYetSupportedException)
-            {
-                //TODO: MethodValueTracker doesn't handle branching yet, so this ugly
-                // hack must be here until we've implemented branching support.
-                yield break;
-            }
+            var tracker = new MethodValueTracker(testCase.TestMethod);
 
             // For each asserting method with >= 1 parameters:
             foreach (var cm in calledMethods.Where(cm => cm.Method.HasParameters))
@@ -63,30 +54,49 @@ namespace TestNess.Lib.Rule
                 var paramPurposes = _framework.GetParameterPurposes(cm.Method);
                 if (paramPurposes == null) continue; // unknown method, rule does not apply
 
-                IList<MethodValueTracker.Value> consumedValues = tracker.GetConsumedValues(cm.Instruction).ToList();
-
-                IList<MethodValueTracker.Value> binaryComparisonOperands;
-                if (IsSingleTruthCheckingMethod(cm.Method, paramPurposes) && IsProducedByBinaryComparison(consumedValues[0], out binaryComparisonOperands))
+                foreach (var valueGraph in tracker.ValueGraphs)
                 {
-                    // "Expand" the parameter purposes and consumed values to represent the
-                    // values that were compared using a binary comparison.
-                    consumedValues = binaryComparisonOperands;
-                    paramPurposes = binaryComparisonOperands.Select(x => ParameterPurpose.ExpectedOrActual).ToList();
-                }
+                    IList<MethodValueTracker.Value> consumedValues = tracker.GetConsumedValues(valueGraph, cm.Instruction).ToList();
+                    if (consumedValues.Count == 0)
+                        continue; // not part of value graph
 
-                var interestingConsumedValues =
-                    consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)]));
+                    // Handle cases like Assert.IsTrue(x == 5)
+                    ExpandIfSingleTruthCheckingMethod(cm.Method, ref consumedValues, ref paramPurposes);
 
-                var hasAtLeastOneLocallyProducedExpectation = interestingConsumedValues.Any(v => IsLocallyProduced(tracker, v));
+                    // Get the consumed values that correspond to parameters that represent
+                    // (or perhaps represent) expectations.
+                    var interestingConsumedValues =
+                        consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)]));
 
-                if (!hasAtLeastOneLocallyProducedExpectation)
-                {
+                    // See if there is at least one locally produced value among the surviving
+                    // consumed values.
+                    var hasAtLeastOneLocallyProducedExpectation =
+                        interestingConsumedValues.Any(v => IsLocallyProduced(tracker, valueGraph, v));
+
+                    if (hasAtLeastOneLocallyProducedExpectation) 
+                        continue;
+                    
+                    // Generate a violation!
                     yield return new Violation(this, testCase);
                     break; // currently only one violation per test case!
                 }
             }
 
             yield break;
+        }
+
+        private static void ExpandIfSingleTruthCheckingMethod(MethodReference method, ref IList<MethodValueTracker.Value> consumedValues,
+            ref IList<ParameterPurpose> parameterPurposes)
+        {
+            IList<MethodValueTracker.Value> binaryComparisonOperands;
+            if (IsSingleTruthCheckingMethod(method, parameterPurposes) &&
+                IsProducedByBinaryComparison(consumedValues[0], out binaryComparisonOperands))
+            {
+                // "Expand" the parameter purposes and consumed values to represent the
+                // values that were compared using a binary comparison.
+                consumedValues = binaryComparisonOperands;
+                parameterPurposes = binaryComparisonOperands.Select(x => ParameterPurpose.ExpectedOrActual).ToList();
+            }
         }
 
         private static bool IsProducedByBinaryComparison(MethodValueTracker.Value value, out IList<MethodValueTracker.Value> operands)
@@ -145,9 +155,9 @@ namespace TestNess.Lib.Rule
             return parameterType == ParameterPurpose.Expected || parameterType == ParameterPurpose.ExpectedOrActual;
         }
 
-        private bool IsLocallyProduced(MethodValueTracker tracker, MethodValueTracker.Value v)
+        private bool IsLocallyProduced(MethodValueTracker tracker, Graph<MethodValueTracker.Value> valueGraph, MethodValueTracker.Value v)
         {
-            var hasForbiddenProducer = tracker.ValueGraph.Walk(v).Any(HasForbiddenProducer);
+            var hasForbiddenProducer = valueGraph.Walk(v).Any(HasForbiddenProducer);
             return !hasForbiddenProducer;
         }
 

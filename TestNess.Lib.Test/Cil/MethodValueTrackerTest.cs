@@ -28,8 +28,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using NUnit.Framework;
 using TestNess.Lib.Cil;
-using TestNess.Lib.Test;
-using TestNess.Lib;
 using GraphBuilder;
 
 namespace TestNess.Lib.Test.Cil
@@ -49,7 +47,7 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
             var tracker = new MethodValueTracker(method);
-            var consumedValues = tracker.GetConsumedValues(LastCall(method));
+            var consumedValues = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method));
             Assert.AreEqual(1, consumedValues.Count());
         }
 
@@ -58,7 +56,7 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
             var tracker = new MethodValueTracker(method);
-            var consumedValue = tracker.GetConsumedValues(LastCall(method)).First();
+            var consumedValue = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method)).First();
 
             Assert.AreEqual(OpCodes.Ldc_I4_S, consumedValue.Producer.OpCode);
         }
@@ -68,7 +66,7 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("BoxedConstantUseByStaticMethod()");
             var tracker = new MethodValueTracker(method);
-            var consumedValue = tracker.GetConsumedValues(LastCall(method)).First();
+            var consumedValue = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method)).First();
             var roots = tracker.FindSourceValues(consumedValue);
 
             Assert.AreEqual(OpCodes.Ldc_I4_S, roots.First().Producer.OpCode);
@@ -79,7 +77,7 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("DirectConstantUseByVirtualMethod()");
             var tracker = new MethodValueTracker(method);
-            var consumedValues = tracker.GetConsumedValues(LastCall(method));
+            var consumedValues = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method));
             var opCodes = consumedValues.Select(v => v.Producer.OpCode);
 
             // Ldarg_0 should not be in the list!
@@ -91,7 +89,7 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("StaticMethodWithStaticCall(System.Int32)");
             var tracker = new MethodValueTracker(method);
-            var consumedValues = tracker.GetConsumedValues(LastCall(method));
+            var consumedValues = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method));
             var opCodes = consumedValues.Select(v => v.Producer.OpCode);
 
             // Ldarg_0 should be in the list!
@@ -114,17 +112,26 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
             var tracker = new MethodValueTracker(method);
-            tracker.GetConsumedValues(null);
+            tracker.GetConsumedValues(tracker.ValueGraphs[0], null);
         }
 
         [TestCase]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestThatQueryInstructionMustBePartOfMethod()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestThatGraphCannotBeNullWhenQueryingConsumedValues()
+        {
+            var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
+            var tracker = new MethodValueTracker(method);
+            tracker.GetConsumedValues(null, LastCall(method));
+        }
+
+        [TestCase]
+        public void TestThatConsumedValuesAreEmptyWhenQueryInstructionIsNotPartOfMethod()
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
             var method2 = GetType().FindMethod("DirectConstantUseByVirtualMethod()");
             var tracker = new MethodValueTracker(method);
-            tracker.GetConsumedValues(LastCall(method2));
+            var values = tracker.GetConsumedValues(tracker.ValueGraphs[0], LastCall(method2));
+            Assert.AreEqual(0, values.Count());
         }
 
         [TestCase]
@@ -142,7 +149,6 @@ namespace TestNess.Lib.Test.Cil
         {
             var method = GetType().FindMethod("UseOfOutValue()");
             var tracker = new MethodValueTracker(method);
-            var callInstruction = method.Body.Instructions.Where(i => i.OpCode == OpCodes.Call).First();
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }.ToList(), opCodes.ToList());
@@ -177,7 +183,7 @@ namespace TestNess.Lib.Test.Cil
 
             CollectionAssert.AreEquivalent(new[] { OpCodes.Newobj }.ToList(), opCodes.ToList());
         }
-
+        
         private Instruction LastCall(MethodDefinition method)
         {
             return method.Body.Instructions.Where(i => i.OpCode.FlowControl == FlowControl.Call).Last();
@@ -185,10 +191,12 @@ namespace TestNess.Lib.Test.Cil
 
         private IEnumerable<OpCode> FindAllSourceValueOpCodes(MethodValueTracker tracker, Instruction instruction)
         {
-            var consumedValues = tracker.GetConsumedValues(instruction);
+            var consumedValues = tracker.GetConsumedValues(tracker.ValueGraphs[0], instruction);
             var sourceValues = consumedValues.SelectMany(tracker.FindSourceValues);
             return sourceValues.Select(v => v.Producer.OpCode).Distinct();
         }
+
+        #region Method subjects used in the test cases above
 
         public static void StaticMethodWithStaticCall(int x)
         {
@@ -283,15 +291,17 @@ namespace TestNess.Lib.Test.Cil
         {
             result = x * y;
         }
+        #endregion
 
-        private string ValueGraphAsString(Graph<MethodValueTracker.Value> graph)
+        #region Helpers for debugging test cases
+        internal static string ValueGraphAsString(Graph<MethodValueTracker.Value> graph)
         {
             var builder = new StringBuilder();
             PrintNode(builder, graph.Root, 0);
             return builder.ToString();
         }
 
-        private void PrintNode(StringBuilder builder, MethodValueTracker.Value node, int indent)
+        private static void PrintNode(StringBuilder builder, MethodValueTracker.Value node, int indent)
         {
             builder.Append("".PadRight(indent * 2));
             PrintValue(builder, node);
@@ -301,18 +311,19 @@ namespace TestNess.Lib.Test.Cil
             }
         }
 
-        private void PrintValue(StringBuilder builder, MethodValueTracker.Value node)
+        private static void PrintValue(StringBuilder builder, MethodValueTracker.Value node)
         {
             builder.AppendFormat("Value produced by {0} and consumed by {1} [#parents={2}].\n",
                 InstructionToString(node.Producer), InstructionToString(node.Consumer),
                 node.Parents.Count);
         }
 
-        private string InstructionToString(Instruction i)
+        private static string InstructionToString(Instruction i)
         {
             if (i == null)
                 return "none";
             return string.Format("{0} {1}", i.OpCode, i.Operand);
         }
+        #endregion
     }
 }

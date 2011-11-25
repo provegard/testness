@@ -38,30 +38,90 @@ namespace TestNess.Lib.Cil
     /// </summary>
     public class MethodValueTracker
     {
-        private static readonly IList<ParameterDefinition> NoParams = new List<ParameterDefinition>(); 
+        private static readonly IList<ParameterDefinition> NoParams = new List<ParameterDefinition>();
 
         private readonly MethodDefinition _method;
 
         /// <summary>
-        /// Graph of values produced and consumed in the method this tracker was created for.
-        /// The root is a fake value which only serves the purpose of being root.
+        /// List of graphs of values produced and consumed in the method this tracker was created for. 
+        /// The root of each graph is a fake value which only serves the purpose of being root. Each graph
+        /// corresponds to a single path through the method; thus if the method does not contain branching,
+        /// there is only one graph.
         /// </summary>
-        public Graph<Value> ValueGraph { get; private set; } 
+        public IList<Graph<Value>> ValueGraphs { get; private set; }
 
         public MethodValueTracker(MethodDefinition method)
         {
             if (method == null)
                 throw new ArgumentNullException("method");
             _method = method;
-            ValueGraph = CreateValueGraph();
+            var paths = FindInstructionPaths();
+            ValueGraphs = new ReadOnlyCollection<Graph<Value>>(CreateValueGraph(paths));
         }
 
-        private Graph<Value> CreateValueGraph()
+        private IEnumerable<IList<Instruction>> FindInstructionPaths()
+        {
+            var igraph = CreateInstructionGraph();
+            var returns = igraph.Walk().Where(i => i.OpCode == OpCodes.Ret);
+            var paths = new List<IList<Instruction>>();
+            foreach (var ret in returns)
+            {
+                paths.AddRange(igraph.FindPaths(igraph.Root, ret));
+            }
+            return paths;
+        }
+
+        private Graph<Instruction> CreateInstructionGraph()
+        {
+            var builder = new GraphBuilder<Instruction>(NextInstructions);
+            return builder.Build(_method.Body.Instructions[0]);
+        }
+
+        private static IEnumerable<Instruction> NextInstructions(Instruction v)
+        {
+            var fc = v.OpCode.FlowControl;
+            switch (fc)
+            {
+                case FlowControl.Next:
+                case FlowControl.Call: // stay within the method
+                    yield return v.Next;
+                    break;
+
+                case FlowControl.Return:
+                    yield break;
+
+                case FlowControl.Cond_Branch:
+                    yield return v.Next;
+                    if (v.Operand is Instruction[])
+                    {
+                        // switch statement
+                        foreach (var i in (Instruction[])v.Operand)
+                            yield return i;
+                    }
+                    else
+                        yield return (Instruction) v.Operand;
+                    break;
+
+                case FlowControl.Branch:
+                    yield return (Instruction) v.Operand;
+                    break;
+
+                default:
+                    throw new NotImplementedException(fc.ToString());
+            }
+        }
+
+        private IList<Graph<Value>> CreateValueGraph(IEnumerable<IList<Instruction>> instructionPaths)
+        {
+            return instructionPaths.Select(CreateValueGraph).ToList();
+        }
+
+        private Graph<Value> CreateValueGraph(IEnumerable<Instruction> instructions)
         {
             var stack = new Stack<Value>();
             var values = new List<Value>();
             var locals = new Value[_method.Body.Variables.Count];
-            foreach (var instruction in _method.Body.Instructions)
+            foreach (var instruction in instructions)
             {
                 Apply(instruction, stack, values, locals);
             }
@@ -73,8 +133,6 @@ namespace TestNess.Lib.Cil
         private void Apply(Instruction instruction, Stack<Value> stack, ICollection<Value> values, IList<Value> locals)
         {
             // TODO: this method is a mess and needs to be refactored!!
-
-            FailOnBranchInstruction(instruction);
 
             var pushCount = instruction.GetPushCount();
             var popCount = instruction.GetPopCount(_method);
@@ -147,7 +205,7 @@ namespace TestNess.Lib.Cil
                 {
                     // First of poppedValues is last argument
                     var inputArgument = poppedValues[callParams.Count - i - 1];
-                    if (!callParams[i].IsRef() && !callParams[i].IsOut) 
+                    if (!callParams[i].IsRef() && !callParams[i].IsOut)
                         continue;
 
                     var newValue = new Value(instruction);
@@ -169,13 +227,6 @@ namespace TestNess.Lib.Cil
             }
         }
 
-        private static void FailOnBranchInstruction(Instruction instruction)
-        {
-            var fc = instruction.OpCode.FlowControl;
-            if (fc == FlowControl.Branch || fc == FlowControl.Cond_Branch)
-                throw new BranchingNotYetSupportedException();
-        }
-
         private Graph<Value> CreateGraph(ICollection<Value> values)
         {
             var allParents = values.SelectMany(v => v.Parents).Distinct();
@@ -187,19 +238,23 @@ namespace TestNess.Lib.Cil
         }
 
         /// <summary>
-        /// Returns the values that are consumed by the given instruction (which must be part of the
-        /// method this tracker was created for, obviously). The "this object" value needed for a
-        /// virtual call <strong>is not</strong> included.
+        /// Returns the values that are consumed by the given instruction when it is part of the
+        /// given value graph. The "this object" value needed for a virtual call 
+        /// <strong>is not</strong> included. If the instruction does not participate in the given
+        /// value graph, an empty enumerable of values is returned.
         /// </summary>
+        /// <param name="valueGraph">One of the value graphs produced by this tracker.</param>
         /// <param name="query">An instruction that consumes values.</param>
         /// <returns>An enumerable of values consumed by the instruction.</returns>
-        public IEnumerable<Value> GetConsumedValues(Instruction query)
+        /// <exception cref="ArgumentNullException">Thrown if any of the arguments is <c>null</c>.
+        /// </exception>
+        public IEnumerable<Value> GetConsumedValues(Graph<Value> valueGraph, Instruction query)
         {
+            if (valueGraph == null)
+                throw new ArgumentNullException("valueGraph");
             if (query == null)
                 throw new ArgumentNullException("query");
-            if (!_method.Body.Instructions.Contains(query))
-                throw new ArgumentException("Unknown instruction!");
-            return ValueGraph.Walk().Where(v => v.Consumer == query).Where(Not_IsThisObjectValue);
+            return valueGraph.Walk().Where(v => v.Consumer == query).Where(Not_IsThisObjectValue);
         }
 
         private bool Not_IsThisObjectValue(Value value)
@@ -219,9 +274,14 @@ namespace TestNess.Lib.Cil
         /// </summary>
         /// <param name="value">A value whose source values to find.</param>
         /// <returns>An enumerable of source values.</returns>
+        /// <exception cref="ArgumentException">Thrown if the value does not belong to any of the value
+        /// graphs produced by this tracker.</exception>
         public IEnumerable<Value> FindSourceValues(Value value)
         {
-            return ValueGraph.Walk(value).Where(v => v.Parents.Count == 0);
+            var graph = ValueGraphs.Where(vg => vg.Contains(value)).FirstOrDefault();
+            //if (graph == null)
+            //    throw new ArgumentException("Unknown value.");
+            return graph.Walk(value).Where(v => v.Parents.Count == 0);
         }
 
         /// <summary>
@@ -261,9 +321,5 @@ namespace TestNess.Lib.Cil
                 _parents.AddRange(parents);
             }
         }
-    }
-
-    public class BranchingNotYetSupportedException : Exception
-    {
     }
 }
