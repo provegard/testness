@@ -43,6 +43,13 @@ namespace TestNess.Lib.Test.Rule
         }
 
         [TestCase]
+        public void TestThatViolationMessageContainsTestCaseSpecificInformation()
+        {
+            var violation = FindViolations("TestAddTwoAsserts()").First();
+            Assert.AreEqual("test case contains 2 asserts (limit is 1)", violation.Message);
+        }
+
+        [TestCase]
         public void TestThatToStringDescribesRule()
         {
             var rule = new LimitAssertsPerTestCaseRule();

@@ -57,7 +57,12 @@ namespace TestNess.Lib.Rule
                 yield break; // no violation
             if (assertMethodCount == 0 && _framework.HasExpectedException(testCase.TestMethod))
                 yield break; // no violation
-            yield return new Violation(this, testCase);
+            yield return new Violation(this, testCase, CreateViolationMessage(assertMethodCount));
+        }
+
+        private string CreateViolationMessage(int assertMethodCount)
+        {
+            return string.Format("test case contains {0} asserts (limit is {1})", assertMethodCount, MaxNumberOfAsserts);
         }
 
         public override string ToString()
