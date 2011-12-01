@@ -42,7 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntegerCalculator.cs" />
+    <Compile Include="IntegerCalculatorConditionalTest.cs" />
+    <Compile Include="IntegerCalculatorDistributionTest.cs" />
+    <Compile Include="IntegerCalculatorExpectationTest.cs" />
     <Compile Include="IntegerCalculatorMethodLengthTest.cs" />
+    <Compile Include="IntegerCalculatorReturnValueTest.cs" />
     <Compile Include="IntegerCalculatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

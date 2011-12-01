@@ -28,7 +28,7 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class UnhandledReturnValueRuleTest : AbstractRuleTest<UnhandledReturnValueRule, IntegerCalculatorTest>
+    public class UnhandledReturnValueRuleTest : AbstractRuleTest<UnhandledReturnValueRule, IntegerCalculatorReturnValueTest>
     {
         [TestCase("TestMultiplyWithUsedReturnValueFromStaticMethod()", 0)]
         [TestCase("TestAddWithUnhandledReturnValueFromStaticMethod()", 1)]

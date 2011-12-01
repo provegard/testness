@@ -31,9 +31,9 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class AssertDistributionRuleTest : AbstractRuleTest<AssertDistributionRule, IntegerCalculatorTest>
+    public class AssertDistributionRuleTest : AbstractRuleTest<AssertDistributionRule, IntegerCalculatorDistributionTest>
     {
-        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddWithSingleAssert()", 0)]
         [TestCase("TestAddWithSpreadAsserts()", 1)]
         [TestCase("TestAddWithAssertsInTheMiddle()", 1)]
         [TestCase("TestAddWithWhitespaceSeparatedAssertsTowardsTheEnd()", 0)]

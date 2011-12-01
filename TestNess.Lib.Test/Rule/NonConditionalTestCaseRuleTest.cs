@@ -28,9 +28,9 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class NonConditionalTestCaseRuleTest : AbstractRuleTest<NonConditionalTestCaseRule, IntegerCalculatorTest>
+    public class NonConditionalTestCaseRuleTest : AbstractRuleTest<NonConditionalTestCaseRule, IntegerCalculatorConditionalTest>
     {
-        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddNonConditional()", 0)]
         [TestCase("TestAddWithIf()", 1)]
         [TestCase("TestAddWithFor()", 1)]
         [TestCase("TestAddWithWhile()", 1)]

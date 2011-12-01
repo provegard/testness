@@ -28,9 +28,9 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class LocalExpectationRuleTest : AbstractRuleTest<LocalExpectationRule, IntegerCalculatorTest>
+    public class LocalExpectationRuleTest : AbstractRuleTest<LocalExpectationRule, IntegerCalculatorExpectationTest>
     {
-        [TestCase("TestAddBasic()", 0)]
+        [TestCase("TestAddWithLiteralExpectation()", 0)]
         [TestCase("TestAddWithExternallyCalculatedExpectation()", 1)]
         [TestCase("TestAddWithConstExpectation()", 0)]
         [TestCase("TestAddWithSwitchedActualAndExpectation()", 1)]

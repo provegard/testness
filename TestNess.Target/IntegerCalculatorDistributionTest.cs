@@ -20,40 +20,57 @@
  * THE SOFTWARE.
  */
 
-using System.Linq;
-using NUnit.Framework;
-using TestNess.Lib.Rule;
-using TestNess.Target;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TestNess.Lib.Test.Rule
+namespace TestNess.Target
 {
-    [TestFixture]
-    public class CompoundRuleTest
+    [TestClass]
+    public class IntegerCalculatorDistributionTest
     {
-        [TestCase]
-        public void TestThatRulesAreInitiallyEmpty()
+        [TestMethod]
+        public void TestAddWithSingleAssert()
         {
-            var rule = new CompoundRule();
-            Assert.AreEqual(0, rule.Rules.Count);
+            var calculator = new IntegerCalculator();
+            var actual = calculator.Add(1, 2);
+
+            Assert.AreEqual(3, actual);
         }
 
-        [TestCase]
-        public void TestThatRuleCanBeAdded()
+        [TestMethod]
+        public void TestAddWithSpreadAsserts()
         {
-            var rule = new CompoundRule();
-            rule.Rules.Add(new LimitAssertsPerTestCaseRule());
-            Assert.AreEqual(1, rule.Rules.Count);
+            var calculator = new IntegerCalculator();
+            Assert.IsNotNull(calculator);
+
+            var actual = calculator.Add(1, 2);
+
+            Assert.AreEqual(3, actual);
         }
 
-        [TestCase]
-        public void TestThatCompoundRuleReturnsViolationsFromAllSubRules()
+        [TestMethod]
+        public void TestAddWithAssertsInTheMiddle()
         {
-            var tc = typeof(IntegerCalculatorConditionalTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");
-            var rule = new CompoundRule();
-            rule.Rules.Add(new LimitAssertsPerTestCaseRule());
-            rule.Rules.Add(new NonConditionalTestCaseRule());
-            var violations = rule.Apply(tc);
-            Assert.AreEqual(2, violations.Count());
+            var calculator = new IntegerCalculator();
+
+            Assert.IsNotNull(calculator);
+            Assert.AreEqual(3, calculator.Add(1, 2));
+
+            calculator.Multiply(4, 4);
+        }
+
+        [TestMethod]
+        public void TestAddWithWhitespaceSeparatedAssertsTowardsTheEnd()
+        {
+            var calculator = new IntegerCalculator();
+
+            Assert.AreEqual(1, calculator.Divide(1, 1));
+
+
+            // lots and lots of ws here...
+
+
+
+            Assert.AreEqual(2, calculator.Divide(4, 2));
         }
     }
 }
