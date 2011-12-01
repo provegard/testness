@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil.Cil;
 
 namespace TestNess.Lib.Rule
 {
@@ -41,8 +42,9 @@ namespace TestNess.Lib.Rule
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var ilCount = testCase.TestMethod.Body.Instructions.Count;
-            var spCount = testCase.TestMethod.Body.Instructions.Where(i => i.SequencePoint != null).Count();
+            var instructions = testCase.TestMethod.Body.Instructions.Where(IsRelevant).ToList();
+            var ilCount = instructions.Count;
+            var spCount = instructions.Where(i => i.SequencePoint != null).Count();
 
             int actual, limit;
             if (spCount > 0)
@@ -60,6 +62,15 @@ namespace TestNess.Lib.Rule
             if (actual <= limit)
                 yield break; // no violation
             yield return new Violation(this, testCase);
+        }
+
+        private static bool IsRelevant(Instruction instruction)
+        {
+            if (instruction.OpCode == OpCodes.Nop && instruction.Previous == null)
+                return false;
+            if (instruction.OpCode == OpCodes.Ret && instruction.Next == null)
+                return false;
+            return true;
         }
 
         public override string ToString()
