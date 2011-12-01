@@ -20,13 +20,10 @@
  * THE SOFTWARE.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Pdb;
 
 namespace TestNess.Lib.Rule
 {
@@ -75,7 +72,7 @@ namespace TestNess.Lib.Rule
             return sp.StartLine != HiddenLine;
         }
 
-        private bool IsAssertCall(Instruction instruction, ICollection<MethodDefinition> assertingMethods)
+        private bool IsAssertCall(Instruction instruction, IEnumerable<MethodDefinition> assertingMethods)
         {
             if (instruction.OpCode.FlowControl != FlowControl.Call)
                 return false;

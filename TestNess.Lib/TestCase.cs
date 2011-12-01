@@ -141,7 +141,7 @@ namespace TestNess.Lib
             return _assertingMethods;
         }
         
-        private IEnumerable<IList<MethodReference>> AddPathsToRoot(MethodReference reference)//, ICollection<IList<MethodReference>> listOfPaths)
+        private IEnumerable<IList<MethodReference>> AddPathsToRoot(MethodReference reference)
         {
             if (!DoesContainAssertion(reference))
                 return new IList<MethodReference>[0];
