@@ -46,22 +46,16 @@ namespace TestNess.Lib.Rule
             var ilCount = instructions.Count;
             var spCount = instructions.Where(i => i.SequencePoint != null).Count();
 
-            int actual, limit;
-            if (spCount > 0)
-            {
-                // Use LOC limit
-                limit = _maxLinesOfCode;
-                actual = spCount;
-            }
-            else
-            {
-                // Use IL limit
-                limit = (int)(_maxLinesOfCode * IL_PER_LOC);
-                actual = ilCount;
-            }
-            if (actual <= limit)
+            var actual = spCount > 0 ? spCount : (int) (ilCount / IL_PER_LOC);
+            if (actual <= _maxLinesOfCode)
                 yield break; // no violation
-            yield return new Violation(this, testCase);
+            yield return new Violation(this, testCase, CreateMessage(actual));
+        }
+
+        private string CreateMessage(int actualStatementCount)
+        {
+            return string.Format("test case contains {0} code statements (limit is {1})", actualStatementCount,
+                                 _maxLinesOfCode);
         }
 
         private static bool IsRelevant(Instruction instruction)
@@ -75,12 +69,12 @@ namespace TestNess.Lib.Rule
 
         public override string ToString()
         {
-            return string.Format("a test case should contain at most {0} lines of code", _maxLinesOfCode);
+            return string.Format("a test case should contain at most {0} code statements", _maxLinesOfCode);
         }
 
         /// <summary>
-        /// The limit for the acceptable number of code lines that a test case can contain. By default, 
-        /// this value is 10. It cannot be set to a values less than 1.
+        /// The limit for the acceptable number of code statements that a test case can contain. By 
+        /// default, this value is 10. It cannot be set to a values less than 1.
         /// </summary>
         public int MaxNumberOfLinesOfCode
         {

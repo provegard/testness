@@ -52,17 +52,24 @@ namespace TestNess.Lib.Test.Rule
         }
 
         [TestCase]
+        public void TestThatViolationMessageContainsTestCaseSpecificInformation()
+        {
+            var violation = FindViolations("ThenWeShouldBeAbleToAdd_Long()").First();
+            Assert.AreEqual("test case contains 11 code statements (limit is 10)", violation.Message);
+        }
+
+        [TestCase]
         public void TestThatToStringDescribesRule()
         {
             var rule = new LongTestCaseRule();
-            Assert.AreEqual("a test case should contain at most 10 lines of code", rule.ToString());
+            Assert.AreEqual("a test case should contain at most 10 code statements", rule.ToString());
         }
 
         [TestCase]
         public void TestThatToStringDescribesConfiguredRule()
         {
             var rule = new LongTestCaseRule { MaxNumberOfLinesOfCode = 20 };
-            Assert.AreEqual("a test case should contain at most 20 lines of code", rule.ToString());
+            Assert.AreEqual("a test case should contain at most 20 code statements", rule.ToString());
         }
 
         [TestCase]
