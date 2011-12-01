@@ -38,6 +38,19 @@ namespace TestNess.Target
         }
 
         [TestMethod]
+        public void TestAddTwoAssertsCalledInHelper()
+        {
+            var calculator = new IntegerCalculator();
+            AssertAddition(calculator);
+        }
+
+        private void AssertAddition(IntegerCalculator calculator)
+        {
+            Assert.AreEqual(3, calculator.Add(1, 2));
+            Assert.AreEqual(10, calculator.Add(1, 9));
+        }
+
+        [TestMethod]
         public void TestAddBasic()
         {
             var calculator = new IntegerCalculator();

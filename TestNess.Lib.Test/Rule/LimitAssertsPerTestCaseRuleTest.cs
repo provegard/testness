@@ -35,6 +35,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddTwoAsserts()", 1)]
         [TestCase("TestDivideWithException()", 0, Description = "No assert needed when there is an expected exception!")]
         [TestCase("TestMultiAssertWithExpectedException()", 1, Description = "Violation due to multiple asserts, expected exception doesn't change the picture!")]
+        [TestCase("TestAddTwoAssertsCalledInHelper()", 1, Description = "Multiple asserts cannot be hidden in a helper!")]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);
