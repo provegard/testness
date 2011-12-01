@@ -66,7 +66,11 @@ namespace TestNess.Lib.Rule
                     // Get the consumed values that correspond to parameters that represent
                     // (or perhaps represent) expectations.
                     var interestingConsumedValues =
-                        consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)]));
+                        consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)])).ToList();
+
+                    // This might happen with for example Assert.Fail("some reason")
+                    if (interestingConsumedValues.Count == 0)
+                        continue;
 
                     // See if there is at least one locally produced value among the surviving
                     // consumed values.

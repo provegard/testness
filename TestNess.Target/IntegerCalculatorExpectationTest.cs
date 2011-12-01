@@ -42,6 +42,12 @@ namespace TestNess.Target
             _calc = new IntegerCalculator();
         }
 
+        [TestMethod, Ignore]
+        public void TestWithUnconditionalFailure()
+        {
+            Assert.Fail("This fails!");
+        }
+
         [TestMethod]
         public void TestAddWithLiteralExpectation()
         {

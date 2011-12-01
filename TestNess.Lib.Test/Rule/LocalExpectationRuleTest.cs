@@ -45,6 +45,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()", 1)]
         [TestCase("TestAddWithLteComparedExternallyCalculatedExpectation()", 1)]
         [TestCase("TestAddWithNeqComparedExternallyCalculatedExpectation()", 1)]
+        [TestCase("TestWithUnconditionalFailure()", 0)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);
