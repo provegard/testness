@@ -103,17 +103,10 @@ namespace TestNess.Lib.Rule
             var sb = new StringBuilder();
             sb.Append(DocumentUrl ?? TestCase.TestMethod.DeclaringType.FullName);
             sb.Append("(");
-            sb.Append(Location != null ? StartCoordinates(Location) : NameWithParameters(TestCase.TestMethod));
+            sb.Append(Location != null ? StartCoordinates(Location) : TestCase.TestMethod.NameWithParameters());
             sb.Append("): ");
             sb.Append(Message);
             return sb.ToString();
-        }
-
-        private static string NameWithParameters(MethodDefinition method)
-        {
-            var fn = method.FullName;
-            var cc = fn.IndexOf("::");
-            return cc >= 0 ? fn.Substring(cc + 2) : fn;
         }
 
         private static string StartCoordinates(Coordinates location)

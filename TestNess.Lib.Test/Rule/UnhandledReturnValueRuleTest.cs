@@ -36,10 +36,25 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithUnhandledReturnValueFromVirtualMethod()", 1)]
         [TestCase("TestAddWithCallToNonReturningMethod()", 0)]
         [TestCase("TestDivideWithException()", 0, Description = "Unhandled value is ok if an exception is expected.")]
+        [TestCase("TestAddWithDoubleUnhandledReturnValueFromStaticMethod()", 2)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);
             Assert.AreEqual(expectedViolationCount, violations.Count());
+        }
+
+        [TestCase]
+        public void TestThatViolationContainsSourceLocation()
+        {
+            var violation = FindViolations("TestAddWithUnhandledReturnValueFromStaticMethod()").First();
+            Assert.IsNotNull(violation.Location);
+        }
+
+        [TestCase]
+        public void TestThatViolationMessageRefersToMethod()
+        {
+            var violation = FindViolations("TestAddWithUnhandledReturnValueFromStaticMethod()").First();
+            Assert.AreEqual("return value of method StaticMethod() is not used", violation.Message);
         }
 
         [TestCase]

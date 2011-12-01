@@ -44,6 +44,14 @@ namespace TestNess.Target
         }
 
         [TestMethod]
+        public void TestAddWithDoubleUnhandledReturnValueFromStaticMethod()
+        {
+            StaticMethod();
+            StaticMethod();
+            Assert.AreEqual(2, _calc.Add(1, 1));
+        }
+
+        [TestMethod]
         public void TestAddWithUnhandledReturnValueFromInstanceMethod()
         {
             InstanceMethod();

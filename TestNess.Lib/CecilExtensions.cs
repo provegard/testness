@@ -58,6 +58,19 @@ namespace TestNess.Lib
             return shortest;
         }
 
+        /// <summary>
+        /// Extension method that return the name of a method, including the parameter list but
+        /// excluding the return type.
+        /// </summary>
+        /// <param name="method">The method for which to return the name.</param>
+        /// <returns>A string with the method name and the parameter list.</returns>
+        public static string NameWithParameters(this MethodReference method)
+        {
+            var fn = method.FullName;
+            var cc = fn.IndexOf("::");
+            return cc >= 0 ? fn.Substring(cc + 2) : fn;
+        }
+
         public struct CalledMethod
         {
             public Instruction Instruction;
