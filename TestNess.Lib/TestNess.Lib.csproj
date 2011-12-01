@@ -56,6 +56,7 @@
     <Compile Include="Rule\IRule.cs" />
     <Compile Include="ITestFramework.cs" />
     <Compile Include="MSTestTestFramework.cs" />
+    <Compile Include="Rule\LongTestCaseRule.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
     <Compile Include="Rule\NoTryCatchInTestCaseRule.cs" />
