@@ -20,6 +20,11 @@
  * THE SOFTWARE.
  */
 
+using System.Linq;
+using System.Text;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
+
 namespace TestNess.Lib.Rule
 {
     public class Violation
@@ -27,10 +32,95 @@ namespace TestNess.Lib.Rule
         public IRule Rule { get; private set; }
         public TestCase TestCase { get; private set; }
 
-        public Violation(IRule rule, TestCase testCase)
+        /// <summary>
+        /// If non-<c>null</c>, contains the URL of the document (source file) that contains the
+        /// code for which this violation was generated. This member can be <c>null</c> if debug 
+        /// symbols could not be loaded.
+        /// </summary>
+        public string DocumentUrl { get; private set; }
+
+        /// <summary>
+        /// If non-<c>null</c>, contains line number information for the piece of code for which
+        /// this violation was generated. This member can be <c>null</c> if debug symbols could
+        /// not be loaded, or if the violation doesn't apply to a particular piece of code but
+        /// to a method in general.
+        /// </summary>
+        public Coordinates Location { get; private set; }
+
+        public Violation(IRule rule, TestCase testCase) : this(rule, testCase, null)
+        {
+        }
+        
+        public Violation(IRule rule, TestCase testCase, Instruction instruction)
         {
             Rule = rule;
             TestCase = testCase;
+
+            if (instruction != null)
+            {
+                InitLocation(instruction);
+            }
+            else
+            {
+                InitLocation(testCase.TestMethod);
+            }
+        }
+
+        private void InitLocation(MethodDefinition method)
+        {
+            // Get the document URL from the first instruction. Source location for the method
+            // definition (name, parameters, etc.) is apparently not stored in the PDB file.
+            var instruction = method.Body.Instructions.Where(i => i.SequencePoint != null).FirstOrDefault();
+            if (instruction == null) return;
+            var sp = instruction.SequencePoint;
+            if (sp == null) return;
+            DocumentUrl = sp.Document.Url;
+        }
+
+        private void InitLocation(Instruction instruction)
+        {
+            var sp = instruction.SequencePoint;
+            if (sp == null) return;
+            DocumentUrl = sp.Document.Url;
+            Location = new Coordinates
+                           {
+                               StartLine = sp.StartLine,
+                               EndLine = sp.EndLine,
+                               StartColumn = sp.StartColumn,
+                               EndColumn = sp.EndColumn
+                           };
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(DocumentUrl ?? TestCase.TestMethod.DeclaringType.FullName);
+            sb.Append("(");
+            sb.Append(Location != null ? StartCoordinates(Location) : NameWithParameters(TestCase.TestMethod));
+            sb.Append("): violation of \"");
+            sb.Append(Rule);
+            sb.Append("\"");
+            return sb.ToString();
+        }
+
+        private static string NameWithParameters(MethodDefinition method)
+        {
+            var fn = method.FullName;
+            var cc = fn.IndexOf("::");
+            return cc >= 0 ? fn.Substring(cc + 2) : fn;
+        }
+
+        private static string StartCoordinates(Coordinates location)
+        {
+            return string.Format("{0},{1}", location.StartLine, location.StartColumn);
+        }
+
+        public class Coordinates
+        {
+            public int StartLine { get; internal set; }
+            public int EndLine { get; internal set; }
+            public int StartColumn { get; internal set; }
+            public int EndColumn { get; internal set; }
         }
     }
 }

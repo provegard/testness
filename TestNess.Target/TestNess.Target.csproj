@@ -45,6 +45,7 @@
     <Compile Include="IntegerCalculatorConditionalTest.cs" />
     <Compile Include="IntegerCalculatorDistributionTest.cs" />
     <Compile Include="IntegerCalculatorExpectationTest.cs" />
+    <Compile Include="IntegerCalculatorLocationTest.cs" />
     <Compile Include="IntegerCalculatorMethodLengthTest.cs" />
     <Compile Include="IntegerCalculatorReturnValueTest.cs" />
     <Compile Include="IntegerCalculatorTest.cs" />

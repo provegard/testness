@@ -77,6 +77,8 @@
     <Compile Include="Rule\RuleConfiguratorTest.cs" />
     <Compile Include="Rule\RulesTest.cs" />
     <Compile Include="Rule\UnhandledReturnValueRuleTest.cs" />
+    <Compile Include="Rule\ViolationInstructionLocationTest.cs" />
+    <Compile Include="Rule\ViolationMethodLocationTest.cs" />
     <Compile Include="TestCaseRepositoryTest.cs" />
     <Compile Include="TestCaseTest.cs" />
     <Compile Include="TestHelper.cs" />

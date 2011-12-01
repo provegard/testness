@@ -20,8 +20,6 @@
  * THE SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -29,52 +27,34 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Rule
 {
     [TestFixture]
-    public class ViolationTest
+    public class ViolationMethodLocationTest
     {
-        [TestCase]
-        public void TestThatViolationExposesRule()
+        private Violation _violation;
+
+        [TestFixtureSetUp]
+        public void GivenAViolationCreatedFromAMethod()
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
-            var rule = new SomeRule();
-
-            var violation = new Violation(rule, tc);
-
-            Assert.AreSame(rule, violation.Rule);
+            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAdd()");
+            _violation = new Violation(new ViolationTest.SomeRule(), tc);
         }
 
         [TestCase]
-        public void TestThatViolationExposesTestCase()
+        public void ThenTheDocumentShouldBeExposed()
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
-
-            var violation = new Violation(new SomeRule(), tc);
-
-            Assert.AreSame(tc, violation.TestCase);
+            StringAssert.EndsWith("\\IntegerCalculatorLocationTest.cs", _violation.DocumentUrl);
         }
 
         [TestCase]
-        public void TestThatToStringWithoutDebugSymbolsIncludesTypeAndMethod()
+        public void ThenTheLocationShouldBeUnknown()
         {
-            var tm = typeof (IntegerCalculatorTest).FindMethod("TestAddBasic()");
-            var rule = new SomeRule();
-
-            var violation = new Violation(rule, new TestCase(tm));
-
-            const string expected = "TestNess.Target.IntegerCalculatorTest(TestAddBasic()): violation of \"some rule\"";
-            Assert.AreEqual(expected, violation.ToString());
+            Assert.IsNull(_violation.Location);
         }
 
-        internal class SomeRule : IRule
+        [TestCase]
+        public void ThenToStringShouldContainDocumentAndMethod()
         {
-            public IEnumerable<Violation> Apply(TestCase testCase)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override string ToString()
-            {
-                return "some rule";
-            }
+            const string expectedEnd = "\\IntegerCalculatorLocationTest.cs(TestAdd()): violation of \"some rule\"";
+            StringAssert.EndsWith(expectedEnd, _violation.ToString());
         }
     }
 }
