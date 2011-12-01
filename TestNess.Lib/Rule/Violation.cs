@@ -29,6 +29,7 @@ namespace TestNess.Lib.Rule
 {
     public class Violation
     {
+        public string Message { get; private set; }
         public IRule Rule { get; private set; }
         public TestCase TestCase { get; private set; }
 
@@ -47,14 +48,15 @@ namespace TestNess.Lib.Rule
         /// </summary>
         public Coordinates Location { get; private set; }
 
-        public Violation(IRule rule, TestCase testCase) : this(rule, testCase, null)
+        public Violation(IRule rule, TestCase testCase, string message = null) : this(rule, testCase, null, message)
         {
         }
-        
-        public Violation(IRule rule, TestCase testCase, Instruction instruction)
+
+        public Violation(IRule rule, TestCase testCase, Instruction instruction, string message = null)
         {
             Rule = rule;
             TestCase = testCase;
+            Message = message ?? CreateDefaultMessage(rule);
 
             if (instruction != null)
             {
@@ -64,6 +66,11 @@ namespace TestNess.Lib.Rule
             {
                 InitLocation(testCase.TestMethod);
             }
+        }
+
+        private static string CreateDefaultMessage(IRule rule)
+        {
+            return string.Format("violation of \"{0}\"", rule);
         }
 
         private void InitLocation(MethodDefinition method)
@@ -97,9 +104,8 @@ namespace TestNess.Lib.Rule
             sb.Append(DocumentUrl ?? TestCase.TestMethod.DeclaringType.FullName);
             sb.Append("(");
             sb.Append(Location != null ? StartCoordinates(Location) : NameWithParameters(TestCase.TestMethod));
-            sb.Append("): violation of \"");
-            sb.Append(Rule);
-            sb.Append("\"");
+            sb.Append("): ");
+            sb.Append(Message);
             return sb.ToString();
         }
 

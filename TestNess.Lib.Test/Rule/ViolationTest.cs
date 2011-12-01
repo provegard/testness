@@ -64,6 +64,36 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expected, violation.ToString());
         }
 
+        [TestCase]
+        public void TestThatViolationExposesMessage()
+        {
+            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var rule = new SomeRule();
+            var violation = new Violation(rule, new TestCase(tm));
+
+            Assert.AreEqual("violation of \"some rule\"", violation.Message);
+        }
+
+        [TestCase]
+        public void TestThatMessageCanBeCustomized()
+        {
+            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var rule = new SomeRule();
+            var violation = new Violation(rule, new TestCase(tm), "a message");
+
+            Assert.AreEqual("a message", violation.Message);
+        }
+
+        [TestCase]
+        public void TestThatCustomizedMessageOccursInToString()
+        {
+            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var rule = new SomeRule();
+            var violation = new Violation(rule, new TestCase(tm), "a message");
+
+            StringAssert.EndsWith(": a message", violation.ToString());
+        }
+
         internal class SomeRule : IRule
         {
             public IEnumerable<Violation> Apply(TestCase testCase)
