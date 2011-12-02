@@ -71,6 +71,25 @@ namespace TestNess.Lib
             return cc >= 0 ? fn.Substring(cc + 2) : fn;
         }
 
+        /// <summary>
+        /// Extension method that finds the sequence point for an instruction. If the instruction
+        /// itself does not have a sequence point, its predecessors are search backwards until a
+        /// sequence point is found, or there are no more instructions to search.
+        /// </summary>
+        /// <param name="instruction">The instruction whose sequence point to find.</param>
+        /// <returns>A sequence point, or <c>null</c> if none was found.</returns>
+        public static SequencePoint FindSequencePoint(this Instruction instruction)
+        {
+            var i = instruction;
+            var sp = i.SequencePoint;
+            while (sp == null && i.Previous != null)
+            {
+                i = i.Previous;
+                sp = i.SequencePoint;
+            }
+            return sp;
+        }
+
         public struct CalledMethod
         {
             public Instruction Instruction;

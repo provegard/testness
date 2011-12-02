@@ -86,7 +86,7 @@ namespace TestNess.Lib.Rule
 
         private void InitLocation(Instruction instruction)
         {
-            var sp = instruction.SequencePoint;
+            var sp = instruction.FindSequencePoint();
             if (sp == null) return;
             DocumentUrl = sp.Document.Url;
             Location = new Coordinates
