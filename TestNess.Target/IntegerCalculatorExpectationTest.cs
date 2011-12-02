@@ -171,6 +171,29 @@ namespace TestNess.Target
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public void TestAddWithMultipleExpectationViolations()
+        {
+            var actual = _calc.Add(1, 2);
+            var expected = Add(1, 2);
+
+            // Two uses of a calculated expected value
+            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithConditionalExpectationViolations()
+        {
+            var actual = _calc.Add(1, 2);
+            int expected;
+            // Two paths, two expected value calculations
+            if (new Random().Next(2) == 0)
+                expected = Add(1, 2);
+            else
+                expected = Add(0, 3);
+            Assert.AreEqual(expected, actual);
+        }
 
         [TestMethod]
         [DeploymentItem("TestNess.Target\\AddTestData.xml")]

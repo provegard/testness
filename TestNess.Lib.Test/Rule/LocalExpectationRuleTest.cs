@@ -21,6 +21,7 @@
  */
 
 using System.Linq;
+using Mono.Cecil.Cil;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -46,10 +47,53 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithLteComparedExternallyCalculatedExpectation()", 1)]
         [TestCase("TestAddWithNeqComparedExternallyCalculatedExpectation()", 1)]
         [TestCase("TestWithUnconditionalFailure()", 0)]
+        [TestCase("TestAddWithMultipleExpectationViolations()", 2)]
+        [TestCase("TestAddWithConditionalExpectationViolations()", 2)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);
             Assert.AreEqual(expectedViolationCount, violations.Count());
+        }
+
+        [TestCase]
+        public void TestThatViolationContainsLocation()
+        {
+            var violation = FindViolations("TestAddWithExternallyCalculatedExpectation()").First();
+            Assert.IsNotNull(violation.Location);
+        }
+
+        [TestCase]
+        public void TestThatViolationContainsLocationOfExternalSource()
+        {
+            var tc = typeof (IntegerCalculatorLocationTest).FindTestCase("TestAddWithExternallyCalculatedExpectation()");
+            var violation = new LocalExpectationRule().Apply(tc).First();
+            // The source of the violation is the second call
+            Assert.AreEqual(43, violation.Location.StartLine);
+        }
+
+        [TestCase]
+        public void TestThatViolationMessageRefersToConsumerIfPossible()
+        {
+            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithExternallyCalculatedExpectation()");
+            var violation = new LocalExpectationRule().Apply(tc).First();
+            Assert.AreEqual("external production of (possibly) expected value (argument 1 of AreEqual on line 45)", violation.Message);
+        }
+
+        [TestCase]
+        public void TestThatViolationForUncertainCaseContainsLocationOfValueUsage()
+        {
+            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()");
+            var violation = new LocalExpectationRule().Apply(tc).First();
+            // The values are used one line 54, by the assert call.
+            Assert.AreEqual(54, violation.Location.StartLine);
+        }
+
+        [TestCase]
+        public void TestThatViolationMessageForUncertainCaseRefersToValueUser()
+        {
+            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()");
+            var violation = new LocalExpectationRule().Apply(tc).First();
+            Assert.AreEqual("the expected value used by IsTrue should be produced locally", violation.Message);
         }
 
         [TestCase]

@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphBuilder;
@@ -33,7 +34,7 @@ namespace TestNess.Lib.Rule
     {
         private static readonly IList<OpCode> BinaryComparisonOpCodes = new List<OpCode> { OpCodes.Ceq, OpCodes.Cgt, OpCodes.Cgt_Un,
             OpCodes.Clt, OpCodes.Clt_Un};
-        private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda }; 
+        private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda };
 
         private readonly ITestFramework _framework = TestFrameworks.Instance;
 
@@ -60,46 +61,73 @@ namespace TestNess.Lib.Rule
                     if (consumedValues.Count == 0)
                         continue; // not part of value graph
 
-                    // Handle cases like Assert.IsTrue(x == 5)
-                    ExpandIfSingleTruthCheckingMethod(cm.Method, ref consumedValues, ref paramPurposes);
+                    // Build a list of arguments with the details we need to know if the rule applies.
+                    var arguments = cm.Method.Parameters
+                        .Select((p, index) => new ArgumentDetails { Method = cm.Method, Index = index, Purpose = paramPurposes[index], ConsumedValue = consumedValues[index] }).ToList();
 
-                    // Get the consumed values that correspond to parameters that represent
-                    // (or perhaps represent) expectations.
-                    var interestingConsumedValues =
-                        consumedValues.Where(v => IsPerhapsExpectation(paramPurposes[consumedValues.IndexOf(v)])).ToList();
+                    // Handle cases like Assert.IsTrue(x == 5) by expanding arguments
+                    ExpandIfSingleTruthCheckingMethod(cm.Method, ref arguments);
 
-                    // This might happen with for example Assert.Fail("some reason")
-                    if (interestingConsumedValues.Count == 0)
+                    // We're only interested in arguments that represent expectations!
+                    var interestingArguments = arguments.Where(a => IsPerhapsExpectation(a.Purpose)).ToList();
+
+                    // This might happen with for example Assert.Fail("some reason").
+                    if (interestingArguments.Count == 0)
                         continue;
 
-                    // See if there is at least one locally produced value among the surviving
-                    // consumed values.
-                    var hasAtLeastOneLocallyProducedExpectation =
-                        interestingConsumedValues.Any(v => IsLocallyProduced(tracker, valueGraph, v));
+                    // Add in the "forbidden producer", if any, for each argument. A forbidden producer is an 
+                    // instruction that generates a value externally, such as a call.
+                    interestingArguments = interestingArguments.Select(
+                            a => { a.ForbiddenProducer = FirstForbiddenProducer(valueGraph, a.ConsumedValue); return a; }).ToList();
 
-                    if (hasAtLeastOneLocallyProducedExpectation) 
+                    // If there is at least one locally produced argument, the rule doesn't apply.
+                    if (interestingArguments.Any(IsLocallyProduced))
                         continue;
-                    
-                    // Generate a violation!
-                    yield return new Violation(this, testCase);
-                    break; // currently only one violation per test case!
+
+                    if (interestingArguments.All(a => a.Purpose == ParameterPurpose.ExpectedOrActual))
+                    {
+                        // Since we don't know exactly which parameter that represents the expectation, we
+                        // just generate a single violation.
+                        yield return new Violation(this, testCase, interestingArguments[0].ConsumedValue.Consumer,
+                            CreateViolationMessageForUncertainCase(interestingArguments[0]));
+                        continue;
+                    }
+
+                    foreach (var a in interestingArguments.Where(IsExternallyProduced))
+                    {
+                        // Generate a violation at the location of the forbidden producer!
+                        yield return new Violation(this, testCase, a.ForbiddenProducer, CreateViolationMessage(a));
+                    }
                 }
             }
 
             yield break;
         }
 
-        private static void ExpandIfSingleTruthCheckingMethod(MethodReference method, ref IList<MethodValueTracker.Value> consumedValues,
-            ref IList<ParameterPurpose> parameterPurposes)
+        private string CreateViolationMessageForUncertainCase(ArgumentDetails a)
+        {
+            return string.Format("the expected value used by {0} should be produced locally", a.Method.Name);
+        }
+
+        private string CreateViolationMessage(ArgumentDetails a)
+        {
+            var sp = a.ConsumedValue.Consumer.FindSequencePoint();
+            var lineInfo = sp == null ? "" : string.Format(" on line {0}", sp.StartLine);
+            return string.Format(
+                    "external production of (possibly) expected value (argument {0} of {1}{2})",
+                    a.Index + 1, a.Method.Name, lineInfo);
+        }
+
+        private static void ExpandIfSingleTruthCheckingMethod(MethodReference method, ref List<ArgumentDetails> arguments)
         {
             IList<MethodValueTracker.Value> binaryComparisonOperands;
-            if (IsSingleTruthCheckingMethod(method, parameterPurposes) &&
-                IsProducedByBinaryComparison(consumedValues[0], out binaryComparisonOperands))
+            if (IsSingleTruthCheckingMethod(method, arguments) &&
+                IsProducedByBinaryComparison(arguments[0].ConsumedValue, out binaryComparisonOperands))
             {
-                // "Expand" the parameter purposes and consumed values to represent the
-                // values that were compared using a binary comparison.
-                consumedValues = binaryComparisonOperands;
-                parameterPurposes = binaryComparisonOperands.Select(x => ParameterPurpose.ExpectedOrActual).ToList();
+                // "Expand" to arguments that represent the values that were compared using a binary comparison.
+                var index = arguments[0].Index;
+                arguments = binaryComparisonOperands.Select(
+                        v => new ArgumentDetails { ConsumedValue = v, Purpose = ParameterPurpose.ExpectedOrActual, Index = index, Method = method }).ToList();
             }
         }
 
@@ -147,11 +175,11 @@ namespace TestNess.Lib.Rule
             return BinaryComparisonOpCodes.Contains(i.OpCode);
         }
 
-        private static bool IsSingleTruthCheckingMethod(MethodReference method, IList<ParameterPurpose> parameterPurposes)
+        private static bool IsSingleTruthCheckingMethod(MethodReference method, List<ArgumentDetails> arguments)
         {
             var reduced = method.ReduceToShortestOverload();
             return reduced.Parameters.Count == 1 && method.Parameters[0].ParameterType.FullName == "System.Boolean" &&
-                   parameterPurposes[0] == ParameterPurpose.Actual;
+                   arguments[0].Purpose == ParameterPurpose.Actual;
         }
 
         private static bool IsPerhapsExpectation(ParameterPurpose parameterType)
@@ -159,10 +187,9 @@ namespace TestNess.Lib.Rule
             return parameterType == ParameterPurpose.Expected || parameterType == ParameterPurpose.ExpectedOrActual;
         }
 
-        private bool IsLocallyProduced(MethodValueTracker tracker, Graph<MethodValueTracker.Value> valueGraph, MethodValueTracker.Value v)
+        private Instruction FirstForbiddenProducer(Graph<MethodValueTracker.Value> valueGraph, MethodValueTracker.Value v)
         {
-            var hasForbiddenProducer = valueGraph.Walk(v).Any(HasForbiddenProducer);
-            return !hasForbiddenProducer;
+            return valueGraph.Walk(v).Where(HasForbiddenProducer).Select(value => value.Producer).FirstOrDefault();
         }
 
         private bool HasForbiddenProducer(MethodValueTracker.Value value)
@@ -189,7 +216,7 @@ namespace TestNess.Lib.Rule
                 return false;
             return true;
         }
-        
+
         private static bool IsDataConversionCall(MethodReference method)
         {
             return "System.Convert".Equals(method.DeclaringType.FullName);
@@ -198,6 +225,18 @@ namespace TestNess.Lib.Rule
         public override string ToString()
         {
             return "an assert expectation should be locally produced";
+        }
+
+        private static readonly Func<ArgumentDetails, bool> IsLocallyProduced = a => a.ForbiddenProducer == null;
+        private static readonly Func<ArgumentDetails, bool> IsExternallyProduced = a => a.ForbiddenProducer != null;
+        private class ArgumentDetails
+        {
+            internal ParameterPurpose Purpose;
+            internal int Index;
+            internal Instruction ForbiddenProducer;
+            internal MethodValueTracker.Value ConsumedValue;
+            internal MethodReference Method;
+
         }
     }
 }
