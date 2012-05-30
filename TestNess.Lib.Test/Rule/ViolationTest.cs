@@ -34,7 +34,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationExposesRule()
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             var rule = new SomeRule();
 
             var violation = new Violation(rule, tc);
@@ -45,7 +45,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationExposesTestCase()
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
 
             var violation = new Violation(new SomeRule(), tc);
 

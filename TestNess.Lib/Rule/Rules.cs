@@ -34,10 +34,11 @@ namespace TestNess.Lib.Rule
     /// and creates all rules it can find. Only public rules that implement the <see cref="IRule"/> interface
     /// are considered.
     /// </summary>
-    public class Rules
+    public class Rules : IEnumerable<IRule>
     {
-        public ICollection<IRule> AllRules { get; private set; }
-
+        //public ICollection<IRule> AllRules { get; private set; }
+        private ICollection<IRule> _allRules;
+ 
         /// <summary>
         /// Creates a new rules repository.
         /// </summary>
@@ -46,7 +47,7 @@ namespace TestNess.Lib.Rule
         {
             if (assemblies.Length == 0)
                 throw new ArgumentException("At least one assembly is required!");
-            AllRules = new ReadOnlyCollection<IRule>(DiscoverRules(assemblies));
+            _allRules = new ReadOnlyCollection<IRule>(DiscoverRules(assemblies));
         }
 
         private IList<IRule> DiscoverRules(IEnumerable<Assembly> assemblies)
@@ -81,11 +82,21 @@ namespace TestNess.Lib.Rule
         {
             var pattern = "^" + Regex.Escape(name) + "(Rule)?$";
             var regex = new Regex(pattern);
-            var cands = AllRules.Where(r => regex.IsMatch(r.GetType().Name));
+            var cands = _allRules.Where(r => regex.IsMatch(r.GetType().Name));
             var ret = cands.FirstOrDefault();
             if (ret == null)
                 throw new NoSuchRuleException(name);
             return ret;
+        }
+
+        public IEnumerator<IRule> GetEnumerator()
+        {
+            return _allRules.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

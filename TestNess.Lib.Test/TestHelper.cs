@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Mono.Cecil;
 using TestNess.Target;
@@ -35,7 +36,7 @@ namespace TestNess.Lib.Test
     /// </summary>
     public static class TestHelper
     {
-        private static readonly IDictionary<Assembly, TestCaseRepository> Repositories = new Dictionary<Assembly, TestCaseRepository>();
+        private static readonly IDictionary<Assembly, TestCases> Repositories = new Dictionary<Assembly, TestCases>();
 
         /// <summary>
         /// Returns the assembly that unit tests use for testing the evaluation capabilities of
@@ -50,14 +51,25 @@ namespace TestNess.Lib.Test
         public static TestCase FindTestCase(this Type type, string methodSignature)
         {
             var assembly = type.Assembly;
-            TestCaseRepository repository;
+            TestCases repository;
             if (!Repositories.TryGetValue(assembly, out repository))
             {
-                repository = TestCaseRepository.FromAssembly(assembly);
+                repository = TestCases.FromAssembly(assembly);
                 Repositories.Add(assembly, repository);
             }
             var fullName = type.FullName + "::" + methodSignature;
             return repository.GetTestCaseByName(fullName);
+        }
+
+        public static TestCase FindTestCase<T>(Expression<Action<T>> expr)
+        {
+            var call = expr.Body as MethodCallExpression;
+            if (call == null)
+                throw new InvalidOperationException("A method call is necessary.");
+            var signature = call.Method.ToString();
+            // strip the return type
+            signature = signature.Substring(signature.IndexOf(' ') + 1);
+            return typeof(T).FindTestCase(signature);
         }
 
         /// <summary>
@@ -90,6 +102,16 @@ namespace TestNess.Lib.Test
         public static ICollection AsNonGeneric<T>(this ICollection<T> collection)
         {
             return new List<T>(collection);
+        }
+
+        public static TestCase GetTestCaseByName(this TestCases repo, string name)
+        {
+            return repo.FirstOrDefault(tc => name.Equals(tc.Name));
+        }
+
+        public static ICollection<TestCase> GetAllTestCases(this TestCases repo)
+        {
+            return repo.ToList();
         }
     }
 }

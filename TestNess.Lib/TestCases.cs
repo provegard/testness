@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,35 +37,44 @@ namespace TestNess.Lib
     /// test methods identified in the assembly. The ID/name of a test case is the full name (excluding return type) 
     /// of the test method that contains the test case.
     /// </summary>
-    public class TestCaseRepository
+    public class TestCases : IEnumerable<TestCase>
     {
         private readonly AssemblyDefinition _assembly;
-        private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>();
+        //private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>();
         private readonly ITestFramework _framework;
+        private readonly IEnumerable<TestCase> _enumerable;
 
         /// <summary>
         /// Creates a new test case repository that fetches test cases from the given assembly.
         /// </summary>
         /// <param name="assembly">The assembly that contains test cases (in the form of test methods).</param>
-        private TestCaseRepository(AssemblyDefinition assembly)
+        private TestCases(AssemblyDefinition assembly)
         {
             _assembly = assembly;
             _framework = TestFrameworks.Instance;
-            BuildTestMethodDictionary();
+            //BuildTestMethodDictionary();
+            _enumerable = CreateEnumerable();
         }
 
-        private void BuildTestMethodDictionary()
+        private IEnumerable<TestCase> CreateEnumerable()
         {
-            var methods = from type in _assembly.MainModule.Types
-                          from method in type.Methods
-                          where _framework.IsTestMethod(method)
-                          select method;
-
-            foreach (var method in methods)
-            {
-                _testCases.Add(TestCase.GetTestCaseName(method), new TestCase(method));
-            }
+            return
+                _assembly.MainModule.Types.SelectMany(type => type.Methods).Where(_framework.IsTestMethod).Select(
+                    m => new TestCase(m));
         }
+
+        //private void BuildTestMethodDictionary()
+        //{
+        //    var methods = from type in _assembly.MainModule.Types
+        //                  from method in type.Methods
+        //                  where _framework.IsTestMethod(method)
+        //                  select method;
+
+        //    foreach (var method in methods)
+        //    {
+        //        _testCases.Add(TestCase.GetTestCaseName(method), new TestCase(method));
+        //    }
+        //}
 
         /// <summary>
         /// Fetches a test case by its name. The name (ID) of a test case is the full name of the test method that
@@ -78,25 +88,25 @@ namespace TestNess.Lib
         /// <returns>A test case instance.</returns>
         /// <exception cref="NotATestMethodException">If the method name does not refer to a recognized test method,
         /// or if there is no method at all by that name.</exception>
-        public TestCase GetTestCaseByName(string testMethodName)
-        {
-            TestCase testCase;
-            if (!_testCases.TryGetValue(testMethodName, out testCase))
-            {
-                throw new NotATestMethodException(testMethodName);
-            }
-            return testCase;
-        }
+        //public TestCase GetTestCaseByName(string testMethodName)
+        //{
+        //    TestCase testCase;
+        //    if (!_testCases.TryGetValue(testMethodName, out testCase))
+        //    {
+        //        throw new NotATestMethodException(testMethodName);
+        //    }
+        //    return testCase;
+        //}
 
         /// <summary>
         /// Fetches all test cases found in the current assembly. If there are no test cases in the assembly, an
         /// empty collection is returned.
         /// </summary>
         /// <returns>A collection of test cases.</returns>
-        public ICollection<TestCase> GetAllTestCases()
-        {
-            return _testCases.Values;
-        }
+        //public ICollection<TestCase> GetAllTestCases()
+        //{
+        //    return _testCases.Values;
+        //}
 
         /// <summary>
         /// Creates a test case repository from an assembly. The assembly is actually loaded from the
@@ -104,7 +114,7 @@ namespace TestNess.Lib
         /// </summary>
         /// <param name="assembly">The assembly to create a test case repository from.</param>
         /// <returns>A test case repository that fetches test cases from the given assembly.</returns>
-        public static TestCaseRepository FromAssembly(Assembly assembly)
+        public static TestCases FromAssembly(Assembly assembly)
         {
             if (assembly.GetModules().Length > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
@@ -122,7 +132,7 @@ namespace TestNess.Lib
         /// </summary>
         /// <param name="fileName">The path to the assembly file.</param>
         /// <returns>A test case repository that fetches test cases from the loaded assembly.</returns>
-        public static TestCaseRepository LoadFromFile(string fileName)
+        public static TestCases LoadFromFile(string fileName)
         {
             var parameters = new ReaderParameters
             {
@@ -142,7 +152,22 @@ namespace TestNess.Lib
             if (assemblyDef.Modules.Count > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
 
-            return new TestCaseRepository(assemblyDef);
+            return new TestCases(assemblyDef);
+        }
+
+        //public AssemblyDefinition Assembly
+        //{
+        //    get { return _assembly; }
+        //}
+
+        public IEnumerator<TestCase> GetEnumerator()
+        {
+            return _enumerable.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

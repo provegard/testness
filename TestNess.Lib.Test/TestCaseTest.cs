@@ -36,7 +36,7 @@ namespace TestNess.Lib.Test
         [SetUp]
         public void FindFirstTestCase()
         {
-            _testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            _testCase = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
         }
 
         [TestCase]
@@ -80,14 +80,14 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsAreNotEqual()
         {
-            var testCase2 = typeof(IntegerCalculatorTest).FindTestCase("TestSubtractBasic()");
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestSubtractBasic());
             Assert.AreNotEqual(_testCase, testCase2);
         }
 
         [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsHaveDifferentHashCode()
         {
-            var testCase2 = typeof(IntegerCalculatorTest).FindTestCase("TestSubtractBasic()");
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestSubtractBasic());
             Assert.AreNotEqual(_testCase.GetHashCode(), testCase2.GetHashCode());
         }
 
@@ -123,7 +123,7 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatTestCaseExposesAllCallsToSingleAssertingMethod()
         {
-            var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
+            var testCase = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddTwoAsserts());
             var assertMethods = testCase.GetCalledAssertingMethods();
             Assert.AreEqual(2, assertMethods.Count);
         }

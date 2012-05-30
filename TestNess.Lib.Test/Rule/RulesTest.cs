@@ -43,7 +43,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var rules = new Rules(typeof(IRule).Assembly);
 
-            var foundRules = rules.AllRules;
+            var foundRules = rules; //.AllRules;
 
             // Rules are not singleton, so find by type...
             var soughtRule = foundRules.Where(r => r.GetType() == typeof(LimitAssertsPerTestCaseRule));

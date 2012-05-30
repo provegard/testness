@@ -23,7 +23,11 @@
 using System;
 using System.Reflection;
 using System.IO;
+using System.Text;
+using System.Xml;
 using TestNess.Lib;
+using TestNess.Lib.Analysis;
+using TestNess.Lib.Reporting;
 using TestNess.Lib.Rule;
 
 namespace TestNess.Main
@@ -75,7 +79,7 @@ namespace TestNess.Main
                 PrintUsage();
                 throw new ExitException(1);
             }
-            var repo = TestCaseRepository.LoadFromFile(_arguments.AssemblyFileName);
+            var repo = TestCases.LoadFromFile(_arguments.AssemblyFileName);
             var rules = new Rules(typeof (IRule).Assembly);
             if (_arguments.HasConfigurationFileName)
             {
@@ -96,7 +100,7 @@ namespace TestNess.Main
             }
         }
 
-        private void AnalyzeTestCases(TestCaseRepository repo, Rules rules)
+        private void AnalyzeTestCases(TestCases repo, Rules rules)
         {
             var analyzer = new Analyzer(repo, rules);
             analyzer.Analyze();
@@ -109,7 +113,15 @@ namespace TestNess.Main
 
             Console.WriteLine();
 
-            Console.WriteLine("Total score = {0}", analyzer.Score);
+            var reporter = new Reporter(analyzer.AnalysisTree, new ViolationScorer());
+            var elem = reporter.Generate();
+
+            var writer = new XmlTextWriter("c:\\temp\\xunit-test-output.xml", Encoding.UTF8);
+            writer.Formatting = Formatting.Indented;
+            writer.WriteStartDocument(true);
+            elem.WriteTo(writer);
+
+            //Console.WriteLine("Total score = {0}", analyzer.Score);
         }
 
         private static void PrintUsage()

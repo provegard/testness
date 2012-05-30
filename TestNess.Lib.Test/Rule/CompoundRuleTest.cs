@@ -48,7 +48,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatCompoundRuleReturnsViolationsFromAllSubRules()
         {
-            var tc = typeof(IntegerCalculatorConditionalTest).FindTestCase("TestAddWithConditionalAndMultiAssert()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorConditionalTest>(t => t.TestAddWithConditionalAndMultiAssert());
             var rule = new CompoundRule();
             rule.Rules.Add(new LimitAssertsPerTestCaseRule());
             rule.Rules.Add(new NonConditionalTestCaseRule());

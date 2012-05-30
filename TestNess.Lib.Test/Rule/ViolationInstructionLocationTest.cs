@@ -36,9 +36,9 @@ namespace TestNess.Lib.Test.Rule
         [TestFixtureSetUp]
         public void GivenAViolationCreatedFromAnInstruction()
         {
-            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAdd()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAdd());
             _violation = new Violation(new ViolationTest.SomeRule(), tc, 
-                tc.TestMethod.Body.Instructions.Where(i => i.OpCode != OpCodes.Nop && i.SequencePoint != null).First());
+                tc.TestMethod.Body.Instructions.First(i => i.OpCode != OpCodes.Nop && i.SequencePoint != null));
         }
 
         [TestCase]

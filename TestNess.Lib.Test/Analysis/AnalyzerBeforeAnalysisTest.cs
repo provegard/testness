@@ -20,64 +20,28 @@
  * THE SOFTWARE.
  */
 
-using System;
+using System.Linq;
 using NUnit.Framework;
+using TestNess.Lib.Analysis;
 using TestNess.Lib.Rule;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Test.Analysis
 {
     [TestFixture]
-    public class AnalyzerTest
+    public class AnalyzerBeforeAnalysisTest
     {
         private Analyzer _analyzer;
 
         [SetUp]
-        public void WithAnalyzer()
+        public void GivenAnAnalyzerBeforeAnalysis()
         {
-            var repo = TestCaseRepository.FromAssembly(TestHelper.GetTargetAssembly());
+            var repo = TestCases.FromAssembly(TestHelper.GetTargetAssembly());
             _analyzer = new Analyzer(repo, new Rules(typeof(IRule).Assembly));
         }
-
-        [TestCase]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void TestThatRuleCollectionIsReadOnly()
-        {
-            _analyzer.Rules.Clear();
-        }
-
-        [TestCase]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void TestThatViolationCollectionIsReadOnly()
-        {
-            _analyzer.Violations.Clear();
-        }
-        
-        [TestCase]
-        public void TestThatScoreIsInitiallyNegative()
-        {
-            Assert.IsTrue(_analyzer.Score < 0);
-        }
-
         [TestCase]
         public void TestThatViolationListIsInitiallyEmpty()
         {
-            Assert.AreEqual(0, _analyzer.Violations.Count);
-        }
-
-        [TestCase]
-        public void TestThatAnalyzingSetsScore()
-        {
-            _analyzer.Analyze();
-
-            Assert.That(_analyzer.Score > 0);
-        }
-
-        [TestCase]
-        public void TestThatAnalyzingFillsViolations()
-        {
-            _analyzer.Analyze();
-
-            Assert.AreNotEqual(0, _analyzer.Violations.Count);
+            Assert.AreEqual(0, _analyzer.Violations.Count());
         }
     }
 }

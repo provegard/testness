@@ -65,7 +65,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationContainsLocationOfExternalSource()
         {
-            var tc = typeof (IntegerCalculatorLocationTest).FindTestCase("TestAddWithExternallyCalculatedExpectation()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
             // The source of the violation is the second call
             Assert.AreEqual(43, violation.Location.StartLine);
@@ -74,7 +74,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationMessageRefersToConsumerIfPossible()
         {
-            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithExternallyCalculatedExpectation()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
             Assert.AreEqual("external production of (possibly) expected value (argument 1 of AreEqual on line 45)", violation.Message);
         }
@@ -82,7 +82,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationForUncertainCaseContainsLocationOfValueUsage()
         {
-            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithManuallyComparedExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
             // The values are used one line 54, by the assert call.
             Assert.AreEqual(54, violation.Location.StartLine);
@@ -91,7 +91,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationMessageForUncertainCaseRefersToValueUser()
         {
-            var tc = typeof(IntegerCalculatorLocationTest).FindTestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithManuallyComparedExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
             Assert.AreEqual("the expected value used by IsTrue should be produced locally", violation.Message);
         }

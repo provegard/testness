@@ -67,7 +67,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
         {
-            var tc = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddTwoAsserts());
             var rule = new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 2 };
 
             Assert.AreEqual(0, rule.Apply(tc).Count());

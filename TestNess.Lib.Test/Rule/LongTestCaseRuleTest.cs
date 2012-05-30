@@ -75,7 +75,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
         {
-            var tc = typeof(IntegerCalculatorMethodLengthTest).FindTestCase("ThenWeShouldBeAbleToAdd_Long()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorMethodLengthTest>(t => t.ThenWeShouldBeAbleToAdd_Long());
             var rule = new LongTestCaseRule { MaxNumberOfLinesOfCode = 20 };
 
             Assert.AreEqual(0, rule.Apply(tc).Count());
