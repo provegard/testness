@@ -82,7 +82,7 @@ namespace GraphBuilder
                     continue;
                 visited[u] = true;
                 yield return u;
-                var unvisited = from h in HeadsFor(u) where !visited[h] select h;
+                var unvisited = HeadsFor(u).Where(h => !visited[h]);
                 // Add in reverse order to maintain head order when visiting
                 foreach (var neighbor in unvisited.Reverse())
                 {
