@@ -15,11 +15,6 @@ namespace TestNess.Lib.Reporting.XUnit
 {
     public class XUnitReporter : XmlReporter
     {
-        public XUnitReporter(XmlWriter writer)
-            : base(writer)
-        {
-        }
-
         public override XDocument GenerateXml(AnalysisResults results)
         {
             var gen = new XUnitXmlGenerator(results);

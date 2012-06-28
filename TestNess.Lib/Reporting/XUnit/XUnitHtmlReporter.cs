@@ -11,22 +11,17 @@ namespace TestNess.Lib.Reporting.XUnit
 {
     public class XUnitHtmlReporter : IReporter
     {
-        private readonly XmlWriter _writer;
-
-        public XUnitHtmlReporter(XmlWriter writer)
+        public void GenerateReport(TextWriter writer, AnalysisResults results)
         {
-            _writer = writer;
-        }
-
-        public void GenerateReport(AnalysisResults results)
-        {
-            var xmlReporter = new XUnitReporter(null);
+            var xmlReporter = new XUnitReporter();
             var xml = xmlReporter.GenerateXml(results);
 
             var transform = new XslCompiledTransform();
             transform.Load(new XmlTextReader(new StringReader(Properties.Resources.XUnitHtml_xslt)));
 
-            transform.Transform(xml.CreateNavigator(), null, _writer);
+            var xwriter = XmlWriter.Create(writer);
+            transform.Transform(xml.CreateNavigator(), null, xwriter);
+            xwriter.Flush();
         }
     }
 }

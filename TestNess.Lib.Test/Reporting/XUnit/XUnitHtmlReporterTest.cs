@@ -25,7 +25,6 @@ namespace TestNess.Lib.Test.Reporting.XUnit
         [SetUp]
         public void GivenAReportBasedOnAnalysisOfOneTestCase()
         {
-            //TODO: Make this simpler!!
             var tc1 = TestHelper.FindTestCase<IntegerCalculatorTest>(x => x.TestAddTwoAsserts());
             var rule = new LimitAssertsPerTestCaseRule();
             var scorer = Substitute.For<IViolationScorer>();
@@ -33,9 +32,9 @@ namespace TestNess.Lib.Test.Reporting.XUnit
 
             var results = AnalysisResults.Create(new[] { tc1 }, new[] { rule }, scorer);
             var sb = new StringBuilder();
-            var writer = new XmlTextWriter(new StringWriter(sb));
-            var report = new XUnitHtmlReporter(writer);
-            report.GenerateReport(results);
+            var writer = new StringWriter(sb);
+            var report = new XUnitHtmlReporter();
+            report.GenerateReport(writer, results);
 
             _html = sb.ToString();
         }

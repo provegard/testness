@@ -63,15 +63,20 @@ namespace TestNess.Main
             }
             var repo = TestCases.LoadFromFile(_arguments.AssemblyFileName);
             var rules = new Rules(typeof (IRule).Assembly);
-            if (_arguments.HasConfigurationFileName)
-            {
-                var config = ReadFileContents(_arguments.ConfigurationFileName);
-                var configurator = new RuleConfigurator();
-                configurator.ReadConfiguration(config);
-                configurator.ApplyConfiguration(rules);
-            }
+            MaybeConfigureRules(rules);
 
             AnalyzeTestCases(repo, rules, new ViolationScorer());
+        }
+
+        private void MaybeConfigureRules(Rules rules)
+        {
+            if (!_arguments.HasConfigurationFileName) 
+                return;
+
+            var config = ReadFileContents(_arguments.ConfigurationFileName);
+            var configurator = new RuleConfigurator();
+            configurator.ReadConfiguration(config);
+            configurator.ApplyConfiguration(rules);
         }
 
         private string ReadFileContents(string file)
@@ -85,28 +90,35 @@ namespace TestNess.Main
         private void AnalyzeTestCases(IEnumerable<TestCase> repo, IEnumerable<IRule> rules, IViolationScorer scorer)
         {
             var results = AnalysisResults.Create(repo, rules, scorer);
-            new ConsoleReporter().GenerateReport(results);
+            CreateReporter(_arguments.ReporterType).GenerateReport(Console.Out, results);
+        }
 
-            //TODO: Let command-line arguments control reporting!
-            using (var writer = XmlWriter.Create(@"c:\temp\test1.html"))
+        private IReporter CreateReporter(ReporterType reporterType)
+        {
+            switch (reporterType)
             {
-                new XUnitHtmlReporter(writer).GenerateReport(results);
+                case ReporterType.Plain:
+                    return new PlainTextReporter();
+                case ReporterType.XunitXml:
+                    return new XUnitReporter();
+                case ReporterType.XunitHtml:
+                    return new XUnitHtmlReporter();
             }
-
+            throw new ArgumentException("Unknown reporter type: " + reporterType);
         }
 
         private static void PrintUsage()
         {
             var exeName = new FileInfo(Environment.GetCommandLineArgs()[0]).Name;
-            Console.WriteLine("Usage: {0} [-c <config file>] <assembly file>", exeName);
-            Console.WriteLine();
+            Console.Error.WriteLine("Usage: {0} {1}", exeName, Arguments.GenerateUsageOverview());
+            Console.Error.WriteLine();
         }
 
         private static void PrintHeader()
         {
             var assembly = Assembly.GetCallingAssembly();
-            Console.WriteLine("{0} v{1} - {2}", GetProductName(assembly), assembly.GetName().Version, GetCopyright(assembly));
-            Console.WriteLine();
+            Console.Error.WriteLine("{0} v{1} - {2}", GetProductName(assembly), assembly.GetName().Version, GetCopyright(assembly));
+            Console.Error.WriteLine();
         }
 
         private static string GetCopyright(Assembly assembly)

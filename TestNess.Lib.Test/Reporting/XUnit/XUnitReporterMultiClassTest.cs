@@ -29,12 +29,8 @@ namespace TestNess.Lib.Test.Reporting.XUnit
             var scorer = Substitute.For<IViolationScorer>();
             scorer.CalculateScore(null).ReturnsForAnyArgs(1m);
 
-            //TODO: lot of duplicated code from XUnitReporterTest
             var results = AnalysisResults.Create(new[] { tc1, tc2 }, new[] { rule }, scorer);
-            var ms = new MemoryStream();
-            var writer = XmlWriter.Create(ms);
-
-            var report = new XUnitReporter(writer);
+            var report = new XUnitReporter();
             _doc = report.GenerateXml(results);
         }
 

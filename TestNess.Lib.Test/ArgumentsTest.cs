@@ -33,34 +33,63 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatOptionIsNotMistakenForAssemblyName()
         {
-            var args = Arguments.Parse(new[] { "-c", "testness.cfg", "anassembly.dll" });
+            var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
             Assert.AreEqual("anassembly.dll", args.AssemblyFileName);
         }
 
         [TestCase]
         public void TestThatConfigFileIsReadFromOption()
         {
-            var args = Arguments.Parse(new[] { "-c", "testness.cfg", "anassembly.dll" });
+            var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
+            Assert.AreEqual("testness.cfg", args.ConfigurationFileName);
+        }
+
+        [TestCase]
+        public void TestThatConfigFileIsReadFromLongOption()
+        {
+            var args = Arguments.Parse(new[] { "/config:testness.cfg", "anassembly.dll" });
             Assert.AreEqual("testness.cfg", args.ConfigurationFileName);
         }
 
         [TestCase]
         public void TestThatPreseceOfConfigFileCanBeChecked()
         {
-            var args = Arguments.Parse(new[] { "-c", "testness.cfg", "anassembly.dll" });
+            var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
             Assert.IsTrue(args.HasConfigurationFileName);
         }
 
-        [TestCase, ExpectedException(typeof(ArgumentException))]
+        [TestCase]
         public void TestThatUnrecognizedOptionThrows()
         {
-            Arguments.Parse(new[] { "-x" }); // should throw
+            Assert.Throws<ArgumentException>(() => Arguments.Parse(new[] { "/x" }));
         }
 
-        [TestCase, ExpectedException(typeof(ArgumentException))]
-        public void TestThatMissingOptionValueThrows()
+        [TestCase]
+        public void TestThatDefaultReporterIsPlain()
         {
-            Arguments.Parse(new[] { "-c" }); // should throw
+            var args = Arguments.Parse(new string[0]);
+            Assert.AreEqual(ReporterType.Plain, args.ReporterType);
+        }
+
+        [TestCase]
+        public void TestThatPlainReporterCanBeSelectedWithArgument()
+        {
+            var args = Arguments.Parse(new[] { "/plain" });
+            Assert.AreEqual(ReporterType.Plain, args.ReporterType);
+        }
+
+        [TestCase]
+        public void TestThatXunitXmlReporterCanBeSelectedWithArgument()
+        {
+            var args = Arguments.Parse(new[] { "/xxml" });
+            Assert.AreEqual(ReporterType.XunitXml, args.ReporterType);
+        }
+
+        [TestCase]
+        public void TestThatXunitHtmlReporterCanBeSelectedWithArgument()
+        {
+            var args = Arguments.Parse(new[] { "/xhtml" });
+            Assert.AreEqual(ReporterType.XunitHtml, args.ReporterType);
         }
     }
 }

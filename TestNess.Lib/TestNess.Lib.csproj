@@ -58,7 +58,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Reporting\ConsoleReporter.cs" />
+    <Compile Include="Reporting\PlainTextReporter.cs" />
     <Compile Include="Reporting\IReporter.cs" />
     <Compile Include="Reporting\XUnit\AssemblyNode.cs" />
     <Compile Include="Reporting\XUnit\NamespaceNode.cs" />

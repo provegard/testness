@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
+using System.Text;
 
 namespace TestNess.Lib
 {
@@ -37,6 +38,8 @@ namespace TestNess.Lib
             get { return ConfigurationFileName != null; }
         }
 
+        public ReporterType ReporterType { get; private set; }
+
         private Arguments()
         {
         }
@@ -47,14 +50,39 @@ namespace TestNess.Lib
             var index = 0;
 
             // Options first
-            while (index < args.Length && args[index].StartsWith("-"))
+            while (index < args.Length && args[index].StartsWith("/"))
             {
-                var option = args[index].Substring(1);
+                var colonIdx = args[index].IndexOf(':');
+                string option, arg;
+                if (colonIdx < 0)
+                {
+                    option = args[index].Substring(1);
+                    arg = null;
+                }
+                else
+                {
+                    option = args[index].Substring(1, colonIdx - 1);
+                    arg = args[index].Substring(colonIdx + 1);
+                }
                 switch (option)
                 {
                     case "c":
-                        arguments.ConfigurationFileName = GetOptionValue("c", args, ++index);
+                    case "config":
+                        arguments.ConfigurationFileName = GetOptionValue(option, arg);
                         break;
+
+                    case "plain":
+                        arguments.ReporterType = ReporterType.Plain;
+                        break;
+
+                    case "xxml":
+                        arguments.ReporterType = ReporterType.XunitXml;
+                        break;
+
+                    case "xhtml":
+                        arguments.ReporterType = ReporterType.XunitHtml;
+                        break;
+
                     default:
                         throw new ArgumentException(string.Format("Encountered unrecognized option '{0}'.", option));
                 }
@@ -70,12 +98,29 @@ namespace TestNess.Lib
             return arguments;
         }
 
-        private static string GetOptionValue(string opt, string[] args, int index)
+        private static string GetOptionValue(string opt, string arg)
         {
-            var value = index < args.Length ? args[index] : null;
-            if (value == null)
+            if (arg == null)
                 throw new ArgumentException(string.Format("Missing value for option '{0}'.", opt));
-            return value;
+            return arg;
         }
+
+        public static string GenerateUsageOverview()
+        {
+            var sb = new StringBuilder("[/c[onfig]:<configuration file>] [reporting option] <assembly file>");
+            sb.AppendLine().AppendLine();
+            sb.AppendLine("  The following reporting options are supported:").AppendLine();
+            sb.AppendLine("    /plain   Prints a plain-text report.");
+            sb.AppendLine("    /xxml    Prints an XUnit XML report.");
+            sb.AppendLine("    /xhtml   Prints an XUnit HTML report.");
+            return sb.ToString();
+        }
+    }
+
+    public enum ReporterType
+    {
+        Plain,
+        XunitXml,
+        XunitHtml
     }
 }
