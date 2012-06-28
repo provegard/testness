@@ -33,7 +33,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Pex.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\lib\Mono.Cecil.dll</HintPath>
@@ -76,7 +75,6 @@
     <Compile Include="Rule\AbstractRuleTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />
     <Compile Include="Rule\AssertDistributionRuleTest.cs" />
-    <Compile Include="Rule\CompoundRuleTest.cs" />
     <Compile Include="MSTestTestFrameworkTest.cs" />
     <Compile Include="Rule\LocalExpectationRuleTest.cs" />
     <Compile Include="Rule\LongTestCaseRuleTest.cs" />

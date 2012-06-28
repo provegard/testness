@@ -1,3 +1,6 @@
+// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.IO;
 using System.Xml;
@@ -13,7 +16,7 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Reporting.XUnit
 {
     [TestFixture]
-    public partial class XUnitReporterMultiClassTest
+    public class XUnitReporterMultiClassTest
     {
         private XDocument _doc;
 

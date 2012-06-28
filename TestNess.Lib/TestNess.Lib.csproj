@@ -71,7 +71,6 @@
     <Compile Include="Reporting\XUnit\XUnitTreeVisitor.cs" />
     <Compile Include="Rule\LocalExpectationRule.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
-    <Compile Include="Rule\CompoundRule.cs" />
     <Compile Include="Rule\IRule.cs" />
     <Compile Include="ITestFramework.cs" />
     <Compile Include="MSTestTestFramework.cs" />

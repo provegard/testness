@@ -1,27 +1,7 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Linq;
-using Mono.Cecil.Cil;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -68,7 +48,7 @@ namespace TestNess.Lib.Test.Rule
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
             // The source of the violation is the second call
-            Assert.AreEqual(43, violation.Location.StartLine);
+            Assert.AreEqual(24, violation.Location.StartLine);
         }
 
         [TestCase]
@@ -76,7 +56,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
-            Assert.AreEqual("external production of (possibly) expected value (argument 1 of AreEqual on line 45)", violation.Message);
+            Assert.AreEqual("external production of (possibly) expected value (argument 1 of AreEqual on line 26)", violation.Message);
         }
 
         [TestCase]
@@ -84,8 +64,8 @@ namespace TestNess.Lib.Test.Rule
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithManuallyComparedExternallyCalculatedExpectation());
             var violation = new LocalExpectationRule().Apply(tc).First();
-            // The values are used one line 54, by the assert call.
-            Assert.AreEqual(54, violation.Location.StartLine);
+            // The values are used one line 35, by the assert call.
+            Assert.AreEqual(35, violation.Location.StartLine);
         }
 
         [TestCase]
