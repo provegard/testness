@@ -40,28 +40,19 @@ namespace TestNess.Lib.Test
         }
 
         [TestCase]
-        [ExpectedException(typeof(NotATestMethodException))]
         public void TestThatRetrievalByNameFromRepositoryThrowsForNonTestMethod()
         {
             var repo = CreateTestCaseRepository();
-            repo.GetTestCaseByName("TestNess.Target.IntegerCalculator::Add(System.Int32,System.Int32)"); // should throw
+            Assert.Throws<NotATestMethodException>(
+                () => repo.GetTestCaseByName("TestNess.Target.IntegerCalculator::Add(System.Int32,System.Int32)"));
         }
 
         [TestCase]
-        [ExpectedException(typeof(NotATestMethodException))]
         public void TestThatRetrievalByNameFromRepositoryThrowsForMissingMethod()
         {
             var repo = CreateTestCaseRepository();
-            repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::NoSuchMethod()"); // should throw
-        }
-
-        [TestCase]
-        public void TestThatRepositoryCachesTestCaseInstances()
-        {
-            var repo = CreateTestCaseRepository();
-            var testCase1 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
-            var testCase2 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestAddBasic()");
-            Assert.AreSame(testCase1, testCase2);
+            Assert.Throws<NotATestMethodException>(
+                () => repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::NoSuchMethod()"));
         }
 
         [TestCase]
@@ -73,15 +64,6 @@ namespace TestNess.Lib.Test
             var testCase2 = repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::TestSubtractBasic()");
             // Let's leave it at checking if at least some test cases are included
             CollectionAssert.IsSubsetOf(new List<TestCase> {testCase1, testCase2}, testCases.AsNonGeneric());
-        }
-
-        [TestCase]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void TestThatCollectionOfAllTestCasesIsImmutable()
-        {
-            var repo = CreateTestCaseRepository();
-            var testCases = repo.GetAllTestCases();
-            testCases.Clear(); // should throw
         }
 
         [TestCase]

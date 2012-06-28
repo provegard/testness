@@ -106,7 +106,10 @@ namespace TestNess.Lib.Test
 
         public static TestCase GetTestCaseByName(this TestCases repo, string name)
         {
-            return repo.FirstOrDefault(tc => name.Equals(tc.Name));
+            var result = repo.FirstOrDefault(tc => name.Equals(tc.Name));
+            if (result == null)
+                throw new NotATestMethodException(name);
+            return result;
         }
 
         public static ICollection<TestCase> GetAllTestCases(this TestCases repo)

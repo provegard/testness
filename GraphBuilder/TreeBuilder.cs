@@ -30,6 +30,11 @@ namespace GraphBuilder
     {
         private readonly IList<T> _headless = new List<T>();
 
+        public static TreeBuilder<T> Create()
+        {
+            return new TreeBuilder<T>();
+        }
+
         public Grp<T1> Group<T1>() where T1 : T
         {
             return new Grp<T1>(this);
@@ -45,9 +50,10 @@ namespace GraphBuilder
                 _builder = builder;
             }
 
-            public void As<T2>(Func<T1, T2> func) where T2 : T
+            public TreeBuilder<T> As<T2>(Func<T1, T2> func) where T2 : T
             {
                 _builder.AddGrouping(typeof (T1), typeof (T2), func, _condition);
+                return _builder;
             }
 
             public Grp<T1> When(Func<T1, bool> condition)

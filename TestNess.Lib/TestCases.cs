@@ -40,7 +40,6 @@ namespace TestNess.Lib
     public class TestCases : IEnumerable<TestCase>
     {
         private readonly AssemblyDefinition _assembly;
-        //private readonly IDictionary<string, TestCase> _testCases = new Dictionary<string, TestCase>();
         private readonly ITestFramework _framework;
         private readonly IEnumerable<TestCase> _enumerable;
 
@@ -62,52 +61,7 @@ namespace TestNess.Lib
                 _assembly.MainModule.Types.SelectMany(type => type.Methods).Where(_framework.IsTestMethod).Select(
                     m => new TestCase(m));
         }
-
-        //private void BuildTestMethodDictionary()
-        //{
-        //    var methods = from type in _assembly.MainModule.Types
-        //                  from method in type.Methods
-        //                  where _framework.IsTestMethod(method)
-        //                  select method;
-
-        //    foreach (var method in methods)
-        //    {
-        //        _testCases.Add(TestCase.GetTestCaseName(method), new TestCase(method));
-        //    }
-        //}
-
-        /// <summary>
-        /// Fetches a test case by its name. The name (ID) of a test case is the full name of the test method that
-        /// contains the test case, minus the return type.
-        /// <example>
-        /// var testCase = repository.GetTestCaseByName("Some.Assembly::TestFoo()");
-        /// </example>
-        /// </summary>
-        /// <param name="testMethodName">The full name (excluding return type) of the test method that contains
-        /// the test case.</param>
-        /// <returns>A test case instance.</returns>
-        /// <exception cref="NotATestMethodException">If the method name does not refer to a recognized test method,
-        /// or if there is no method at all by that name.</exception>
-        //public TestCase GetTestCaseByName(string testMethodName)
-        //{
-        //    TestCase testCase;
-        //    if (!_testCases.TryGetValue(testMethodName, out testCase))
-        //    {
-        //        throw new NotATestMethodException(testMethodName);
-        //    }
-        //    return testCase;
-        //}
-
-        /// <summary>
-        /// Fetches all test cases found in the current assembly. If there are no test cases in the assembly, an
-        /// empty collection is returned.
-        /// </summary>
-        /// <returns>A collection of test cases.</returns>
-        //public ICollection<TestCase> GetAllTestCases()
-        //{
-        //    return _testCases.Values;
-        //}
-
+        
         /// <summary>
         /// Creates a test case repository from an assembly. The assembly is actually loaded from the
         /// file pointed out by the code base of the assembly.

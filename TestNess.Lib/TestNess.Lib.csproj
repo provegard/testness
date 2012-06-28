@@ -46,14 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\AnalysisTreeVisitor.cs" />
+    <Compile Include="Analysis\AnalysisResults.cs" />
     <Compile Include="Analysis\IViolationScorer.cs" />
-    <Compile Include="Analysis\Node\AnalysisNode.cs" />
-    <Compile Include="Analysis\Analyzer.cs" />
-    <Compile Include="Analysis\Node\AssemblyNode.cs" />
-    <Compile Include="Analysis\Node\TypeNode.cs" />
-    <Compile Include="Analysis\Node\NamespaceNode.cs" />
-    <Compile Include="Analysis\Node\TestCaseNode.cs" />
+    <Compile Include="Analysis\TestCaseRuleApplication.cs" />
     <Compile Include="Analysis\ViolationScorer.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
@@ -63,7 +58,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Reporting\Reporter.cs" />
+    <Compile Include="Reporting\ConsoleReporter.cs" />
+    <Compile Include="Reporting\IReporter.cs" />
+    <Compile Include="Reporting\XUnit\AssemblyNode.cs" />
+    <Compile Include="Reporting\XUnit\NamespaceNode.cs" />
+    <Compile Include="Reporting\XUnit\TestCaseNode.cs" />
+    <Compile Include="Reporting\XUnit\TypeNode.cs" />
+    <Compile Include="Reporting\XmlReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitHtmlReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitNode.cs" />
+    <Compile Include="Reporting\XUnit\XUnitTreeVisitor.cs" />
     <Compile Include="Rule\LocalExpectationRule.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
     <Compile Include="Rule\CompoundRule.cs" />
@@ -95,10 +100,12 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <None Include="Resources\HTML.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

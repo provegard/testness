@@ -1,16 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Mono.Cecil;
 
-namespace TestNess.Lib.Analysis.Node
+namespace TestNess.Lib.Reporting.XUnit
 {
-    public class TypeNode : AnalysisNode
+    public class TypeNode : XUnitNode
     {
-        public TypeNode(TypeDefinition type)
-        {
-            Type = type;
-        }
-
-        public TypeDefinition Type { get; private set; }
+        public TypeDefinition Type { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -23,9 +21,9 @@ namespace TestNess.Lib.Analysis.Node
             return Type.GetHashCode();
         }
 
-        public override void Accept(AnalysisTreeVisitor v)
+        public override void Accept(XUnitTreeVisitor visitor)
         {
-            v.Visit(this);
+            visitor.Visit(this);
         }
     }
 }

@@ -4,6 +4,6 @@ namespace TestNess.Lib.Analysis
 {
     public interface IViolationScorer
     {
-        int CalculateScore(Violation v);
+        decimal CalculateScore(Violation v);
     }
 }

@@ -21,13 +21,14 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
-using System.Text;
 using System.Xml;
 using TestNess.Lib;
 using TestNess.Lib.Analysis;
 using TestNess.Lib.Reporting;
+using TestNess.Lib.Reporting.XUnit;
 using TestNess.Lib.Rule;
 
 namespace TestNess.Main
@@ -89,7 +90,7 @@ namespace TestNess.Main
                 configurator.ApplyConfiguration(rules);
             }
 
-            AnalyzeTestCases(repo, rules);
+            AnalyzeTestCases(repo, rules, new ViolationScorer());
         }
 
         private string ReadFileContents(string file)
@@ -100,28 +101,17 @@ namespace TestNess.Main
             }
         }
 
-        private void AnalyzeTestCases(TestCases repo, Rules rules)
+        private void AnalyzeTestCases(IEnumerable<TestCase> repo, IEnumerable<IRule> rules, IViolationScorer scorer)
         {
-            var analyzer = new Analyzer(repo, rules);
-            analyzer.Analyze();
-            
-            Console.WriteLine("Violations:");
-            foreach (var violation in analyzer.Violations)
+            var results = AnalysisResults.Create(repo, rules, scorer);
+            new ConsoleReporter().GenerateReport(results);
+
+            //TODO: Let command-line arguments control reporting!
+            using (var writer = XmlWriter.Create(@"c:\temp\test1.html"))
             {
-                Console.WriteLine("  {0}", violation);
+                new XUnitHtmlReporter(writer).GenerateReport(results);
             }
 
-            Console.WriteLine();
-
-            var reporter = new Reporter(analyzer.AnalysisTree, new ViolationScorer());
-            var elem = reporter.Generate();
-
-            var writer = new XmlTextWriter("c:\\temp\\xunit-test-output.xml", Encoding.UTF8);
-            writer.Formatting = Formatting.Indented;
-            writer.WriteStartDocument(true);
-            elem.WriteTo(writer);
-
-            //Console.WriteLine("Total score = {0}", analyzer.Score);
         }
 
         private static void PrintUsage()

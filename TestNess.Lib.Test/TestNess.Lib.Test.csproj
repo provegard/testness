@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Pex.Framework, Version=0.94.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\lib\Mono.Cecil.dll</HintPath>
@@ -62,14 +63,17 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\AnalysisTreeVisitorTest.cs" />
-    <Compile Include="Analysis\AnalyzerAfterAnalysisTest.cs" />
+    <Compile Include="Analysis\AnalysisResultsTest.cs" />
+    <Compile Include="Analysis\TestCaseRuleApplicationProperTest.cs" />
+    <Compile Include="Analysis\TestCaseRuleApplicationScorerTest.cs" />
+    <Compile Include="Analysis\TestCaseRuleApplicationViolationTest.cs" />
     <Compile Include="ArgumentsTest.cs" />
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
-    <Compile Include="Reporting\SuccessfulTestCaseReportTest.cs" />
+    <Compile Include="Reporting\XUnit\XUnitHtmlReporterTest.cs" />
+    <Compile Include="Reporting\XUnit\XUnitReporterMultiClassTest.cs" />
+    <Compile Include="Reporting\XUnit\XUnitReporterTest.cs" />
     <Compile Include="Rule\AbstractRuleTest.cs" />
-    <Compile Include="Analysis\AnalyzerBeforeAnalysisTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />
     <Compile Include="Rule\AssertDistributionRuleTest.cs" />
     <Compile Include="Rule\CompoundRuleTest.cs" />
@@ -107,6 +111,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
