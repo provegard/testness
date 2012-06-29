@@ -83,6 +83,7 @@
     <Compile Include="Rule\RuleConfigurator.cs" />
     <Compile Include="Rule\Rules.cs" />
     <Compile Include="TestCase.cs" />
+    <Compile Include="TestCaseOrigin.cs" />
     <Compile Include="TestCases.cs" />
     <Compile Include="TestFrameworks.cs" />
     <Compile Include="Rule\Violation.cs" />

@@ -36,10 +36,10 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatToStringWithoutDebugSymbolsIncludesTypeAndMethod()
         {
-            var tm = typeof (IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
             var rule = new SomeRule();
 
-            var violation = new Violation(rule, new TestCase(tm));
+            var violation = new Violation(rule, new TestCase(tm, null));
 
             const string expected = "TestNess.Target.IntegerCalculatorTest(TestAddBasic()): violation of \"some rule\"";
             Assert.AreEqual(expected, violation.ToString());
@@ -48,9 +48,9 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatViolationExposesMessage()
         {
-            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(x => x.TestAddBasic());
             var rule = new SomeRule();
-            var violation = new Violation(rule, new TestCase(tm));
+            var violation = new Violation(rule, tc);
 
             Assert.AreEqual("violation of \"some rule\"", violation.Message);
         }
@@ -58,9 +58,9 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatMessageCanBeCustomized()
         {
-            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             var rule = new SomeRule();
-            var violation = new Violation(rule, new TestCase(tm), "a message");
+            var violation = new Violation(rule, tc, "a message");
 
             Assert.AreEqual("a message", violation.Message);
         }
@@ -68,9 +68,9 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatCustomizedMessageOccursInToString()
         {
-            var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             var rule = new SomeRule();
-            var violation = new Violation(rule, new TestCase(tm), "a message");
+            var violation = new Violation(rule, tc, "a message");
 
             StringAssert.EndsWith(": a message", violation.ToString());
         }

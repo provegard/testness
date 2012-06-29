@@ -23,16 +23,18 @@ namespace TestNess.Lib
         private readonly AssemblyDefinition _assembly;
         private readonly ITestFramework _framework;
         private readonly IEnumerable<TestCase> _enumerable;
+        private readonly string _fileName;
 
         /// <summary>
         /// Creates a new test case repository that fetches test cases from the given assembly.
         /// </summary>
         /// <param name="assembly">The assembly that contains test cases (in the form of test methods).</param>
-        private TestCases(AssemblyDefinition assembly)
+        /// <param name="fileName">The name of the file from which the assembly was loaded.</param>
+        private TestCases(AssemblyDefinition assembly, string fileName)
         {
             _assembly = assembly;
+            _fileName = fileName;
             _framework = TestFrameworks.Instance;
-            //BuildTestMethodDictionary();
             _enumerable = CreateEnumerable();
         }
 
@@ -40,7 +42,7 @@ namespace TestNess.Lib
         {
             return
                 _assembly.MainModule.Types.SelectMany(type => type.Methods).Where(_framework.IsTestMethod).Select(
-                    m => new TestCase(m));
+                    m => new TestCase(m, new TestCaseOrigin(_assembly, _fileName)));
         }
         
         /// <summary>
@@ -87,13 +89,8 @@ namespace TestNess.Lib
             if (assemblyDef.Modules.Count > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
 
-            return new TestCases(assemblyDef);
+            return new TestCases(assemblyDef, fileName);
         }
-
-        //public AssemblyDefinition Assembly
-        //{
-        //    get { return _assembly; }
-        //}
 
         public IEnumerator<TestCase> GetEnumerator()
         {

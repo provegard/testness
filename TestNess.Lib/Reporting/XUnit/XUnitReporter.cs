@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using GraphBuilder;
 using TestNess.Lib.Analysis;
@@ -58,19 +57,22 @@ namespace TestNess.Lib.Reporting.XUnit
 
             internal XElement GetRootElement()
             {
-                //TODO: some validation here
-                return _intermediate.First().Element;
+                if (_intermediate.Count != 1)
+                {
+                    throw new InvalidOperationException("There should be a single XUnit result element left.");
+                }
+                return _intermediate.Single().Element;
             }
 
             public override void Visit(AssemblyNode node)
             {
                 var now = _ar.AnalysisTime;
-                var ass = _ar.Applications.First().TestCase.TestMethod.DeclaringType.Module.Assembly;
+                var origin = _ar.Applications.First().TestCase.Origin;
 
                 base.Visit(node);
 
                 var elem = new XElement("assembly",
-                                        new XAttribute("name", ass.Name.Name),
+                                        new XAttribute("name", origin.AssemblyFileName),
                                         new XAttribute("run-date", now.ToString("yyyy-MM-dd")),
                                         new XAttribute("run-time", now.ToString("HH:mm:ss")),
                                         new XAttribute("configFile", ""),

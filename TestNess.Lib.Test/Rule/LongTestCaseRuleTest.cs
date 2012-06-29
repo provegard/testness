@@ -25,9 +25,9 @@ namespace TestNess.Lib.Test.Rule
         public void TestViolationCountForDifferentMethodsWithoutSequencePoints(string method, int expectedViolationCount)
         {
             // "Manual" test case creation to avoid PDB loading...
-            var tm = typeof (IntegerCalculatorMethodLengthTest).FindMethod(method);
+            var tc = typeof (IntegerCalculatorMethodLengthTest).FindTestCase(method);
             var rule = new LongTestCaseRule();
-            var violations = rule.Apply(new TestCase(tm));
+            var violations = rule.Apply(tc);
 
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }

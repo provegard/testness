@@ -47,14 +47,14 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatTestCasesAreEqualBasedOnTestMethod()
         {
-            var testCase2 = new TestCase(_testCase.TestMethod);
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             Assert.AreEqual(_testCase, testCase2);
         }
 
         [TestCase]
         public void TestThatTestCasesWithSameTestMethodHaveSameHashCode()
         {
-            var testCase2 = new TestCase(_testCase.TestMethod);
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             Assert.AreEqual(_testCase.GetHashCode(), testCase2.GetHashCode());
         }
 
@@ -115,6 +115,25 @@ namespace TestNess.Lib.Test
             var graph = _testCase.CallGraph;
             var result = graph.Walk().Aggregate("", (str, reference) => str + string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
             StringAssert.StartsWith("TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n", result);
+        }
+
+        [TestCase]
+        public void TestThatOriginContainsAssembly()
+        {
+            Assert.AreSame(_testCase.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
+        }
+
+        [TestCase]
+        public void TestThatOriginContainsAssemblyFileName()
+        {
+            Assert.That(_testCase.Origin.AssemblyFileName, Contains.Substring("TestNess.Target.dll").IgnoreCase);
+        }
+
+        [TestCase]
+        public void TestThatTestCaseWithUnspecifiedOriginFindsOriginAssemblyInTestMethod()
+        {
+            var tc = new TestCase(_testCase.TestMethod);
+            Assert.AreSame(tc.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
         }
     }
 }

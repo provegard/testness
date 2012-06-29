@@ -58,7 +58,7 @@ namespace TestNess.Lib.Rule
         {
             // Get the document URL from the first instruction. Source location for the method
             // definition (name, parameters, etc.) is apparently not stored in the PDB file.
-            var instruction = method.Body.Instructions.Where(i => i.SequencePoint != null).FirstOrDefault();
+            var instruction = method.Body.Instructions.FirstOrDefault(i => i.SequencePoint != null);
             if (instruction == null) return;
             var sp = instruction.SequencePoint;
             if (sp == null) return;

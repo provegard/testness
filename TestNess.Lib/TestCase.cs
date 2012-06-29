@@ -22,6 +22,7 @@ namespace TestNess.Lib
     {
         private ICollection<MethodDefinition> _assertingMethods;
         private readonly ITestFramework _framework = TestFrameworks.Instance;
+        private TestCaseOrigin _origin;
 
         /// <summary>
         /// The test method that contains this test case.
@@ -55,10 +56,28 @@ namespace TestNess.Lib
         /// Creates an instance of this class based on a method. The method is assumed to be a test method.
         /// </summary>
         /// <param name="method">The method that contains/defines the test case.</param>
-        public TestCase(MethodDefinition method)
+        /// <param name="testCaseOrigin">Contains origin information about the test case. Not
+        /// mandatory.</param>
+        public TestCase(MethodDefinition method, TestCaseOrigin testCaseOrigin = null)
         {
             TestMethod = method;
+            _origin = testCaseOrigin;
             CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
+        }
+
+        /// <summary>
+        /// Contains information about the assembly in which the test case exists.
+        /// </summary>
+        public TestCaseOrigin Origin
+        {
+            get
+            {
+                if (_origin == null)
+                {
+                    _origin = new TestCaseOrigin(TestMethod.DeclaringType.Module.Assembly, null);
+                }
+                return _origin;
+            }
         }
 
         private static IEnumerable<MethodReference> CalledMethodsFinder(MethodReference reference)

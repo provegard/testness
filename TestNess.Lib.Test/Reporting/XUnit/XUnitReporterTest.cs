@@ -50,7 +50,7 @@ namespace TestNess.Lib.Test.Reporting.XUnit
         }
 
         [TestCase("/assembly", @"^$")]
-        [TestCase("/assembly/@name", @"^TestNess\.Target$")] //TODO: this should be path
+        [TestCase("/assembly/@name", @"(?i)^.*\\TestNess\.Target\.dll$")]
         [TestCase("/assembly/@run-date", @"^\d{4}-\d{2}-\d{2}$")]
         [TestCase("/assembly/@run-time", @"^\d{2}:\d{2}:\d{2}$")]
         [TestCase("/assembly/@configFile", @"^$")] //TODO: ??
