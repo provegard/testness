@@ -16,12 +16,10 @@ using TestNess.Target;
 namespace TestNess.Lib.Test.Reporting.XUnit
 {
     [TestFixture]
-    public class XUnitReporterMultiClassTest
+    public class XUnitReporterSpecialCasesTest
     {
-        private XDocument _doc;
-
-        [SetUp]
-        public void GivenAReportBasedOnAnalysisOfTestCasesInTwoClasses()
+        [Test]
+        public void TestThatTestCasesInTwoClassesResultsInXmlWithTwoClassElements()
         {
             var tc1 = TestHelper.FindTestCase<IntegerCalculatorTest>(x => x.TestAddTwoAsserts());
             var tc2 = TestHelper.FindTestCase<IntegerCalculatorConditionalTest>(x => x.TestAddWithIf());
@@ -31,14 +29,18 @@ namespace TestNess.Lib.Test.Reporting.XUnit
 
             var results = AnalysisResults.Create(new[] { tc1, tc2 }, new[] { rule }, scorer);
             var report = new XUnitReporter();
-            _doc = report.GenerateXml(results);
+            var doc = report.GenerateXml(results);
+
+            var raw = Convert.ToInt32(doc.XPathEvaluate("count(/assembly/class)"));
+            Assert.AreEqual(2, raw);
         }
 
         [Test]
-        public void ThenTheXmlContainsTwoClassElements()
+        public void TestThatEmptyAnalysisResultsIsHandled()
         {
-            var raw = Convert.ToInt32(_doc.XPathEvaluate("count(/assembly/class)"));
-            Assert.AreEqual(2, raw);
+            var results = new AnalysisResults(new TestCaseRuleApplication[0]);
+            var reporter = new XUnitReporter();
+            Assert.Throws<ArgumentException>(() => reporter.GenerateReport(new StringWriter(), results));
         }
     }
 }

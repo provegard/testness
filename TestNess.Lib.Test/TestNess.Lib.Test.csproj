@@ -70,7 +70,7 @@
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
     <Compile Include="Reporting\XUnit\XUnitHtmlReporterTest.cs" />
-    <Compile Include="Reporting\XUnit\XUnitReporterMultiClassTest.cs" />
+    <Compile Include="Reporting\XUnit\XUnitReporterSpecialCasesTest.cs" />
     <Compile Include="Reporting\XUnit\XUnitReporterTest.cs" />
     <Compile Include="Rule\AbstractRuleTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />

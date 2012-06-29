@@ -26,8 +26,11 @@ namespace TestNess.Lib.Reporting.XUnit
 
         private Graph<XUnitNode> BuildTree(AnalysisResults results)
         {
-            //TODO: handle the empty list case!
             var leafNodes = results.Applications.Select(app => new TestCaseNode { Application = app }).ToList();
+            if (leafNodes.Count == 0)
+            {
+                throw new ArgumentException("No analysis results available - cannot generate XUnit report!");
+            }
             var ass = leafNodes.First().Application.TestCase.TestMethod.DeclaringType.Module.Assembly;
             return TreeBuilder<XUnitNode>.Create()
                 .Group<TestCaseNode>()
