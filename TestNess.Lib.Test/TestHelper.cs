@@ -1,29 +1,11 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Mono.Cecil;
 using TestNess.Target;
@@ -35,7 +17,7 @@ namespace TestNess.Lib.Test
     /// </summary>
     public static class TestHelper
     {
-        private static readonly IDictionary<Assembly, TestCaseRepository> Repositories = new Dictionary<Assembly, TestCaseRepository>();
+        private static readonly IDictionary<Assembly, TestCases> Repositories = new Dictionary<Assembly, TestCases>();
 
         /// <summary>
         /// Returns the assembly that unit tests use for testing the evaluation capabilities of
@@ -50,14 +32,25 @@ namespace TestNess.Lib.Test
         public static TestCase FindTestCase(this Type type, string methodSignature)
         {
             var assembly = type.Assembly;
-            TestCaseRepository repository;
+            TestCases repository;
             if (!Repositories.TryGetValue(assembly, out repository))
             {
-                repository = TestCaseRepository.FromAssembly(assembly);
+                repository = TestCases.FromAssembly(assembly);
                 Repositories.Add(assembly, repository);
             }
             var fullName = type.FullName + "::" + methodSignature;
             return repository.GetTestCaseByName(fullName);
+        }
+
+        public static TestCase FindTestCase<T>(Expression<Action<T>> expr)
+        {
+            var call = expr.Body as MethodCallExpression;
+            if (call == null)
+                throw new InvalidOperationException("A method call is necessary.");
+            var signature = call.Method.ToString();
+            // strip the return type
+            signature = signature.Substring(signature.IndexOf(' ') + 1);
+            return typeof(T).FindTestCase(signature);
         }
 
         /// <summary>
@@ -90,6 +83,19 @@ namespace TestNess.Lib.Test
         public static ICollection AsNonGeneric<T>(this ICollection<T> collection)
         {
             return new List<T>(collection);
+        }
+
+        public static TestCase GetTestCaseByName(this TestCases repo, string name)
+        {
+            var result = repo.FirstOrDefault(tc => name.Equals(tc.Name));
+            if (result == null)
+                throw new NotATestMethodException(name);
+            return result;
+        }
+
+        public static ICollection<TestCase> GetAllTestCases(this TestCases repo)
+        {
+            return repo.ToList();
         }
     }
 }

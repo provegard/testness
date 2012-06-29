@@ -48,11 +48,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphTest.cs" />
-    <Compile Include="IHasChildren.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GraphBuilderTest.cs" />
     <Compile Include="SimpleNode.cs" />
     <Compile Include="SimpleNodeTest.cs" />
+    <Compile Include="TreeBuilder\INode.cs" />
+    <Compile Include="TreeBuilder\TreeBuilderIncompleteTreeTest.cs" />
+    <Compile Include="TreeBuilder\TreeBuilderMultiStepTest.cs" />
+    <Compile Include="TreeBuilder\TreeBuilderSingleStepTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GraphBuilder\GraphBuilder.csproj">

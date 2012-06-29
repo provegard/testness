@@ -1,25 +1,6 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Linq;
 using GraphBuilder;
 using Mono.Cecil;
@@ -36,7 +17,7 @@ namespace TestNess.Lib.Test
         [SetUp]
         public void FindFirstTestCase()
         {
-            _testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddBasic()");
+            _testCase = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
         }
 
         [TestCase]
@@ -66,28 +47,28 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatTestCasesAreEqualBasedOnTestMethod()
         {
-            var testCase2 = new TestCase(_testCase.TestMethod);
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             Assert.AreEqual(_testCase, testCase2);
         }
 
         [TestCase]
         public void TestThatTestCasesWithSameTestMethodHaveSameHashCode()
         {
-            var testCase2 = new TestCase(_testCase.TestMethod);
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
             Assert.AreEqual(_testCase.GetHashCode(), testCase2.GetHashCode());
         }
 
         [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsAreNotEqual()
         {
-            var testCase2 = typeof(IntegerCalculatorTest).FindTestCase("TestSubtractBasic()");
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestSubtractBasic());
             Assert.AreNotEqual(_testCase, testCase2);
         }
 
         [TestCase]
         public void TestThatTestCasesWithDifferentTestMethodsHaveDifferentHashCode()
         {
-            var testCase2 = typeof(IntegerCalculatorTest).FindTestCase("TestSubtractBasic()");
+            var testCase2 = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestSubtractBasic());
             Assert.AreNotEqual(_testCase.GetHashCode(), testCase2.GetHashCode());
         }
 
@@ -123,7 +104,7 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatTestCaseExposesAllCallsToSingleAssertingMethod()
         {
-            var testCase = typeof(IntegerCalculatorTest).FindTestCase("TestAddTwoAsserts()");
+            var testCase = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddTwoAsserts());
             var assertMethods = testCase.GetCalledAssertingMethods();
             Assert.AreEqual(2, assertMethods.Count);
         }
@@ -134,6 +115,25 @@ namespace TestNess.Lib.Test
             var graph = _testCase.CallGraph;
             var result = graph.Walk().Aggregate("", (str, reference) => str + string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
             StringAssert.StartsWith("TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n", result);
+        }
+
+        [TestCase]
+        public void TestThatOriginContainsAssembly()
+        {
+            Assert.AreSame(_testCase.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
+        }
+
+        [TestCase]
+        public void TestThatOriginContainsAssemblyFileName()
+        {
+            Assert.That(_testCase.Origin.AssemblyFileName, Contains.Substring("TestNess.Target.dll").IgnoreCase);
+        }
+
+        [TestCase]
+        public void TestThatTestCaseWithUnspecifiedOriginFindsOriginAssemblyInTestMethod()
+        {
+            var tc = new TestCase(_testCase.TestMethod);
+            Assert.AreSame(tc.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
         }
     }
 }

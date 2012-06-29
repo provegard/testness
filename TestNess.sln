@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphBuilder", "GraphBuilde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphBuilder.Test", "GraphBuilder.Test\GraphBuilder.Test.csproj", "{F1130593-0664-480F-84E1-70D4CB02543B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graph", "Graph", "{45015DC1-F40F-4C7C-89CA-6EA33B3F7250}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4A80DC6E-EB0D-4F8C-AC2B-FC8A75F32710}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = TestNess.vsmdi
@@ -96,5 +100,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BBFF7561-3653-4DAB-B251-374B934D738F} = {45015DC1-F40F-4C7C-89CA-6EA33B3F7250}
+		{F1130593-0664-480F-84E1-70D4CB02543B} = {45015DC1-F40F-4C7C-89CA-6EA33B3F7250}
+		{00732E60-8BB4-4138-8EAF-9ACD44585FAD} = {4A80DC6E-EB0D-4F8C-AC2B-FC8A75F32710}
 	EndGlobalSection
 EndGlobal

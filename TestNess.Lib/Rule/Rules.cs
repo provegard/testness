@@ -1,25 +1,6 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,10 +15,10 @@ namespace TestNess.Lib.Rule
     /// and creates all rules it can find. Only public rules that implement the <see cref="IRule"/> interface
     /// are considered.
     /// </summary>
-    public class Rules
+    public class Rules : IEnumerable<IRule>
     {
-        public ICollection<IRule> AllRules { get; private set; }
-
+        private readonly ICollection<IRule> _allRules;
+ 
         /// <summary>
         /// Creates a new rules repository.
         /// </summary>
@@ -46,7 +27,7 @@ namespace TestNess.Lib.Rule
         {
             if (assemblies.Length == 0)
                 throw new ArgumentException("At least one assembly is required!");
-            AllRules = new ReadOnlyCollection<IRule>(DiscoverRules(assemblies));
+            _allRules = new ReadOnlyCollection<IRule>(DiscoverRules(assemblies));
         }
 
         private IList<IRule> DiscoverRules(IEnumerable<Assembly> assemblies)
@@ -81,11 +62,21 @@ namespace TestNess.Lib.Rule
         {
             var pattern = "^" + Regex.Escape(name) + "(Rule)?$";
             var regex = new Regex(pattern);
-            var cands = AllRules.Where(r => regex.IsMatch(r.GetType().Name));
+            var cands = _allRules.Where(r => regex.IsMatch(r.GetType().Name));
             var ret = cands.FirstOrDefault();
             if (ret == null)
                 throw new NoSuchRuleException(name);
             return ret;
+        }
+
+        public IEnumerator<IRule> GetEnumerator()
+        {
+            return _allRules.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

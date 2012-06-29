@@ -1,29 +1,15 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using System.Xml;
 using TestNess.Lib;
+using TestNess.Lib.Analysis;
+using TestNess.Lib.Reporting;
+using TestNess.Lib.Reporting.XUnit;
 using TestNess.Lib.Rule;
 
 namespace TestNess.Main
@@ -75,17 +61,22 @@ namespace TestNess.Main
                 PrintUsage();
                 throw new ExitException(1);
             }
-            var repo = TestCaseRepository.LoadFromFile(_arguments.AssemblyFileName);
+            var repo = TestCases.LoadFromFile(_arguments.AssemblyFileName);
             var rules = new Rules(typeof (IRule).Assembly);
-            if (_arguments.HasConfigurationFileName)
-            {
-                var config = ReadFileContents(_arguments.ConfigurationFileName);
-                var configurator = new RuleConfigurator();
-                configurator.ReadConfiguration(config);
-                configurator.ApplyConfiguration(rules);
-            }
+            MaybeConfigureRules(rules);
 
-            AnalyzeTestCases(repo, rules);
+            AnalyzeTestCases(repo, rules, new ViolationScorer());
+        }
+
+        private void MaybeConfigureRules(Rules rules)
+        {
+            if (!_arguments.HasConfigurationFileName) 
+                return;
+
+            var config = ReadFileContents(_arguments.ConfigurationFileName);
+            var configurator = new RuleConfigurator();
+            configurator.ReadConfiguration(config);
+            configurator.ApplyConfiguration(rules);
         }
 
         private string ReadFileContents(string file)
@@ -96,34 +87,38 @@ namespace TestNess.Main
             }
         }
 
-        private void AnalyzeTestCases(TestCaseRepository repo, Rules rules)
+        private void AnalyzeTestCases(IEnumerable<TestCase> repo, IEnumerable<IRule> rules, IViolationScorer scorer)
         {
-            var analyzer = new Analyzer(repo, rules);
-            analyzer.Analyze();
-            
-            Console.WriteLine("Violations:");
-            foreach (var violation in analyzer.Violations)
+            var results = AnalysisResults.Create(repo, rules, scorer);
+            CreateReporter(_arguments.ReporterType).GenerateReport(Console.Out, results);
+        }
+
+        private IReporter CreateReporter(ReporterType reporterType)
+        {
+            switch (reporterType)
             {
-                Console.WriteLine("  {0}", violation);
+                case ReporterType.Plain:
+                    return new PlainTextReporter();
+                case ReporterType.XunitXml:
+                    return new XUnitReporter();
+                case ReporterType.XunitHtml:
+                    return new XUnitHtmlReporter();
             }
-
-            Console.WriteLine();
-
-            Console.WriteLine("Total score = {0}", analyzer.Score);
+            throw new ArgumentException("Unknown reporter type: " + reporterType);
         }
 
         private static void PrintUsage()
         {
             var exeName = new FileInfo(Environment.GetCommandLineArgs()[0]).Name;
-            Console.WriteLine("Usage: {0} [-c <config file>] <assembly file>", exeName);
-            Console.WriteLine();
+            Console.Error.WriteLine("Usage: {0} {1}", exeName, Arguments.GenerateUsageOverview());
+            Console.Error.WriteLine();
         }
 
         private static void PrintHeader()
         {
             var assembly = Assembly.GetCallingAssembly();
-            Console.WriteLine("{0} v{1} - {2}", GetProductName(assembly), assembly.GetName().Version, GetCopyright(assembly));
-            Console.WriteLine();
+            Console.Error.WriteLine("{0} v{1} - {2}", GetProductName(assembly), assembly.GetName().Version, GetCopyright(assembly));
+            Console.Error.WriteLine();
         }
 
         private static string GetCopyright(Assembly assembly)

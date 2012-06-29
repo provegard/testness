@@ -1,25 +1,6 @@
-﻿/**
- * Copyright (C) 2011 by Per Rovegård (per@rovegard.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Linq;
 using NUnit.Framework;
@@ -44,9 +25,9 @@ namespace TestNess.Lib.Test.Rule
         public void TestViolationCountForDifferentMethodsWithoutSequencePoints(string method, int expectedViolationCount)
         {
             // "Manual" test case creation to avoid PDB loading...
-            var tm = typeof (IntegerCalculatorMethodLengthTest).FindMethod(method);
+            var tc = typeof (IntegerCalculatorMethodLengthTest).FindTestCase(method);
             var rule = new LongTestCaseRule();
-            var violations = rule.Apply(new TestCase(tm));
+            var violations = rule.Apply(tc);
 
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
@@ -75,7 +56,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase]
         public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
         {
-            var tc = typeof(IntegerCalculatorMethodLengthTest).FindTestCase("ThenWeShouldBeAbleToAdd_Long()");
+            var tc = TestHelper.FindTestCase<IntegerCalculatorMethodLengthTest>(t => t.ThenWeShouldBeAbleToAdd_Long());
             var rule = new LongTestCaseRule { MaxNumberOfLinesOfCode = 20 };
 
             Assert.AreEqual(0, rule.Apply(tc).Count());

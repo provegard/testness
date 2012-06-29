@@ -46,13 +46,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analyzer.cs" />
+    <Compile Include="Analysis\AnalysisResults.cs" />
+    <Compile Include="Analysis\IViolationScorer.cs" />
+    <Compile Include="Analysis\TestCaseRuleApplication.cs" />
+    <Compile Include="Analysis\ViolationScorer.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Reporting\PlainTextReporter.cs" />
+    <Compile Include="Reporting\IReporter.cs" />
+    <Compile Include="Reporting\XUnit\AssemblyNode.cs" />
+    <Compile Include="Reporting\XUnit\NamespaceNode.cs" />
+    <Compile Include="Reporting\XUnit\TestCaseNode.cs" />
+    <Compile Include="Reporting\XUnit\TypeNode.cs" />
+    <Compile Include="Reporting\XmlReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitHtmlReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitReporter.cs" />
+    <Compile Include="Reporting\XUnit\XUnitNode.cs" />
+    <Compile Include="Reporting\XUnit\XUnitTreeVisitor.cs" />
     <Compile Include="Rule\LocalExpectationRule.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
-    <Compile Include="Rule\CompoundRule.cs" />
     <Compile Include="Rule\IRule.cs" />
     <Compile Include="ITestFramework.cs" />
     <Compile Include="MSTestTestFramework.cs" />
@@ -65,7 +83,8 @@
     <Compile Include="Rule\RuleConfigurator.cs" />
     <Compile Include="Rule\Rules.cs" />
     <Compile Include="TestCase.cs" />
-    <Compile Include="TestCaseRepository.cs" />
+    <Compile Include="TestCaseOrigin.cs" />
+    <Compile Include="TestCases.cs" />
     <Compile Include="TestFrameworks.cs" />
     <Compile Include="Rule\Violation.cs" />
     <Compile Include="Rule\UnhandledReturnValueRule.cs" />
@@ -77,7 +96,17 @@
       <Name>GraphBuilder</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\HTML.xslt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
