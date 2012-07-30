@@ -13,6 +13,19 @@ namespace TestNess.Lib
     public sealed class Arguments
     {
         /// <summary>
+        /// Returns the output encoding to use for generated files/text data.
+        /// </summary>
+        public Encoding OutputEncoding;
+
+        /// <summary>
+        /// Determines if there is a specified output encoding or not.
+        /// </summary>
+        public bool HasOutputEncoding
+        {
+            get { return OutputEncoding != null;  }
+        }
+
+        /// <summary>
         /// Returns the name of the assembly file.
         /// </summary>
         public string AssemblyFileName { get; private set; }
@@ -69,6 +82,12 @@ namespace TestNess.Lib
                     case "c":
                     case "config":
                         arguments.ConfigurationFileName = GetOptionValue(option, arg);
+                        break;
+
+                    case "e":
+                    case "enc":
+                    case "encoding":
+                        arguments.OutputEncoding = Encoding.GetEncoding(GetOptionValue(option, arg));
                         break;
 
                     case "plain":

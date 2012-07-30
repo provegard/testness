@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
+using System.Text;
 using NUnit.Framework;
 
 namespace TestNess.Lib.Test
@@ -91,5 +92,47 @@ namespace TestNess.Lib.Test
             var args = Arguments.Parse(new[] { "/xhtml" });
             Assert.AreEqual(ReporterType.XunitHtml, args.ReporterType);
         }
+
+        [TestCase]
+        public void TestThatEncodingCanBeSpecified()
+        {
+            var args = Arguments.Parse(new[] { "/e:utf-8" });
+            Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
+        }
+
+        [TestCase]
+        public void TestThatEncodingCanBeSpecifiedUsingLongOption()
+        {
+            var args = Arguments.Parse(new[] { "/encoding:utf-8" });
+            Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
+        }
+
+        [TestCase]
+        public void TestThatEncodingCanBeSpecifiedUsingMediumOption()
+        {
+            var args = Arguments.Parse(new[] { "/enc:utf-8" });
+            Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
+        }
+
+        [TestCase]
+        public void TestThatThereIsNoEncodingByDefault()
+        {
+            var args = Arguments.Parse(new string[0]);
+            Assert.IsFalse(args.HasOutputEncoding);
+        }
+
+        [TestCase]
+        public void TestThatThereIsAnEncodingWhenSpecified()
+        {
+            var args = Arguments.Parse(new[] { "/e:utf-8" });
+            Assert.IsTrue(args.HasOutputEncoding);
+        }
+
+        [TestCase]
+        public void TestThatUnrecognizedEncodingThrows()
+        {
+            Assert.Catch<ArgumentException>(() => Arguments.Parse(new[] { "/e:adfasdf" }));
+        }
+
     }
 }

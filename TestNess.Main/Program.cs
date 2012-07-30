@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using System.Text;
 using System.Xml;
 using TestNess.Lib;
 using TestNess.Lib.Analysis;
@@ -90,6 +91,10 @@ namespace TestNess.Main
         private void AnalyzeTestCases(IEnumerable<TestCase> repo, IEnumerable<IRule> rules, IViolationScorer scorer)
         {
             var results = AnalysisResults.Create(repo, rules, scorer);
+            if (_arguments.HasOutputEncoding)
+            {
+                Console.OutputEncoding = _arguments.OutputEncoding;
+            }
             CreateReporter(_arguments.ReporterType).GenerateReport(Console.Out, results);
         }
 
