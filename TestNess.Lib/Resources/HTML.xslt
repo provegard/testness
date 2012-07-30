@@ -45,7 +45,7 @@
 
                 <h3 class="divided"><b>Summary</b></h3>
                 <div>
-                    Tests run: <a href="#all"><b><xsl:value-of select="sum(//assembly/@total)"/></b></a> &#160;
+                    Tests run: <a href="#all"><b><xsl:value-of select="sum(//assembly/@total)"/></b></a><xsl:text disable-output-escaping="yes"> &amp;#160;</xsl:text>
                     Failures: <a href="#failures"><b><xsl:value-of select="sum(//assembly/@failed)"/></b></a>,
                     Skipped: <a href="#skipped"><b><xsl:value-of select="sum(//assembly/@skipped)"/></b></a>,
                     Run time: <b><xsl:value-of select="sum(//assembly/@time)"/>s</b>
@@ -81,10 +81,15 @@
         <div>
             <xsl:attribute name="class"><xsl:if test="(position() mod 2 = 0)">alt</xsl:if>row</xsl:attribute>
             <xsl:if test="@result!='Skip'"><span class="timing"><xsl:value-of select="@time"/>s</span></xsl:if>
-            <xsl:if test="@result='Skip'"><span class="timing">Skipped</span><span class="skipped">&#x2762;</span></xsl:if>
-            <xsl:if test="@result='Fail'"><span class="failure">&#x2718;</span></xsl:if>
-            <xsl:if test="@result='Pass'"><span class="success">&#x2714;</span></xsl:if>
-            &#160;<xsl:value-of select="@name"/>
+            <xsl:if test="@result='Skip'"><span class="timing">Skipped</span><span class="skipped">
+              <xsl:text disable-output-escaping="yes">&amp;#x2762;</xsl:text></span></xsl:if>
+            <xsl:if test="@result='Fail'"><span class="failure">
+              <xsl:text disable-output-escaping="yes">&amp;#x2718;</xsl:text>
+            </span></xsl:if>
+            <xsl:if test="@result='Pass'"><span class="success">
+              <xsl:text disable-output-escaping="yes">&amp;#x2714;</xsl:text>
+            </span></xsl:if>
+            <xsl:text disable-output-escaping="yes">&amp;#160;</xsl:text><xsl:value-of select="@name"/>
             <xsl:if test="child::node()/message"> : <xsl:value-of select="child::node()/message"/></xsl:if>
             <br clear="all" />
             <xsl:if test="failure/stack-trace">
@@ -98,7 +103,9 @@
     </xsl:template>
 
     <xsl:template match="failure">
-        <span class="failure">&#x2718;</span> <xsl:value-of select="../@name"/> : <xsl:value-of select="message"/><br clear="all"/>
+        <span class="failure">
+          <xsl:text disable-output-escaping="yes">&amp;#x2718;</xsl:text>
+        </span> <xsl:value-of select="../@name"/> : <xsl:value-of select="message"/><br clear="all"/>
         Stack Trace:<br />
         <pre><xsl:value-of select="stack-trace"/></pre>
     </xsl:template>
@@ -109,10 +116,14 @@
             <span class="clickable">
                 <xsl:attribute name="onclick">ToggleClass('class<xsl:value-of select="generate-id()"/>')</xsl:attribute>
                 <xsl:attribute name="ondblclick">ToggleClass('class<xsl:value-of select="generate-id()"/>')</xsl:attribute>
-                <xsl:if test="@failed > 0"><span class="failure">&#x2718;</span></xsl:if>
-                <xsl:if test="@failed = 0"><span class="success">&#x2714;</span></xsl:if>
-                &#160;<xsl:value-of select="@name"/>
-                &#160;<span class="testcount">(<xsl:value-of select="@total"/>&#160;test<xsl:if test="@total > 1">s</xsl:if>)</span>
+                <xsl:if test="@failed > 0"><span class="failure">
+                  <xsl:text disable-output-escaping="yes">&amp;#x2718;</xsl:text>
+                </span></xsl:if>
+                <xsl:if test="@failed = 0"><span class="success">
+                  <xsl:text disable-output-escaping="yes">&amp;#x2714;</xsl:text>
+                </span></xsl:if>
+                <xsl:text disable-output-escaping="yes">&amp;#160;</xsl:text><xsl:value-of select="@name"/>
+                <xsl:text disable-output-escaping="yes">&amp;#160;</xsl:text><span class="testcount">(<xsl:value-of select="@total"/><xsl:text disable-output-escaping="yes">&amp;#160;</xsl:text>test<xsl:if test="@total > 1">s</xsl:if>)</span>
             </span>
             <br clear="all" />
         </h3>
