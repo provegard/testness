@@ -26,6 +26,7 @@
                     .indent { margin: 0.25em 0 0.5em 2em; }
                     .clickable { cursor: pointer; }
                     .testcount { font-size: 85%; }
+                    .message { white-space: pre-line; }
                 </style>
                 <script language="javascript">
                     function ToggleClass(id) {
@@ -90,14 +91,8 @@
               <xsl:text disable-output-escaping="yes">&amp;#x2714;</xsl:text>
             </span></xsl:if>
             <xsl:text disable-output-escaping="yes">&amp;#160;</xsl:text><xsl:value-of select="@name"/>
-            <xsl:if test="child::node()/message"> : <xsl:value-of select="child::node()/message"/></xsl:if>
-            <br clear="all" />
-            <xsl:if test="failure/stack-trace">
-                <pre><xsl:value-of select="failure/stack-trace"/></pre>
-            </xsl:if>
-            <xsl:if test="output">
-                <h4>Output</h4>
-                <pre><xsl:value-of select="output"/></pre>
+            <xsl:if test="child::node()/message">
+              : <span class="message"><xsl:value-of select="child::node()/message"/></span>
             </xsl:if>
         </div>
     </xsl:template>

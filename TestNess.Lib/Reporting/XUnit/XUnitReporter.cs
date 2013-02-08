@@ -140,6 +140,10 @@ namespace TestNess.Lib.Reporting.XUnit
                 {
                     // Construct a single message from all violations
                     var sb = new StringBuilder();
+                    if (violations.Count > 1)
+                    {
+                        sb.Append(violations.Count).AppendLine(" violations:");
+                    }
                     foreach (var v in violations)
                     {
                         sb.AppendLine(v.Message);

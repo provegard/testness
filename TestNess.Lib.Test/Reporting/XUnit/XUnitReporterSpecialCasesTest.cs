@@ -42,5 +42,21 @@ namespace TestNess.Lib.Test.Reporting.XUnit
             var reporter = new XUnitReporter();
             Assert.Throws<ArgumentException>(() => reporter.GenerateReport(new StringWriter(), results));
         }
+
+        [Test]
+        public void TestThatMultipleViolationsPerTestCaseArePointedOut()
+        {
+            var tc1 = TestHelper.FindTestCase<IntegerCalculatorExpectationTest>(x => x.TestAddWithConditionalExpectationViolations());
+            var rule = new LocalExpectationRule();
+            var scorer = Substitute.For<IViolationScorer>();
+            scorer.CalculateScore(null).ReturnsForAnyArgs(1m);
+
+            var results = AnalysisResults.Create(new[] { tc1 }, new[] { rule }, scorer);
+            var report = new XUnitReporter();
+            var doc = report.GenerateXml(results);
+
+            var message = doc.XPathSelectElement("//message").Value;
+            StringAssert.Contains("2 violations", message);
+        }
     }
 }
