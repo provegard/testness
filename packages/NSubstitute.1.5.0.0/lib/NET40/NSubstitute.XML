@@ -26,8 +26,8 @@
         </member>
         <member name="M:NSubstitute.Arg.Is``1(System.Linq.Expressions.Expression{System.Predicate{``0}})">
             <summary>
-            Match argument that satisfies <paramref name="predicate"/>. If the <paramref name="predicate"/> throws
-            an exception for an argument it will be treated as non-matching.
+            Match argument that satisfies <paramref name="predicate"/>. 
+            If the <paramref name="predicate"/> throws an exception for an argument it will be treated as non-matching.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="predicate"></param>
@@ -100,6 +100,28 @@
             <param name="useArgument"></param>
             <returns></returns>
         </member>
+        <member name="T:NSubstitute.IArgumentMatcher">
+            <summary>
+            Provides a specification for arguments for use with <see ctype="Arg.Matches (IArgumentMatcher)" />.
+            Can additionally implement <see ctype="IDescribeNonMatches" /> to give descriptions when arguments do not match.
+            </summary>
+        </member>
+        <member name="M:NSubstitute.IArgumentMatcher.IsSatisfiedBy(System.Object)">
+            <summary>
+            Checks whether the <paramref name="argument"/> satisfies the condition of the matcher.
+            If this throws an exception the argument will be treated as non-matching.
+            </summary>
+            <param name="argument"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NSubstitute.IDescribeNonMatches.DescribeFor(System.Object)">
+            <summary>
+            Describes how the <paramref name="argument"/> does not match the condition specified by this class, or <see cref="F:System.String.Empty"/>
+            if a detailed description can not be provided for the argument.
+            </summary>
+            <param name="argument"></param>
+            <returns>Description of the non-match, or <see cref="F:System.String.Empty"/> if no description can be provided.</returns>
+        </member>
         <member name="M:NSubstitute.Core.Extensions.Zip``3(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``1},System.Func{``0,``1,``2})">
             <summary>
             Combines two enumerables into a new enumerable using the given selector.
@@ -117,6 +139,22 @@
             <a href="http://blogs.msdn.com/b/ericlippert/archive/2009/05/07/zip-me-up.aspx">Eric Lippert's implementation</a>.
             </remarks>
         </member>
+        <member name="M:NSubstitute.Core.Extensions.IsCompatibleWith(System.Object,System.Type)">
+            <summary>
+            Checks if the instance can be used when a <paramref name="type"/> is expected.
+            </summary>
+            <param name="instance"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NSubstitute.Core.Extensions.Join(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Join the <paramref name="strings"/> using <paramref name="seperator"/>.
+            </summary>
+            <param name="strings"></param>
+            <param name="seperator"></param>
+            <returns></returns>
+        </member>
         <member name="T:NSubstitute.Core.RobustThreadLocal`1">
             <summary>
             Delegates to ThreadLocal&lt;T&gt;, but wraps Value property access in try/catch to swallow ObjectDisposedExceptions.
@@ -124,6 +162,37 @@
             just swallow the exception (the finalizer thread won't be using any of the values from thread local storage anyway).
             </summary>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:NSubstitute.Experimental.Received.InOrder(System.Action)">
+            <summary>
+            *EXPERIMENTAL* Asserts the calls to the substitutes contained in the given Action were
+            received by these substitutes in the same order. Calls to property getters are not included
+            in the assertion.
+            </summary>
+            <param name="calls">Action containing calls to substitutes in the expected order</param>
+        </member>
+        <member name="T:NSubstitute.IArgumentMatcher`1">
+            <summary>
+            Provides a specification for arguments for use with <see ctype="Arg.Matches &lt; T &gt;(IArgumentMatcher)" />.
+            Can additionally implement <see ctype="IDescribeNonMatches" /> to give descriptions when arguments do not match.
+            </summary>
+            <typeparam name="T">Matches arguments of type <typeparamref name="T"/> or compatible type.</typeparam>
+        </member>
+        <member name="M:NSubstitute.IArgumentMatcher`1.IsSatisfiedBy(`0)">
+            <summary>
+            Checks whether the <paramref name="argument"/> satisfies the condition of the matcher.
+            If this throws an exception the argument will be treated as non-matching.
+            </summary>
+            <param name="argument"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NSubstitute.Routing.Handlers.ClearLastCallRouterHandler">
+            <summary>
+            Clears last call router on SubstitutionContext for routes that do not require it. 
+            </summary>
+            <remarks>
+            This is to help prevent static state bleeding over into future calls.
+            </remarks>
         </member>
         <member name="M:NSubstitute.Raise.EventWith``1(System.Object,``0)">
             <summary>
