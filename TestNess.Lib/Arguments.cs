@@ -102,6 +102,10 @@ namespace TestNess.Lib
                         arguments.ReporterType = ReporterType.XunitHtml;
                         break;
 
+                    case "angjs":
+                        arguments.ReporterType = ReporterType.AngularJs;
+                        break;
+
                     default:
                         throw new ArgumentException(string.Format("Encountered unrecognized option '{0}'.", option));
                 }
@@ -132,6 +136,7 @@ namespace TestNess.Lib
             sb.AppendLine("    /plain   Prints a plain-text report.");
             sb.AppendLine("    /xxml    Prints an XUnit XML report.");
             sb.AppendLine("    /xhtml   Prints an XUnit HTML report.");
+            sb.AppendLine("    /angjs   Prints an AngularJS-based HTML report.");
             return sb.ToString();
         }
     }
@@ -140,6 +145,7 @@ namespace TestNess.Lib
     {
         Plain,
         XunitXml,
-        XunitHtml
+        XunitHtml,
+        AngularJs
     }
 }

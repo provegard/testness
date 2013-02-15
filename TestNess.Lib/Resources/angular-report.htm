@@ -1,0 +1,75 @@
+<!doctype html>
+<html data-ng-app="testNessApp" lang="en">
+    <head>
+        <title>TestNess Violations Report</title>
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+        <style>
+body {
+    margin-top: 20px;
+}
+.container {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+}
+        </style>
+    </head>
+    <body data-ng-controller="MainController">
+        <div class="row-fluid">
+            <div class="span12 container">
+                <h1>TestNess Analysis Results for {{target}}</h1>
+                <dl>
+                    <dt>Total score</dt><dd>{{totalScore}}</dd>
+                    <dt>Time (ms)</dt><dd>{{totalTime}}</dd>
+                    <dt>Timestamp</dt><dd>{{timestamp}}</dd>
+                </dl>
+                <label for="showSuccessful"><input type="checkbox" id="showSuccessful" data-ng-model="showSuccessful" /> Show successful applications</label>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Test case</th>
+                        <th>Rule</th>
+                        <th>Violations</th>
+                        <th>Score</th>
+                        <th>Time (ms)</th>
+                    </tr>
+                    <tr data-ng-repeat="app in applications | filter:showApplication" data-ng-class="{success:app.Violations.length==0,warning:app.Violations.length==1,error:app.Violations.length>1}">
+                        <td>{{app.TestCaseName}}</td>
+                        <td>{{app.RuleName}}</td>
+                        <td>
+                            <ul>
+                                <li data-ng-repeat="v in app.Violations">
+                                    <span>{{v.Message}}</span>
+                                    <span data-ng-show="v.Where"><br/>at {{v.Where}}<span data-ng-show="v.Location">:{{v.Location.StartLine}},{{v.Location.StartColumn}}</span></span>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>{{app.Score}}</td>
+                        <td>{{app.TimeMs}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+        <script>
+var analysisResults = @@ANALYSIS_RESULTS@@;
+var controllerFunc = function($scope) {
+    $scope.target = analysisResults.Target;
+    $scope.totalScore = analysisResults.TotalScore;
+    $scope.totalTime = analysisResults.TotalTimeMs;
+    $scope.timestamp = new Date(Date.parse(analysisResults.When)).toLocaleString();
+    $scope.applications = analysisResults.Applications;
+    $scope.showApplication = function (app) {
+        return $scope.showSuccessful || app.Violations.length > 0;
+    };
+    $scope.showSuccessful = false;
+};
+
+var m = angular.module("testNessApp", []);
+var ctrl = m.controller("MainController", controllerFunc);
+        </script>
+    </body>
+</html>

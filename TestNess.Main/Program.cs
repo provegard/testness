@@ -108,6 +108,8 @@ namespace TestNess.Main
                     return new XUnitReporter();
                 case ReporterType.XunitHtml:
                     return new XUnitHtmlReporter();
+                case ReporterType.AngularJs:
+                    return new AngularJsReporter();
             }
             throw new ArgumentException("Unknown reporter type: " + reporterType);
         }

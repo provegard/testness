@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestNess.Lib.Properties {
+namespace TestNess.Lib.Test.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace TestNess.Lib.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TestNess.Lib.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TestNess.Lib.Test.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,33 +57,6 @@ namespace TestNess.Lib.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string angular_report {
-            get {
-                return ResourceManager.GetString("angular_report", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-        ///&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-        ///    &lt;xsl:output method=&quot;html&quot;/&gt;
-        ///    &lt;xsl:template match=&quot;/&quot;&gt;
-        ///        &lt;xsl:text disable-output-escaping=&quot;yes&quot;&gt;&lt;![CDATA[&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;]]&gt;&lt;/xsl:text&gt;
-        ///        &lt;html&gt;
-        ///            &lt;head&gt;
-        ///                &lt;title&gt;
-        ///                    xUnit.net Test Results - &lt;xsl:value-of select=&quot;@name&quot;/&gt;
-        ///               [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string XUnitHtml_xslt {
-            get {
-                return ResourceManager.GetString("XUnitHtml_xslt", resourceCulture);
             }
         }
     }
