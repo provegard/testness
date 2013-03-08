@@ -80,6 +80,13 @@ namespace TestNess.Lib.Test
         }
 
         [TestCase]
+        public void TestThatReportPathCanBeSelectedWithArgument()
+        {
+            var args = Arguments.Parse(new[] { "/output:foo.txt" });
+            Assert.AreEqual("foo.txt", args.ReportFilePath);
+        }
+
+        [TestCase]
         public void TestThatXunitXmlReporterCanBeSelectedWithArgument()
         {
             var args = Arguments.Parse(new[] { "/xxml" });

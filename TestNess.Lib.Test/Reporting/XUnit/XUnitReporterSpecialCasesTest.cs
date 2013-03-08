@@ -9,6 +9,7 @@ using System.Xml.XPath;
 using NSubstitute;
 using NUnit.Framework;
 using TestNess.Lib.Analysis;
+using TestNess.Lib.Reporting;
 using TestNess.Lib.Reporting.XUnit;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -40,7 +41,8 @@ namespace TestNess.Lib.Test.Reporting.XUnit
         {
             var results = new AnalysisResults(new TestCaseRuleApplication[0]);
             var reporter = new XUnitReporter();
-            Assert.Throws<ArgumentException>(() => reporter.GenerateReport(new StringWriter(), results));
+            var receiver = Substitute.For<IReportReceiver>();
+            Assert.Throws<ArgumentException>(() => reporter.GenerateReport(receiver, results));
         }
 
         [Test]

@@ -8,8 +8,9 @@ namespace TestNess.Lib.Reporting
 {
     public class PlainTextReporter : IReporter
     {
-        public void GenerateReport(TextWriter writer, AnalysisResults results)
+        public void GenerateReport(IReportReceiver recv, AnalysisResults results)
         {
+            var writer = new StringWriter();
             writer.WriteLine("Analysis started at " + results.AnalysisTime);
             writer.WriteLine("Total analysis time (ms) = " + results.ElapsedTimeInMilliseconds);
             writer.WriteLine("Violations:");
@@ -25,6 +26,7 @@ namespace TestNess.Lib.Reporting
 
             writer.WriteLine();
             writer.WriteLine("Total score = " + score);
+            recv.GenerateReport(writer.ToString());
         }
     }
 }

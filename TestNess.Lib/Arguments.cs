@@ -26,6 +26,11 @@ namespace TestNess.Lib
         }
 
         /// <summary>
+        /// Returns the path (raw form) to the file that will receive the report.
+        /// </summary>
+        public string ReportFilePath { get; private set; }
+
+        /// <summary>
         /// Returns the name of the assembly file.
         /// </summary>
         public string AssemblyFileName { get; private set; }
@@ -106,6 +111,10 @@ namespace TestNess.Lib
                         arguments.ReporterType = ReporterType.AngularJs;
                         break;
 
+                    case "output":
+                        arguments.ReportFilePath = GetOptionValue(option, arg);
+                        break;
+
                     default:
                         throw new ArgumentException(string.Format("Encountered unrecognized option '{0}'.", option));
                 }
@@ -130,15 +139,20 @@ namespace TestNess.Lib
 
         public static string GenerateUsageOverview()
         {
-            var sb = new StringBuilder("[/c[onfig]:<configuration file>] [reporting option] <assembly file>");
+            var sb = new StringBuilder("[/c[onfig]:FILE] [/e[nc[oding]:ENC] </output:FILE> [reporting option] <assembly file>");
             sb.AppendLine().AppendLine();
             sb.AppendLine("  The following reporting options are supported:").AppendLine();
-            sb.AppendLine("    /plain   Prints a plain-text report.");
-            sb.AppendLine("    /xxml    Prints an XUnit XML report.");
-            sb.AppendLine("    /xhtml   Prints an XUnit HTML report.");
-            sb.AppendLine("    /angjs   Prints an AngularJS-based HTML report.");
+            sb.AppendLine("    /plain    Prints a plain-text report.");
+            sb.AppendLine("    /xxml     Prints an XUnit XML report.");
+            sb.AppendLine("    /xhtml    Prints an XUnit HTML report.");
+            sb.AppendLine("    /angjs    Prints an AngularJS-based HTML report.").AppendLine();
+            sb.AppendLine("  The following non-reporting options are supported:").AppendLine();
+            sb.AppendLine("    /config   Specifies a configuration file.");
+            sb.AppendLine("    /encoding Specifies an output file encoding (defaults to UTF-8).");
+            sb.AppendLine("    /output   Specifies a file name for the report file.");
             return sb.ToString();
         }
+
     }
 
     public enum ReporterType

@@ -11,12 +11,14 @@ namespace TestNess.Lib.Reporting
 {
     public abstract class XmlReporter : IReporter
     {
-        public void GenerateReport(TextWriter writer, AnalysisResults results)
+        public void GenerateReport(IReportReceiver receiver, AnalysisResults results)
         {
+            var writer = new StringWriter();
             var xml = GenerateXml(results);
             var xwriter = XmlWriter.Create(writer);
             xml.WriteTo(xwriter);
             xwriter.Flush();
+            receiver.GenerateReport(writer.ToString());
         }
 
         public abstract XDocument GenerateXml(AnalysisResults results);

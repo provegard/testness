@@ -11,7 +11,7 @@ namespace TestNess.Lib.Reporting.XUnit
 {
     public class XUnitHtmlReporter : IReporter
     {
-        public void GenerateReport(TextWriter writer, AnalysisResults results)
+        public void GenerateReport(IReportReceiver recv, AnalysisResults results)
         {
             var xmlReporter = new XUnitReporter();
             var xml = xmlReporter.GenerateXml(results);
@@ -19,9 +19,11 @@ namespace TestNess.Lib.Reporting.XUnit
             var transform = new XslCompiledTransform();
             transform.Load(new XmlTextReader(new StringReader(Properties.Resources.XUnitHtml_xslt)));
 
+            var writer = new StringWriter();
             var xwriter = XmlWriter.Create(writer);
             transform.Transform(xml.CreateNavigator(), null, xwriter);
             xwriter.Flush();
+            recv.GenerateReport(writer.ToString());
         }
     }
 }

@@ -68,6 +68,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Reporting\AngularJsReporter.cs" />
+    <Compile Include="Reporting\IReportReceiver.cs" />
     <Compile Include="Reporting\PlainTextReporter.cs" />
     <Compile Include="Reporting\IReporter.cs" />
     <Compile Include="Reporting\XUnit\AssemblyNode.cs" />

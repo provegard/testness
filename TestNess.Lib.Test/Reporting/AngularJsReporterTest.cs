@@ -18,6 +18,7 @@ namespace TestNess.Lib.Test.Reporting
     {
         private CQ _cq;
         private string _text;
+        private IReportReceiver _receiver;
 
         [SetUp]
         public void GivenAReportBasedOnAnalysisOfTwoTestCases()
@@ -30,13 +31,13 @@ namespace TestNess.Lib.Test.Reporting
 
             var results = AnalysisResults.Create(new[] { tc1, tc2 }, new[] { rule }, scorer);
             var report = new AngularJsReporter();
-            var writer = new StringWriter();
-            report.GenerateReport(writer, results);
+            _receiver = Substitute.For<IReportReceiver>();
+            _receiver.WhenForAnyArgs(r => r.GenerateReport("")).Do(ci => _text = ci.Arg<string>());
+            report.GenerateReport(_receiver, results);
 
-            _text = writer.ToString();
             _cq = new CQ(_text);
         }
-
+        
         [Test]
         public void ItShouldHaveHtml5Doctype()
         {

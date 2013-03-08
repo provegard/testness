@@ -16,12 +16,12 @@ namespace TestNess.Lib.Reporting
 {
     public class AngularJsReporter : IReporter
     {
-        public void GenerateReport(TextWriter writer, AnalysisResults results)
+        public void GenerateReport(IReportReceiver recv, AnalysisResults results)
         {
             var text = Resources.angular_report;
             var json = JsonConvert.SerializeObject(new Report(results));
             text = text.Replace("@@ANALYSIS_RESULTS@@", json);
-            writer.Write(text);
+            recv.GenerateReport(text);
         }
 
         private class Report

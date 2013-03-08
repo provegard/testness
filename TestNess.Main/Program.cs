@@ -15,7 +15,7 @@ using TestNess.Lib.Rule;
 
 namespace TestNess.Main
 {
-    class Program
+    class Program : IReportReceiver
     {
         static int Main(string[] args)
         {
@@ -48,16 +48,18 @@ namespace TestNess.Main
         }
 
         private readonly Arguments _arguments;
+        private readonly string _reportFilePath;
 
         private Program(string[] args)
         {
             _arguments = Arguments.Parse(args);
+            _reportFilePath = Path.Combine(Environment.CurrentDirectory, _arguments.ReportFilePath);
         }
 
         internal void Run()
         {
             PrintHeader();
-            if (!_arguments.HasAssemblyFileName)
+            if (!_arguments.HasAssemblyFileName || _arguments.ReportFilePath == null)
             {
                 PrintUsage();
                 throw new ExitException(1);
@@ -95,7 +97,7 @@ namespace TestNess.Main
             {
                 Console.OutputEncoding = _arguments.OutputEncoding;
             }
-            CreateReporter(_arguments.ReporterType).GenerateReport(Console.Out, results);
+            CreateReporter(_arguments.ReporterType).GenerateReport(this, results);
         }
 
         private IReporter CreateReporter(ReporterType reporterType)
@@ -136,6 +138,31 @@ namespace TestNess.Main
         private static string GetProductName(Assembly assembly)
         {
             return ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
+        }
+
+        public void GenerateReport(string contents)
+        {
+            WriteToFile(_reportFilePath, contents);
+        }
+
+        public void GenerateSupplementaryFile(string fileName, string contents)
+        {
+            var dir = new FileInfo(_reportFilePath).Directory.FullName;
+            var filePath = Path.Combine(dir, fileName);
+            if (!filePath.StartsWith(dir))
+            {
+                throw new Exception("Cannot write a file outside of the report file directory.");
+            }
+            WriteToFile(filePath, contents);
+        }
+
+        private void WriteToFile(string fileName, string data)
+        {
+            using (var fs = File.OpenWrite(fileName))
+            using (var writer = new StreamWriter(fs, _arguments.HasOutputEncoding ? _arguments.OutputEncoding : Encoding.UTF8))
+            {
+                writer.WriteLine(data);
+            }
         }
     }
 

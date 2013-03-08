@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using TestNess.Lib.Analysis;
+using TestNess.Lib.Reporting;
 using TestNess.Lib.Reporting.XUnit;
 using TestNess.Lib.Rule;
 // Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
@@ -20,7 +21,7 @@ namespace TestNess.Lib.Test.Reporting.XUnit
     [TestFixture]
     public class XUnitHtmlReporterTest
     {
-        private string _html;
+        private IReportReceiver _receiver;
 
         [SetUp]
         public void GivenAReportBasedOnAnalysisOfOneTestCase()
@@ -31,18 +32,15 @@ namespace TestNess.Lib.Test.Reporting.XUnit
             scorer.CalculateScore(null).ReturnsForAnyArgs(1m);
 
             var results = AnalysisResults.Create(new[] { tc1 }, new[] { rule }, scorer);
-            var sb = new StringBuilder();
-            var writer = new StringWriter(sb);
             var report = new XUnitHtmlReporter();
-            report.GenerateReport(writer, results);
-
-            _html = sb.ToString();
+            _receiver = Substitute.For<IReportReceiver>();
+            report.GenerateReport(_receiver, results);
         }
 
         [Test]
         public void ThenOuputContainsHtml()
         {
-            StringAssert.Contains("<html>", _html);
+            _receiver.Received().GenerateReport(Arg.Is<string>(s => s.Contains("<html>")));
         }
     }
 }

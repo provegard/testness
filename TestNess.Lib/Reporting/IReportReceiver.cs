@@ -1,14 +1,11 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
-
-using System.IO;
-using TestNess.Lib.Analysis;
-
 namespace TestNess.Lib.Reporting
 {
-    public interface IReporter
+    public interface IReportReceiver
     {
-        void GenerateReport(IReportReceiver generator, AnalysisResults results);
+        void GenerateReport(string contents);
+        void GenerateSupplementaryFile(string fileName, string contents);
     }
 }
