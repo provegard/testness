@@ -23,7 +23,13 @@ namespace TestNess.Lib.Test.Analysis
             var rule = new DelayRule();
             var testCase = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddTwoAsserts());
             var app = new TestCaseRuleApplication(testCase, rule, new ViolationScorer());
-            _results = new AnalysisResults(Enumerable.Repeat(app, 1));
+            _results = new AnalysisResults(Enumerable.Repeat(app, 1), new[] { testCase });
+        }
+
+        [Test]
+        public void TestThatTheTestCaseCountIsSet()
+        {
+            Assert.AreEqual(1, _results.TestCaseCount);
         }
 
         [Test]

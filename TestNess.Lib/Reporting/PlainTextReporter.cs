@@ -12,6 +12,7 @@ namespace TestNess.Lib.Reporting
         {
             var writer = new StringWriter();
             writer.WriteLine("Analysis started at " + results.AnalysisTime);
+            writer.WriteLine("Number of test cases analyzed = " + results.TestCaseCount);
             writer.WriteLine("Total analysis time (ms) = " + results.ElapsedTimeInMilliseconds);
             writer.WriteLine("Violations:");
             var score = 0m;

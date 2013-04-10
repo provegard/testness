@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
@@ -12,8 +12,9 @@ namespace TestNess.Lib.Analysis
 {
     public class AnalysisResults
     {
-        public AnalysisResults(IEnumerable<TestCaseRuleApplication> applications)
+        public AnalysisResults(IEnumerable<TestCaseRuleApplication> applications, IList<TestCase> allTestCases)
         {
+            TestCaseCount = allTestCases.Count;
             Measure(applications);
         }
 
@@ -26,6 +27,8 @@ namespace TestNess.Lib.Analysis
             ElapsedTimeInMilliseconds = sw.ElapsedMilliseconds;
         }
 
+        public int TestCaseCount { get; private set; }
+
         public DateTime AnalysisTime { get; private set; }
 
         public long ElapsedTimeInMilliseconds { get; private set; }
@@ -34,7 +37,8 @@ namespace TestNess.Lib.Analysis
 
         public static AnalysisResults Create(IEnumerable<TestCase> testCases, IEnumerable<IRule> rules, IViolationScorer scorer)
         {
-            return new AnalysisResults(rules.SelectMany(r => testCases, (r, tc) => new TestCaseRuleApplication(tc, r, scorer)));
+            var testCasesList = testCases.ToList();
+            return new AnalysisResults(rules.SelectMany(r => testCasesList, (r, tc) => new TestCaseRuleApplication(tc, r, scorer)), testCasesList);
         }
     }
 }

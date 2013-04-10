@@ -1,10 +1,7 @@
-// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using NSubstitute;
 using NUnit.Framework;
@@ -39,7 +36,7 @@ namespace TestNess.Lib.Test.Reporting.XUnit
         [Test]
         public void TestThatEmptyAnalysisResultsIsHandled()
         {
-            var results = new AnalysisResults(new TestCaseRuleApplication[0]);
+            var results = new AnalysisResults(new TestCaseRuleApplication[0], new TestCase[0]);
             var reporter = new XUnitReporter();
             var receiver = Substitute.For<IReportReceiver>();
             Assert.Throws<ArgumentException>(() => reporter.GenerateReport(receiver, results));
