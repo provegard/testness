@@ -5,12 +5,17 @@ open System.Linq
 open System
 open System.IO
 open System.Reflection
+open System.Collections.Generic
 
 type TestCaseOrigin(assembly: AssemblyDefinition, fileName: string) =
     member this.Assembly = assembly
     member this.AssemblyFileName = fileName
 
-type TestCase(meth: MethodDefinition, origin: TestCaseOrigin) = class end
+type TestCase(meth: MethodDefinition, origin: TestCaseOrigin) = 
+    member this.GetCalledAssertingMethods(): seq<MethodDefinition> =
+        Seq.empty<MethodDefinition>
+    member this.TestMethod
+        with get(): MethodDefinition = null
 
 type TestCases(assembly: AssemblyDefinition, fileName: string) as self =
 

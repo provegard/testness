@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="TestCases.fs" />
     <None Include="packages.config" />
+    <Compile Include="Rules.fs" />
+    <Compile Include="TestFrameworks.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
