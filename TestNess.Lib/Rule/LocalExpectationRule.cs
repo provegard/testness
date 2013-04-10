@@ -8,6 +8,7 @@ using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using TestNess.Lib.Cil;
+using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib.Rule
 {

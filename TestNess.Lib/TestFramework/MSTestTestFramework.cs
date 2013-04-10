@@ -6,7 +6,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.TestFramework
 {
     public class MSTestTestFramework : ITestFramework
     {

@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
@@ -11,20 +11,27 @@ using PP = TestNess.Lib.TestFramework.ParameterPurpose;
 namespace TestNess.Lib.Test
 {
     [TestFixture]
-    public class MSTestTestFrameworkTest
+    public class NUnitTestFrameworkTest
     {
-        private MSTestTestFramework _framework;
+        private NUnitTestFramework _framework;
 
         [SetUp]
         public void GivenFramework()
         {
-            _framework = new MSTestTestFramework();
+            _framework = new NUnitTestFramework();
         }
 
         [TestCase]
         public void TestThatMethodIsDetectedAsTestMethod()
         {
-            var method = typeof (IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var method = typeof (IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");
+            Assert.IsTrue(_framework.IsTestMethod(method));
+        }
+
+        [TestCase]
+        public void TestThatDataDrivenMethodIsDetectedAsTestMethod()
+        {
+            var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestDataDriven(System.Int32,System.Int32,System.Int32)");
             Assert.IsTrue(_framework.IsTestMethod(method));
         }
 
@@ -38,30 +45,31 @@ namespace TestNess.Lib.Test
         [TestCase]
         public void TestThatExpectedExceptionIsIdentified()
         {
-            var method = typeof(IntegerCalculatorTest).FindMethod("TestDivideWithException()");
+            var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestDivideWithException()");
             Assert.IsTrue(_framework.HasExpectedException(method));
         }
 
         [TestCase]
         public void TestThatNonExpectedExceptionIsIdentified()
         {
-            var method = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");
             Assert.IsFalse(_framework.HasExpectedException(method));
         }
 
         [TestCase]
         public void TestThatAssertionThrowingMethodIsDetected()
         {
+            // That(object actual, IResolveConstraint expression, string message, params object[] args)
             var method =
-                typeof (Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(
-                    "HandleFail(System.String,System.String,System.Object[])");
+                typeof (Assert).FindMethod(
+                    "That(System.Object,NUnit.Framework.Constraints.IResolveConstraint,System.String,System.Object[])");
             Assert.IsTrue(_framework.DoesContainAssertion(method));
         }
 
         [TestCase]
         public void TestThatNonAssertionThrowingMethodIsDetected()
         {
-            var method = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
+            var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");
             Assert.IsFalse(_framework.DoesContainAssertion(method));
         }
 
@@ -73,32 +81,33 @@ namespace TestNess.Lib.Test
         [TestCase("Fail(System.String)", new[] { PP.MetaData })]
         [TestCase("Inconclusive()", new PP[] {})]
         [TestCase("Inconclusive(System.String)", new[] { PP.MetaData })]
-        [TestCase("IsInstanceOfType(System.Object,System.Type)", new[] { PP.Actual, PP.Expected })]
+        [TestCase("IsInstanceOfType(System.Type,System.Object)", new[] { PP.Expected, PP.Actual })]
         [TestCase("IsTrue(System.Boolean)", new[] { PP.Actual })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForAssert(string methodName, PP[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(methodName);
+            var method = typeof(Assert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
-        [TestCase("Contains(System.String,System.String)", new[] { PP.Actual, PP.Expected })]
-        [TestCase("StartsWith(System.String,System.String)", new[] { PP.Actual, PP.Expected })]
-        [TestCase("Matches(System.String,System.Text.RegularExpressions.Regex)", new[] { PP.Actual, PP.Expected })]
+        [TestCase("Contains(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
+        [TestCase("StartsWith(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
+        [TestCase("IsMatch(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
+        [TestCase("IsMatch(System.String,System.String,System.String)", new[] { PP.Expected, PP.Actual, PP.MetaData })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForStringAssert(string methodName, PP[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.StringAssert).FindMethod(methodName);
+            var method = typeof(StringAssert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
-        [TestCase("Contains(System.Collections.ICollection,System.Object)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
-        [TestCase("AllItemsAreInstancesOfType(System.Collections.ICollection,System.Type)", new[] { PP.Actual, PP.Expected })]
-        [TestCase("AllItemsAreUnique(System.Collections.ICollection)", new[] { PP.Actual })]
-        [TestCase("AreEqual(System.Collections.ICollection,System.Collections.ICollection)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("AreEquivalent(System.Collections.ICollection,System.Collections.ICollection)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("IsSubsetOf(System.Collections.ICollection,System.Collections.ICollection)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
+        [TestCase("Contains(System.Collections.IEnumerable,System.Object)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
+        [TestCase("AllItemsAreInstancesOfType(System.Collections.IEnumerable,System.Type)", new[] { PP.Actual, PP.Expected })]
+        [TestCase("AllItemsAreUnique(System.Collections.IEnumerable)", new[] { PP.Actual })]
+        [TestCase("AreEqual(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.Expected, PP.Actual })]
+        [TestCase("AreEquivalent(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.Expected, PP.Actual })]
+        [TestCase("IsSubsetOf(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForCollectionAssert(string methodName, PP[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.CollectionAssert).FindMethod(methodName);
+            var method = typeof(CollectionAssert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Mono.Cecil;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.TestFramework
 {
     /// <summary>
     /// Defines the interface that TestNess uses to discover and inspect test cases implemented

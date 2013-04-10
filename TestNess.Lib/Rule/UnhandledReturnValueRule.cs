@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib.Rule
 {

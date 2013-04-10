@@ -62,6 +62,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
+    <Compile Include="TestFramework\NUnitTestFramework.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -83,8 +84,8 @@
     <Compile Include="Rule\LocalExpectationRule.cs" />
     <Compile Include="Rule\AssertDistributionRule.cs" />
     <Compile Include="Rule\IRule.cs" />
-    <Compile Include="ITestFramework.cs" />
-    <Compile Include="MSTestTestFramework.cs" />
+    <Compile Include="TestFramework\ITestFramework.cs" />
+    <Compile Include="TestFramework\MSTestTestFramework.cs" />
     <Compile Include="Rule\LongTestCaseRule.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRule.cs" />
     <Compile Include="NotATestMethodException.cs" />
@@ -96,7 +97,7 @@
     <Compile Include="TestCase.cs" />
     <Compile Include="TestCaseOrigin.cs" />
     <Compile Include="TestCases.cs" />
-    <Compile Include="TestFrameworks.cs" />
+    <Compile Include="TestFramework\TestFrameworks.cs" />
     <Compile Include="Rule\Violation.cs" />
     <Compile Include="Rule\UnhandledReturnValueRule.cs" />
     <Compile Include="Cil\MethodValueTracker.cs" />

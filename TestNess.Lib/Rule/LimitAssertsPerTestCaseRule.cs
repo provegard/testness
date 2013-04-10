@@ -3,6 +3,7 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections.Generic;
+using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib.Rule
 {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
 
-namespace TestNess.Lib
+namespace TestNess.Lib.TestFramework
 {
     /// <summary>
     /// This class merges a number of <see cref="ITestFramework" /> implementations while implementing said

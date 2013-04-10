@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using GraphBuilder;
 using Mono.Cecil;
+using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib
 {
