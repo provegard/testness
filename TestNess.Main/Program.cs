@@ -48,12 +48,11 @@ namespace TestNess.Main
         }
 
         private readonly Arguments _arguments;
-        private readonly string _reportFilePath;
+        private string _reportFilePath;
 
         private Program(string[] args)
         {
             _arguments = Arguments.Parse(args);
-            _reportFilePath = Path.Combine(Environment.CurrentDirectory, _arguments.ReportFilePath);
         }
 
         internal void Run()
@@ -64,6 +63,7 @@ namespace TestNess.Main
                 PrintUsage();
                 throw new ExitException(1);
             }
+            _reportFilePath = Path.Combine(Environment.CurrentDirectory, _arguments.ReportFilePath);
             var repo = TestCases.LoadFromFile(_arguments.AssemblyFileName);
             var rules = new Rules(typeof (IRule).Assembly);
             MaybeConfigureRules(rules);
