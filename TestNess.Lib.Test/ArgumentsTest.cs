@@ -32,6 +32,13 @@ namespace TestNess.Lib.Test
         }
 
         [TestCase]
+        public void TestRequiredAssemblyNamesAreRead()
+        {
+            var args = Arguments.Parse(new[] { "anassembly.dll", "foo.dll", "bar.dll" });
+            CollectionAssert.AreEqual(new[] {"foo.dll", "bar.dll"}, args.RequiredAssemblyFileNames);
+        }
+
+        [TestCase]
         public void TestThatOptionIsNotMistakenForAssemblyName()
         {
             var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });

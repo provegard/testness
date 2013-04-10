@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TestNess.Lib
@@ -31,10 +32,15 @@ namespace TestNess.Lib
         public string ReportFilePath { get; private set; }
 
         /// <summary>
-        /// Returns the name of the assembly file.
+        /// Returns the name of the test assembly file.
         /// </summary>
         public string AssemblyFileName { get; private set; }
 
+        /// <summary>
+        /// Returns the names of required assembly files.
+        /// </summary>
+        public string[] RequiredAssemblyFileNames { get; private set; }
+        
         /// <summary>
         /// Returns the name of the configuration file, if any.
         /// </summary>
@@ -65,22 +71,24 @@ namespace TestNess.Lib
         public static Arguments Parse(string[] args)
         {
             var arguments = new Arguments();
-            var index = 0;
+
+            var queue = new Queue<string>(args);
 
             // Options first
-            while (index < args.Length && args[index].StartsWith("/"))
+            while (queue.Count > 0 && queue.Peek().StartsWith("/"))
             {
-                var colonIdx = args[index].IndexOf(':');
+                var next = queue.Dequeue();
+                var colonIdx = next.IndexOf(':');
                 string option, arg;
                 if (colonIdx < 0)
                 {
-                    option = args[index].Substring(1);
+                    option = next.Substring(1);
                     arg = null;
                 }
                 else
                 {
-                    option = args[index].Substring(1, colonIdx - 1);
-                    arg = args[index].Substring(colonIdx + 1);
+                    option = next.Substring(1, colonIdx - 1);
+                    arg = next.Substring(colonIdx + 1);
                 }
                 switch (option)
                 {
@@ -118,14 +126,15 @@ namespace TestNess.Lib
                     default:
                         throw new ArgumentException(string.Format("Encountered unrecognized option '{0}'.", option));
                 }
-                index++;
             }
 
             // Then non-options
-            if (index < args.Length)
+            if (queue.Count > 0)
             {
-                arguments.AssemblyFileName = args[index];
+                arguments.AssemblyFileName = queue.Dequeue();
             }
+
+            arguments.RequiredAssemblyFileNames = queue.ToArray();
 
             return arguments;
         }
@@ -139,7 +148,7 @@ namespace TestNess.Lib
 
         public static string GenerateUsageOverview()
         {
-            var sb = new StringBuilder("[/c[onfig]:FILE] [/e[nc[oding]:ENC] </output:FILE> [reporting option] <assembly file>");
+            var sb = new StringBuilder("[/c[onfig]:FILE] [/e[nc[oding]:ENC] </output:FILE> [reporting option] <test assembly file> [<required assembly file> [...]]");
             sb.AppendLine().AppendLine();
             sb.AppendLine("  The following reporting options are supported:").AppendLine();
             sb.AppendLine("    /plain    Prints a plain-text report.");
