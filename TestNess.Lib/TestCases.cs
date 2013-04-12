@@ -72,10 +72,13 @@ namespace TestNess.Lib
         /// <returns>A test case repository that fetches test cases from the loaded assembly.</returns>
         public static TestCases LoadFromFile(string fileName)
         {
+            var resolver = new DefaultAssemblyResolver();
+            resolver.AddSearchDirectory(new FileInfo(fileName).DirectoryName);
             var parameters = new ReaderParameters
             {
                 SymbolReaderProvider = new PdbReaderProvider(),
                 ReadingMode = ReadingMode.Immediate,
+                AssemblyResolver = resolver
             };
             AssemblyDefinition assemblyDef;
             try
@@ -85,7 +88,8 @@ namespace TestNess.Lib
             catch (FileNotFoundException)
             {
                 // Might be the PDB file that is missing!
-                assemblyDef = AssemblyDefinition.ReadAssembly(fileName);
+                parameters.SymbolReaderProvider = null;
+                assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
             }
             if (assemblyDef.Modules.Count > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
