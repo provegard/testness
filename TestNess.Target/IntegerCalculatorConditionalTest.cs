@@ -3,6 +3,7 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestNess.Target
@@ -87,6 +88,13 @@ namespace TestNess.Target
                     Assert.AreEqual(10, _calc.Add(5, 5));
                     break;
             }
+        }
+
+        [TestMethod]
+        public void ATestWithNonConditionalLinq()
+        {
+            var result = Enumerable.Range(1, 5).Select(x => x + 1);
+            Assert.AreEqual(2, result.First());
         }
     }
 }

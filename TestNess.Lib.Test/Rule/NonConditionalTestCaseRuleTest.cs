@@ -30,5 +30,12 @@ namespace TestNess.Lib.Test.Rule
             var rule = new NonConditionalTestCaseRule();
             Assert.AreEqual("a test case should not be conditional", rule.ToString());
         }
+
+        [Test]
+        public void TestThatUseOfLinqDoesntCountTowardsBranchCount()
+        {
+            var tc = TestHelper.FindTestCase<IntegerCalculatorConditionalTest>(_ => _.ATestWithNonConditionalLinq());
+            Assert.AreEqual(0, NonConditionalTestCaseRule.BranchCount(tc.TestMethod));
+        }
     }
 }
