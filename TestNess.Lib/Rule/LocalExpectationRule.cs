@@ -17,6 +17,7 @@ namespace TestNess.Lib.Rule
         private static readonly IList<OpCode> BinaryComparisonOpCodes = new List<OpCode> { OpCodes.Ceq, OpCodes.Cgt, OpCodes.Cgt_Un,
             OpCodes.Clt, OpCodes.Clt_Un};
         private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda };
+        private static readonly IList<OpCode> StaticFieldLoadOpCodes = new List<OpCode> { OpCodes.Ldsfld, OpCodes.Ldsflda };
 
         private readonly ITestFramework _framework = TestFrameworks.Instance;
 
@@ -177,7 +178,7 @@ namespace TestNess.Lib.Rule
         private bool HasForbiddenProducer(MethodValueTracker.Value value)
         {
             var producer = value.Producer;
-            if (IsUnapprovedCall(producer) || IsFieldLoad(producer))
+            if (IsUnapprovedCall(producer) || (IsFieldLoad(producer) && !IsStaticReadonlyFieldLoad(producer)))
                 return true;
             return false;
         }
@@ -185,6 +186,26 @@ namespace TestNess.Lib.Rule
         private static bool IsFieldLoad(Instruction i)
         {
             return FieldLoadOpCodes.Contains(i.OpCode);
+        }
+
+        private static bool IsStaticReadonlyFieldLoad(Instruction i)
+        {
+            FieldDefinition fieldDef = null;
+            var fieldRef = i.Operand as FieldReference;
+            if (fieldRef != null)
+            {
+                if (fieldRef.IsDefinition)
+                {
+                    // Can use the definition directly
+                    fieldDef = (FieldDefinition) fieldRef;
+                }
+                else
+                {
+                    // Need to resolve
+                    fieldDef = fieldRef.Resolve();
+                }
+            }
+            return StaticFieldLoadOpCodes.Contains(i.OpCode) && fieldDef != null && fieldDef.IsInitOnly;
         }
 
         private bool IsUnapprovedCall(Instruction i)

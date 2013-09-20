@@ -20,7 +20,7 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestDataDrivenAdd()", 0, Description = "Data-driven testing requires external expectations.")]
         [TestCase("TestAddWithLocallyCalculatedExpectation()", 0)]
         [TestCase("TestAddWithExpectationDerivedFromField()", 1)]
-        [TestCase("TestAddWithStaticReadonlyExpectation()", 1, Description = "Static readonly is not treated as Const!")]
+        [TestCase("TestAddWithStaticReadonlyExpectation()", 0, Description = "Static readonly is treated as Const since it's required when the value isn't a compile-time constant!")]
         [TestCase("TestAddWithExpectationFromProperty()", 1)]
         [TestCase("TestAddWithManuallyComparedConstantExpectation()", 0)]
         [TestCase("TestAddWithManuallyComparedExternallyCalculatedExpectation()", 1)]
