@@ -22,6 +22,20 @@ namespace TestNess.Lib.Test
         }
 
         [TestCase]
+        public void TestThatInitializeMethodIsDetectedAsSetupMethod()
+        {
+            var method = typeof(IntegerCalculatorBddStyleTest).FindMethod("Setup()");
+            Assert.IsTrue(_framework.IsSetupMethod(method));
+        }
+
+        [TestCase]
+        public void TestThatTestMethodIsntDetectedAsSetupMethod()
+        {
+            var method = typeof(IntegerCalculatorBddStyleTest).FindMethod("ItShouldBeAbleToAdd()");
+            Assert.IsFalse(_framework.IsSetupMethod(method));
+        }
+
+        [TestCase]
         public void TestThatMethodIsDetectedAsTestMethod()
         {
             var method = typeof (IntegerCalculatorTest).FindMethod("TestAddBasic()");

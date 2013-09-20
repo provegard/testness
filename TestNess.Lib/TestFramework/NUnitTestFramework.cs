@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
@@ -19,10 +19,25 @@ namespace TestNess.Lib.TestFramework
             "NUnit.Framework.ExpectedExceptionAttribute";
         private const string AssertExceptionTypeName =
             "NUnit.Framework.AssertionException";
+        private const string SetUpAttributeName =
+            "NUnit.Framework.SetUpAttribute";
+        private const string TestFixtureSetUpAttributeName =
+            "NUnit.Framework.TestFixtureSetUpAttribute";
+
+        public bool IsSetupMethod(MethodDefinition method)
+        {
+            return method.CustomAttributes.Where(IsSetupAttribute).Any();
+        }
 
         public bool IsTestMethod(MethodDefinition method)
         {
             return method.CustomAttributes.Any(a => IsTestAttribute(a) || IsTestCaseAttribute(a));
+        }
+
+        private static bool IsSetupAttribute(CustomAttribute attr)
+        {
+            return SetUpAttributeName.Equals(attr.AttributeType.FullName)
+                || TestFixtureSetUpAttributeName.Equals(attr.AttributeType.FullName);
         }
 
         private static bool IsTestCaseAttribute(CustomAttribute attr)

@@ -42,6 +42,11 @@ namespace TestNess.Lib.TestFramework
             return t.IsPublic && typeof(ITestFramework).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && t != GetType();
         }
 
+        public bool IsSetupMethod(MethodDefinition method)
+        {
+            return _frameworks.Any(f => f.IsSetupMethod(method));
+        }
+
         public bool IsTestMethod(MethodDefinition method)
         {
             return _frameworks.Any(f => f.IsTestMethod(method));

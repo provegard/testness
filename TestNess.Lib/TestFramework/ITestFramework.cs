@@ -12,6 +12,14 @@ namespace TestNess.Lib.TestFramework
     /// </summary>
     public interface ITestFramework
     {
+        /// <summary>
+        /// Determines if the method is a setup method, i.e. one that returns before all tests
+        /// or before each test.
+        /// </summary>
+        /// <param name="method">The method to check.</param>
+        /// <returns>Whether or not the method is a setup method.</returns>
+        bool IsSetupMethod(MethodDefinition method);
+
         bool IsTestMethod(MethodDefinition method);
 
         bool HasExpectedException(MethodDefinition method);

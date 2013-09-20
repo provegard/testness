@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
@@ -18,6 +18,13 @@ namespace TestNess.Lib.TestFramework
             "Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException";
         private const string TestContextTypeName = 
             "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext";
+        private const string TestSetupAttributeName =
+            "Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute";
+
+        public bool IsSetupMethod(MethodDefinition method)
+        {
+            return method.CustomAttributes.Where(IsInitializeAttribute).Any();
+        }
 
         public bool IsTestMethod(MethodDefinition method)
         {
@@ -27,6 +34,11 @@ namespace TestNess.Lib.TestFramework
         private static bool IsTestAttribute(CustomAttribute attr)
         {
             return TestMethodAttributeName.Equals(attr.AttributeType.FullName);
+        }
+
+        private static bool IsInitializeAttribute(CustomAttribute attr)
+        {
+            return TestSetupAttributeName.Equals(attr.AttributeType.FullName);
         }
 
         public bool HasExpectedException(MethodDefinition method)

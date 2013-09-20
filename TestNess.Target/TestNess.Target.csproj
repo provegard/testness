@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntegerCalculatorBddStyleTestNUnit.cs" />
+    <Compile Include="IntegerCalculatorBddStyleTest.cs" />
     <Compile Include="IntegerCalculatorTestNUnit.cs" />
     <Compile Include="IntegerCalculator.cs" />
     <Compile Include="IntegerCalculatorConditionalTest.cs" />
