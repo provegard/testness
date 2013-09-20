@@ -91,6 +91,7 @@
     <Compile Include="CecilExtensionsTest.cs" />
     <Compile Include="Rule\AssertDistributionRuleTest.cs" />
     <Compile Include="MSTestTestFrameworkTest.cs" />
+    <Compile Include="Rule\LocalExpectationRuleBddStyleTest.cs" />
     <Compile Include="Rule\LocalExpectationRuleTest.cs" />
     <Compile Include="Rule\LongTestCaseRuleTest.cs" />
     <Compile Include="Rule\NonConditionalTestCaseRuleTest.cs" />

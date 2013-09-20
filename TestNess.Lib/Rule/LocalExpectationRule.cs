@@ -29,6 +29,8 @@ namespace TestNess.Lib.Rule
                 testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
             var tracker = new MethodValueTracker(testCase.TestMethod);
 
+            var whitelistedFields = FindWhitelistedFields(testCase.TestMethod.DeclaringType);
+
             // For each asserting method with >= 1 parameters:
             foreach (var cm in calledMethods.Where(cm => cm.Method.HasParameters))
             {
@@ -61,7 +63,7 @@ namespace TestNess.Lib.Rule
                     // Add in the "forbidden producer", if any, for each argument. A forbidden producer is an 
                     // instruction that generates a value externally, such as a call.
                     interestingArguments = interestingArguments.Select(
-                            a => { a.ForbiddenProducer = FirstForbiddenProducer(valueGraph, a.ConsumedValue); return a; }).ToList();
+                            a => { a.ForbiddenProducer = FirstForbiddenProducer(valueGraph, a.ConsumedValue, whitelistedFields); return a; }).ToList();
 
                     // If there is at least one locally produced argument, the rule doesn't apply.
                     if (interestingArguments.Any(IsLocallyProduced))
@@ -78,13 +80,37 @@ namespace TestNess.Lib.Rule
 
                     foreach (var a in interestingArguments.Where(IsExternallyProduced))
                     {
+
                         // Generate a violation at the location of the forbidden producer!
                         yield return new Violation(this, testCase, a.ForbiddenProducer, CreateViolationMessage(a));
                     }
                 }
             }
+        }
 
-            yield break;
+        private IList<FieldDefinition> FindWhitelistedFields(TypeDefinition typeDefinition)
+        {
+            var setupMethods = typeDefinition.Methods.Where(m => _framework.IsSetupMethod(m));
+            return typeDefinition.Fields.Where(f => IsAssignedInSetupMethod(f, setupMethods)).ToList();
+        }
+
+        private bool IsAssignedInSetupMethod(FieldDefinition field, IEnumerable<MethodDefinition> setupMethods)
+        {
+            return setupMethods.SelectMany(GetInstructions).Any(ins => StoresInField(ins, field));
+        }
+
+        private bool StoresInField(Instruction ins, FieldDefinition field)
+        {
+            // As a side effect, we don't allow static fields here!
+            if (ins.OpCode != OpCodes.Stfld)
+                return false;
+            var operand = ins.Operand as FieldReference;
+            return operand != null && operand.Resolve() == field;
+        }
+
+        private IEnumerable<Instruction> GetInstructions(MethodDefinition methodDef)
+        {
+            return methodDef.HasBody ? (IList<Instruction>) methodDef.Body.Instructions : new Instruction[0];
         }
 
         private string CreateViolationMessageForUncertainCase(ArgumentDetails a)
@@ -170,42 +196,36 @@ namespace TestNess.Lib.Rule
             return parameterType == ParameterPurpose.Expected || parameterType == ParameterPurpose.ExpectedOrActual;
         }
 
-        private Instruction FirstForbiddenProducer(Graph<MethodValueTracker.Value> valueGraph, MethodValueTracker.Value v)
+        private Instruction FirstForbiddenProducer(Graph<MethodValueTracker.Value> valueGraph, MethodValueTracker.Value v, IList<FieldDefinition> whitelistedFields)
         {
-            return valueGraph.Walk(v).Where(HasForbiddenProducer).Select(value => value.Producer).FirstOrDefault();
+            return valueGraph.Walk(v).Where(val => HasForbiddenProducer(val, whitelistedFields)).Select(value => value.Producer).FirstOrDefault();
         }
 
-        private bool HasForbiddenProducer(MethodValueTracker.Value value)
+        private bool HasForbiddenProducer(MethodValueTracker.Value value, IList<FieldDefinition> whitelistedFields)
         {
             var producer = value.Producer;
-            if (IsUnapprovedCall(producer) || (IsFieldLoad(producer) && !IsStaticReadonlyFieldLoad(producer)))
+            if (IsUnapprovedCall(producer) || (IsFieldLoad(producer, whitelistedFields) && !IsStaticReadonlyFieldLoad(producer)))
                 return true;
             return false;
         }
 
-        private static bool IsFieldLoad(Instruction i)
+        private static bool IsFieldLoad(Instruction i, IList<FieldDefinition> whitelistedFields)
         {
-            return FieldLoadOpCodes.Contains(i.OpCode);
+            var fieldDef = GetFieldOperand(i);
+            var isWhitelisted = fieldDef != null && whitelistedFields.Contains(fieldDef);
+            return FieldLoadOpCodes.Contains(i.OpCode) && !isWhitelisted;
         }
 
         private static bool IsStaticReadonlyFieldLoad(Instruction i)
         {
-            FieldDefinition fieldDef = null;
-            var fieldRef = i.Operand as FieldReference;
-            if (fieldRef != null)
-            {
-                if (fieldRef.IsDefinition)
-                {
-                    // Can use the definition directly
-                    fieldDef = (FieldDefinition) fieldRef;
-                }
-                else
-                {
-                    // Need to resolve
-                    fieldDef = fieldRef.Resolve();
-                }
-            }
+            var fieldDef = GetFieldOperand(i);
             return StaticFieldLoadOpCodes.Contains(i.OpCode) && fieldDef != null && fieldDef.IsInitOnly;
+        }
+
+        private static FieldDefinition GetFieldOperand(Instruction i)
+        {
+            var fieldRef = i.Operand as FieldReference;
+            return fieldRef != null ? fieldRef.Resolve() : null;
         }
 
         private bool IsUnapprovedCall(Instruction i)
@@ -232,6 +252,7 @@ namespace TestNess.Lib.Rule
 
         private static readonly Func<ArgumentDetails, bool> IsLocallyProduced = a => a.ForbiddenProducer == null;
         private static readonly Func<ArgumentDetails, bool> IsExternallyProduced = a => a.ForbiddenProducer != null;
+        
         private class ArgumentDetails
         {
             internal ParameterPurpose Purpose;
@@ -239,7 +260,6 @@ namespace TestNess.Lib.Rule
             internal Instruction ForbiddenProducer;
             internal MethodValueTracker.Value ConsumedValue;
             internal MethodReference Method;
-
         }
     }
 }
