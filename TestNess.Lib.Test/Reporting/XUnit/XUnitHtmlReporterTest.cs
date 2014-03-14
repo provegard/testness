@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Linq;
+﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
+// which is part of this source code package, or http://per.mit-license.org/2011.
 using NSubstitute;
 using NUnit.Framework;
 using TestNess.Lib.Analysis;
 using TestNess.Lib.Reporting;
 using TestNess.Lib.Reporting.XUnit;
 using TestNess.Lib.Rule;
-// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
-// This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
-// which is part of this source code package, or http://per.mit-license.org/2011.
 using TestNess.Target;
 
 namespace TestNess.Lib.Test.Reporting.XUnit

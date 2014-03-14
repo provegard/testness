@@ -1,14 +1,14 @@
 ﻿// Copyright (C) 2011-2013 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
+
 using System.Collections.Generic;
 using Mono.Cecil;
 using NUnit.Framework;
 using TestNess.Lib.TestFramework;
 using TestNess.Target;
-using PP = TestNess.Lib.TestFramework.ParameterPurpose;
 
-namespace TestNess.Lib.Test
+namespace TestNess.Lib.Test.TestFramework
 {
     [TestFixture]
     public class NUnitTestFrameworkTest
@@ -94,39 +94,39 @@ namespace TestNess.Lib.Test
             Assert.IsFalse(_framework.DoesContainAssertion(method));
         }
 
-        [TestCase("Equals(System.Object,System.Object)", new[] {PP.Expected, PP.Actual})]
-        [TestCase("AreEqual(System.Object,System.Object)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("AreEqual(System.Double,System.Double,System.Double,System.String)", new[] { PP.Expected, PP.Actual, PP.MetaData, PP.MetaData })]
-        [TestCase("AreSame(System.Object,System.Object)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("Fail()", new PP[] {})]
-        [TestCase("Fail(System.String)", new[] { PP.MetaData })]
-        [TestCase("Inconclusive()", new PP[] {})]
-        [TestCase("Inconclusive(System.String)", new[] { PP.MetaData })]
-        [TestCase("IsInstanceOfType(System.Type,System.Object)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("IsTrue(System.Boolean)", new[] { PP.Actual })]
-        public void TestThatParameterIndexIsIdentifiedCorrectlyForAssert(string methodName, PP[] types)
+        [TestCase("Equals(System.Object,System.Object)", new[] {ParameterPurpose.Expected, ParameterPurpose.Actual})]
+        [TestCase("AreEqual(System.Object,System.Object)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("AreEqual(System.Double,System.Double,System.Double,System.String)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual, ParameterPurpose.MetaData, ParameterPurpose.MetaData })]
+        [TestCase("AreSame(System.Object,System.Object)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("Fail()", new ParameterPurpose[] {})]
+        [TestCase("Fail(System.String)", new[] { ParameterPurpose.MetaData })]
+        [TestCase("Inconclusive()", new ParameterPurpose[] {})]
+        [TestCase("Inconclusive(System.String)", new[] { ParameterPurpose.MetaData })]
+        [TestCase("IsInstanceOfType(System.Type,System.Object)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("IsTrue(System.Boolean)", new[] { ParameterPurpose.Actual })]
+        public void TestThatParameterIndexIsIdentifiedCorrectlyForAssert(string methodName, ParameterPurpose[] types)
         {
             var method = typeof(Assert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
-        [TestCase("Contains(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("StartsWith(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("IsMatch(System.String,System.String)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("IsMatch(System.String,System.String,System.String)", new[] { PP.Expected, PP.Actual, PP.MetaData })]
-        public void TestThatParameterIndexIsIdentifiedCorrectlyForStringAssert(string methodName, PP[] types)
+        [TestCase("Contains(System.String,System.String)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("StartsWith(System.String,System.String)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("IsMatch(System.String,System.String)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("IsMatch(System.String,System.String,System.String)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual, ParameterPurpose.MetaData })]
+        public void TestThatParameterIndexIsIdentifiedCorrectlyForStringAssert(string methodName, ParameterPurpose[] types)
         {
             var method = typeof(StringAssert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
-        [TestCase("Contains(System.Collections.IEnumerable,System.Object)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
-        [TestCase("AllItemsAreInstancesOfType(System.Collections.IEnumerable,System.Type)", new[] { PP.Actual, PP.Expected })]
-        [TestCase("AllItemsAreUnique(System.Collections.IEnumerable)", new[] { PP.Actual })]
-        [TestCase("AreEqual(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("AreEquivalent(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.Expected, PP.Actual })]
-        [TestCase("IsSubsetOf(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { PP.ExpectedOrActual, PP.ExpectedOrActual })]
-        public void TestThatParameterIndexIsIdentifiedCorrectlyForCollectionAssert(string methodName, PP[] types)
+        [TestCase("Contains(System.Collections.IEnumerable,System.Object)", new[] { ParameterPurpose.ExpectedOrActual, ParameterPurpose.ExpectedOrActual })]
+        [TestCase("AllItemsAreInstancesOfType(System.Collections.IEnumerable,System.Type)", new[] { ParameterPurpose.Actual, ParameterPurpose.Expected })]
+        [TestCase("AllItemsAreUnique(System.Collections.IEnumerable)", new[] { ParameterPurpose.Actual })]
+        [TestCase("AreEqual(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("AreEquivalent(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { ParameterPurpose.Expected, ParameterPurpose.Actual })]
+        [TestCase("IsSubsetOf(System.Collections.IEnumerable,System.Collections.IEnumerable)", new[] { ParameterPurpose.ExpectedOrActual, ParameterPurpose.ExpectedOrActual })]
+        public void TestThatParameterIndexIsIdentifiedCorrectlyForCollectionAssert(string methodName, ParameterPurpose[] types)
         {
             var method = typeof(CollectionAssert).FindMethod(methodName);
             VerifyExpectedTypes(method, types);

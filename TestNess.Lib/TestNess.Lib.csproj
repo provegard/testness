@@ -62,6 +62,7 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
+    <Compile Include="TestFramework\NSubstituteTestFramework.cs" />
     <Compile Include="TestFramework\NUnitTestFramework.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

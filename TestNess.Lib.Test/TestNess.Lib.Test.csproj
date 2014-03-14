@@ -77,7 +77,8 @@
     <Compile Include="ArgumentsTest.cs" />
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
-    <Compile Include="NUnitTestFrameworkTest.cs" />
+    <Compile Include="TestFramework\NSubstituteTestFrameworkTest.cs" />
+    <Compile Include="TestFramework\NUnitTestFrameworkTest.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -90,7 +91,7 @@
     <Compile Include="Rule\AbstractRuleTest.cs" />
     <Compile Include="CecilExtensionsTest.cs" />
     <Compile Include="Rule\AssertDistributionRuleTest.cs" />
-    <Compile Include="MSTestTestFrameworkTest.cs" />
+    <Compile Include="TestFramework\MSTestTestFrameworkTest.cs" />
     <Compile Include="Rule\LocalExpectationRuleBddStyleTest.cs" />
     <Compile Include="Rule\LocalExpectationRuleTest.cs" />
     <Compile Include="Rule\LongTestCaseRuleTest.cs" />
