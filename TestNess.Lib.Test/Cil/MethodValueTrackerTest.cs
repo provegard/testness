@@ -62,7 +62,7 @@ namespace TestNess.Lib.Test.Cil
             var opCodes = consumedValues.Select(v => v.Producer.OpCode);
 
             // Ldarg_0 should not be in the list!
-            CollectionAssert.AreEqual(new[] { OpCodes.Ldc_I4_S }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEqual(new[] { OpCodes.Ldc_I4_S }, opCodes);
         }
 
         [TestCase]
@@ -74,7 +74,7 @@ namespace TestNess.Lib.Test.Cil
             var opCodes = consumedValues.Select(v => v.Producer.OpCode);
 
             // Ldarg_0 should be in the list!
-            CollectionAssert.AreEqual(new[] { OpCodes.Ldarg_0 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEqual(new[] { OpCodes.Ldarg_0 }, opCodes);
         }
 
         [TestCase]
@@ -84,7 +84,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldc_I4_1 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldc_I4_1 }, opCodes);
         }
 
         [TestCase]
@@ -122,7 +122,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_5 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_5 }, opCodes);
         }
 
         [TestCase]
@@ -132,7 +132,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }, opCodes);
         }
 
         [TestCase]
@@ -142,7 +142,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2 }, opCodes);
         }
 
         [TestCase]
@@ -152,7 +152,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }, opCodes);
         }
 
         [TestCase]
@@ -162,7 +162,7 @@ namespace TestNess.Lib.Test.Cil
             var tracker = new MethodValueTracker(method);
             var opCodes = FindAllSourceValueOpCodes(tracker, LastCall(method));
 
-            CollectionAssert.AreEquivalent(new[] { OpCodes.Newobj }.ToList(), opCodes.ToList());
+            CollectionAssert.AreEquivalent(new[] { OpCodes.Newobj }, opCodes);
         }
         
         private Instruction LastCall(MethodDefinition method)

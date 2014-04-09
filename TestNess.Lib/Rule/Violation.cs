@@ -83,6 +83,8 @@ namespace TestNess.Lib.Rule
         {
             var sb = new StringBuilder();
             sb.Append(DocumentUrl ?? TestCase.TestMethod.DeclaringType.FullName);
+            sb.Append("::");
+            sb.Append(TestCase.TestMethod.Name);
             sb.Append("(");
             sb.Append(Location != null ? StartCoordinates(Location) : TestCase.TestMethod.NameWithParameters());
             sb.Append("): ");
