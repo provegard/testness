@@ -68,7 +68,7 @@ namespace TestNess.Lib.Test.TestFramework
         {
             var method =
                 typeof (Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(
-                    "HandleFail(System.String,System.String,System.Object[])");
+                    "HandleFailure(System.String,System.String)");
             Assert.IsTrue(_framework.DoesContainAssertion(method));
         }
 
