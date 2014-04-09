@@ -16,5 +16,11 @@ namespace TestNess.Target
             var zero = new Decimal(0);
             Assert.AreEqual(zero, 0m);
         }
+
+        [TestMethod]
+        public void UseOfTypeOf()
+        {
+            Assert.AreEqual(typeof (MiscTest), GetType());
+        }
     }
 }

@@ -76,7 +76,7 @@ namespace TestNess.Lib.Test
         public void TestThatToStringIncludesName()
         {
             var str = _testCase.ToString();
-            StringAssert.Contains(_testCase.Name, str);
+            StringAssert.Contains("TestAddBasic", str);
         }
 
         [TestCase]

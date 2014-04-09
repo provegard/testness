@@ -14,6 +14,8 @@ namespace TestNess.Lib.Rule
 {
     public class LocalExpectationRule : IRule
     {
+        private const string GetTypeFromHandleSignature =
+            "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)";
         private static readonly IList<OpCode> BinaryComparisonOpCodes = new List<OpCode> { OpCodes.Ceq, OpCodes.Cgt, OpCodes.Cgt_Un,
             OpCodes.Clt, OpCodes.Clt_Un};
         private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda };
@@ -204,7 +206,7 @@ namespace TestNess.Lib.Rule
         private bool HasForbiddenProducer(MethodValueTracker.Value value, IList<FieldDefinition> whitelistedFields)
         {
             var producer = value.Producer;
-            if (IsUnapprovedCall(producer) || (IsFieldLoad(producer, whitelistedFields) && !IsStaticReadonlyFieldLoad(producer)))
+            if (IsProducedByUnapprovedCall(value) || (IsFieldLoad(producer, whitelistedFields) && !IsStaticReadonlyFieldLoad(producer)))
                 return true;
             return false;
         }
@@ -228,8 +230,9 @@ namespace TestNess.Lib.Rule
             return fieldRef != null ? fieldRef.Resolve() : null;
         }
 
-        private bool IsUnapprovedCall(Instruction i)
+        private bool IsProducedByUnapprovedCall(MethodValueTracker.Value value)
         {
+            var i = value.Producer;
             if (i.OpCode.FlowControl != FlowControl.Call)
                 return false;
             var calledMethod = i.Operand as MethodReference;
@@ -239,7 +242,25 @@ namespace TestNess.Lib.Rule
                 return false;
             if (_framework.IsDataAccessorMethod(calledMethod))
                 return false;
+            if (IsGeneratedByTypeOf(value))
+                return false;
             return true;
+        }
+
+        private bool IsGeneratedByTypeOf(MethodValueTracker.Value value)
+        {
+            var i = value.Producer;
+            var calledMethod = i.Operand as MethodReference;
+            // typeof(X) generates a call to System.Type::GetTypeFromHandle, which can be manually
+            // called as well. Check if its argument is placed on the stack through ldtoken, in
+            // which case we assume it wasn't.
+            if (!GetTypeFromHandleSignature.Equals(calledMethod.FullName))
+                return false;
+            var parent = value.Parents.FirstOrDefault();
+            if (parent == null)
+                return false;
+            var parentProducer = parent.Producer;
+            return parentProducer.OpCode == OpCodes.Ldtoken;
         }
 
         private static bool IsDataConversionCall(MethodReference method)

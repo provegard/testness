@@ -91,5 +91,14 @@ namespace TestNess.Lib.Test.Rule
             var violations = rule.Apply(tc);
             Assert.AreEqual(0, violations.Count());
         }
+
+        [TestCase]
+        public void TestThatTypeOfCountsAsLocalProduction()
+        {
+            var rule = new LocalExpectationRule();
+            var tc = TestHelper.FindTestCase<MiscTest>(t => t.UseOfTypeOf());
+            var violations = rule.Apply(tc);
+            Assert.AreEqual(0, violations.Count());
+        }
     }
 }
