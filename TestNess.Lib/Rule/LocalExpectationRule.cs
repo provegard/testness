@@ -233,6 +233,8 @@ namespace TestNess.Lib.Rule
             if (i.OpCode.FlowControl != FlowControl.Call)
                 return false;
             var calledMethod = i.Operand as MethodReference;
+            if (calledMethod.IsConstructor())
+                return false; // constructing an object locally is ok
             if (IsDataConversionCall(calledMethod))
                 return false;
             if (_framework.IsDataAccessorMethod(calledMethod))

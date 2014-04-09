@@ -102,6 +102,7 @@ namespace TestNess.Lib.Cil
             var stack = new Stack<Value>();
             var values = new List<Value>();
             var locals = new Value[_method.Body.Variables.Count];
+
             foreach (var instruction in instructions)
             {
                 Apply(instruction, stack, values, locals);
@@ -119,6 +120,7 @@ namespace TestNess.Lib.Cil
             var popCount = instruction.GetPopCount(_method);
             if (popCount == Int32.MaxValue)
                 popCount = stack.Count;
+
             var isCall = instruction.OpCode.FlowControl == FlowControl.Call;
             var callParams = isCall ? (instruction.Operand as MethodReference).Parameters : NoParams;
 

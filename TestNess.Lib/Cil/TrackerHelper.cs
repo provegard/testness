@@ -42,6 +42,11 @@ namespace TestNess.Lib.Cil
             return "System.Void".Equals(method.ReturnType.FullName);
         }
 
+        internal static bool IsConstructor(this MethodReference method)
+        {
+            return ".ctor" == method.Name;
+        }
+
         internal static bool IsStoreLocal(this Instruction instruction, out int index)
         {
             var ret = true;
@@ -149,7 +154,7 @@ namespace TestNess.Lib.Cil
             {
                 // First simple approach: number of parameters, + 1 if virtual call
                 var calledMethod = instruction.Operand as MethodReference;
-                count = calledMethod.Parameters.Count + (IsObjectMethod(calledMethod) ? 1 : 0);
+                count = calledMethod.Parameters.Count + (AssumesObjectOnStack(instruction, calledMethod) ? 1 : 0);
             }
             else if (instruction.OpCode == OpCodes.Ret)
             {
@@ -162,9 +167,12 @@ namespace TestNess.Lib.Cil
             return count;
         }
 
-        private static Boolean IsObjectMethod(MethodReference method)
+        private static bool AssumesObjectOnStack(Instruction instruction, MethodReference method)
         {
-            return method.HasThis && !".ctor".Equals(method.Name);
+            // Newobj creates the 'this' instance rather than consuming it.
+            if (instruction.OpCode == OpCodes.Newobj)
+                return false;
+            return method.HasThis;
         }
 
         internal static bool IsRef(this ParameterDefinition pdef)

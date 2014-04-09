@@ -82,5 +82,14 @@ namespace TestNess.Lib.Test.Rule
             var rule = new LocalExpectationRule();
             Assert.AreEqual("an assert expectation should be locally produced", rule.ToString());
         }
+
+        [TestCase]
+        public void TestThatObjectConstructionCountsAsLocalProduction()
+        {
+            var rule = new LocalExpectationRule();
+            var tc = TestHelper.FindTestCase<MiscTest>(t => t.ObjectConstruction());
+            var violations = rule.Apply(tc);
+            Assert.AreEqual(0, violations.Count());
+        }
     }
 }
