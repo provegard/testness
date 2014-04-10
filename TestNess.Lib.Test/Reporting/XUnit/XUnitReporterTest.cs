@@ -75,25 +75,25 @@ namespace TestNess.Lib.Test.Reporting.XUnit
         [TestCase("/assembly/class/test[1]/failure/message", @"test case contains")]
         [TestCase("/assembly/class/test[1]/failure/message", @"^((?!IntegerCalculatorTest\.cs).)*$")]
         [TestCase("/assembly/class/test[2]/@result", @"^Pass$")]
-        [TestCase("/assembly/class/test[2]/failure", null)]
         public void ThenDocumentHasExpectedProperty(string xpath, string valueRegEx)
         {
             var raw = _doc.XPathEvaluate(xpath);
             var obj = ((IEnumerable) raw).Cast<XObject>().FirstOrDefault();
 
-            if (valueRegEx == null)
-            {
-                Assert.IsNull(obj);
-            }
-            else
-            {
-                string value = null;
-                if (obj is XElement)
-                    value = TextValue((XElement) obj);
-                else if (obj is XAttribute)
-                    value = ((XAttribute) obj).Value;
-                StringAssert.IsMatch(valueRegEx, value);
-            }
+            string value = null;
+            if (obj is XElement)
+                value = TextValue((XElement) obj);
+            else if (obj is XAttribute)
+                value = ((XAttribute) obj).Value;
+            StringAssert.IsMatch(valueRegEx, value);
+        }
+
+        [TestCase("/assembly/class/test[2]/failure")]
+        public void ThenDocumentDoesNotHaveUnexpectedProperty(string xpath)
+        {
+            var raw = _doc.XPathEvaluate(xpath);
+            var obj = ((IEnumerable)raw).Cast<XObject>().FirstOrDefault();
+            Assert.IsNull(obj);
         }
 
         [Test]
