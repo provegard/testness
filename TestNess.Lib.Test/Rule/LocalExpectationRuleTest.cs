@@ -29,6 +29,9 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestWithUnconditionalFailure()", 0)]
         [TestCase("TestAddWithMultipleExpectationViolations()", 2)]
         [TestCase("TestAddWithConditionalExpectationViolations()", 2)]
+        [TestCase("TestAddWithExpectationFromStaticGetOnlyProperty()", 0)]
+        [TestCase("TestAddWithExpectationFromStaticAutoGetPrivSetProperty()", 1)]
+        [TestCase("TestAddWithExpectationFromStaticAutoGetSetProperty()", 1)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);

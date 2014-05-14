@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -238,6 +239,9 @@ namespace TestNess.Lib.Rule
             var calledMethod = i.Operand as MethodReference;
             if (calledMethod.IsConstructor())
                 return false; // constructing an object locally is ok
+            var propertyDef = TryGetPropertyDefForPropertyGetter(calledMethod);
+            if (propertyDef != null && IsStaticGetOnlyProperty(propertyDef))
+                return false;
             if (IsDataConversionCall(calledMethod))
                 return false;
             if (_framework.IsDataAccessorMethod(calledMethod))
@@ -245,6 +249,30 @@ namespace TestNess.Lib.Rule
             if (IsGeneratedByTypeOf(value))
                 return false;
             return true;
+        }
+
+        private static bool IsStaticGetOnlyProperty(PropertyDefinition propertyDef)
+        {
+            if (propertyDef.HasThis)
+                return false; // non-static
+            return propertyDef.SetMethod == null;
+        }
+
+        private static PropertyDefinition TryGetPropertyDefForPropertyGetter(MethodReference m)
+        {
+            var mdef = m.Resolve();
+            if (!mdef.IsSpecialName)
+                return null;
+            if (m.Parameters.Count > 0)
+                return null;
+            if (TrackerHelper.IsVoidMethod(m))
+                return null;
+            var name = m.Name;
+            if (!name.StartsWith("get_"))
+                return null;
+            var propName = name.Substring(4);
+            var prop = mdef.DeclaringType.Properties.FirstOrDefault(p => p.Name == propName);
+            return prop;
         }
 
         private bool IsGeneratedByTypeOf(MethodValueTracker.Value value)

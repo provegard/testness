@@ -9,9 +9,19 @@ namespace TestNess.Target
     [TestClass]
     public class IntegerCalculatorExpectationTest
     {
+        public static int PropEightGetOnly { get { return 8; } }
+        public static int PropEightGetPrivSetAuto { get; private set; }
+        public static int PropEightGetSetAuto { get; set; }
+
         private static readonly int Eight = 8;
         private const int Nine = 9;
         private int _one = 1;
+
+        static IntegerCalculatorExpectationTest()
+        {
+            PropEightGetPrivSetAuto = 8;
+            PropEightGetSetAuto = 8;
+        }
 
         private IntegerCalculator _calc;
 
@@ -192,6 +202,30 @@ namespace TestNess.Target
             var actual = calculator.Add(x, y);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExpectationFromStaticGetOnlyProperty()
+        {
+            var actual = _calc.Add(4, 4);
+
+            Assert.AreEqual(PropEightGetOnly, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExpectationFromStaticAutoGetPrivSetProperty()
+        {
+            var actual = _calc.Add(4, 4);
+
+            Assert.AreEqual(PropEightGetPrivSetAuto, actual);
+        }
+
+        [TestMethod]
+        public void TestAddWithExpectationFromStaticAutoGetSetProperty()
+        {
+            var actual = _calc.Add(4, 4);
+
+            Assert.AreEqual(PropEightGetSetAuto, actual);
         }
 
         private int Add(int i1, int i2)
