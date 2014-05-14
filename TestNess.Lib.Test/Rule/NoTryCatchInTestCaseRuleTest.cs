@@ -13,6 +13,7 @@ namespace TestNess.Lib.Test.Rule
     {
         [TestCase("TestAddBasic()", 0)]
         [TestCase("DivideByZeroWithTryCatch()", 1)]
+        [TestCase("AddWithForEach()", 0)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
             var violations = FindViolations(method);

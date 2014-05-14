@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestNess.Target
@@ -80,6 +81,19 @@ namespace TestNess.Target
             {
                 // expected
             }
+        }
+
+        [TestMethod]
+        public void AddWithForEach()
+        {
+            var numbers = new[] {1, 2, 3};
+            var calculator = new IntegerCalculator();
+            var result = 0;
+            foreach (var x in numbers.Select(n => n * 2))
+            {
+                result = calculator.Add(result, x);
+            }
+            Assert.AreEqual(12, result);
         }
     }
 }
