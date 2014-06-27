@@ -31,18 +31,20 @@ namespace TestNess.Lib.Cil
         /// </summary>
         public IList<Graph<Value>> ValueGraphs { get; private set; }
 
+        public Graph<Instruction> InstructionGraph { get; private set; }
+
         public MethodValueTracker(MethodDefinition method)
         {
             if (method == null)
                 throw new ArgumentNullException("method");
             _method = method;
-            var paths = FindInstructionPaths();
+            InstructionGraph = CreateInstructionGraph();
+            var paths = FindInstructionPaths(InstructionGraph);
             ValueGraphs = new ReadOnlyCollection<Graph<Value>>(CreateValueGraph(paths));
         }
 
-        private IEnumerable<IList<Instruction>> FindInstructionPaths()
+        private IEnumerable<IList<Instruction>> FindInstructionPaths(Graph<Instruction> igraph)
         {
-            var igraph = CreateInstructionGraph();
             var returns = igraph.Walk().Where(i => i.OpCode == OpCodes.Ret);
             var paths = new List<IList<Instruction>>();
             foreach (var ret in returns)
