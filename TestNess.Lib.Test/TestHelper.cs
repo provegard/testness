@@ -11,6 +11,7 @@ using System.Reflection;
 using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using TestNess.Lib.Cil;
 using TestNess.Target;
 
@@ -106,7 +107,21 @@ namespace TestNess.Lib.Test
             return tracker.ValueGraphs.Select(func).FirstOrDefault(val => val != null);
         }
 
-        private static MethodDefinition FindFunction(MethodValueTracker tracker, MethodValueTracker.Value value)
+        private static Func<MethodValueTracker.Value, bool> IsFieldStoreOf(FieldDefinition field)
+        {
+            return v =>
+            {
+                if (v.Consumer != null && v.Consumer.OpCode == OpCodes.Stsfld)
+                {
+                    var stField = v.Consumer.Operand as FieldDefinition;
+                    if (stField == field)
+                        return true;
+                }
+                return false;
+            };
+        }
+
+        private static MethodDefinition FindFunction(TypeDefinition type, MethodValueTracker tracker, MethodValueTracker.Value value)
         {
             var queue = new Queue<MethodValueTracker.Value>(new[] { value });
             MethodDefinition funcDef = null;
@@ -116,7 +131,6 @@ namespace TestNess.Lib.Test
 
                 if (val.Producer.OpCode == OpCodes.Ldftn)
                 {
-                    //TODO: Check the type to verify that it's the correct one
                     // Something like:
                     // ldftn      instance bool TestNess.Lib.Test.TestCaseTest/'<>c__DisplayClasse'::'<TestFoo>b__d'(int32)
                     funcDef = val.Producer.Operand as MethodDefinition;
@@ -124,24 +138,32 @@ namespace TestNess.Lib.Test
                 }
                 if (val.Producer.OpCode == OpCodes.Ldsfld)
                 {
-                    //TODO: Check the type to verify that it's the correct one
                     var field = val.Producer.Operand as FieldDefinition;
 
                     // Find:
                     // stsfld     class [mscorlib]System.Func`2<int32,bool> TestNess.Lib.Test.TestCaseTest::'CS$<>9__CachedAnonymousMethodDelegate11'
 
-                    var xval = FindValue(tracker, graph => graph.Walk().FirstOrDefault(v =>
-                    {
-                        if (v.Consumer != null && v.Consumer.OpCode == OpCodes.Stsfld)
-                        {
-                            var stField = v.Consumer.Operand as FieldDefinition;
-                            if (stField == field)
-                                return true;
-                        }
-                        return false;
-                    }));
+                    Func<Graph<MethodValueTracker.Value>, MethodValueTracker.Value> valueFinder = 
+                        graph => graph.Walk().FirstOrDefault(IsFieldStoreOf(field));
 
-                    funcDef = FindFunction(tracker, xval);
+                    // First try the method itself
+                    var xval = FindValue(tracker, valueFinder);
+                    if (xval == null)
+                    {
+                        // Next try the static constructor of the type
+                        var staticConstructor = type.GetStaticConstructor();
+                        if (staticConstructor != null)
+                        {
+                            var tracker2 = new MethodValueTracker(staticConstructor);
+                            xval = FindValue(tracker2, valueFinder);
+                        }
+                    }
+                    if (xval == null)
+                    {
+                        throw new InvalidOperationException("Failed to find storing instruction.");
+                    }
+
+                    funcDef = FindFunction(type, tracker, xval);
                     if (funcDef != null)
                         break;
                 }
@@ -152,7 +174,7 @@ namespace TestNess.Lib.Test
             return funcDef;
         }
 
-        private static TestCase ConstructTestCase(object o, int stackFrameIndexDiff)
+        private static MethodDefinition FindMethodOfDelegate(Delegate d, int stackFrameIndexDiff)
         {
             var st = new StackTrace();
             var frame = st.GetFrame(1 + stackFrameIndexDiff);
@@ -163,8 +185,8 @@ namespace TestNess.Lib.Test
             var path = new Uri(callingType.Assembly.CodeBase).LocalPath;
             var mm = AssemblyDefinition.ReadAssembly(path).MainModule;
 
-            var tp = mm.Types.First(t => t.FullName == callingType.FullName);
-            var meth = tp.Methods.First(m => m.MetadataToken.ToInt32() == callingMethod.MetadataToken).Resolve();
+            var typeOfCaller = mm.Types.First(t => t.FullName == callingType.FullName);
+            var meth = typeOfCaller.Methods.First(m => m.MetadataToken.ToInt32() == callingMethod.MetadataToken).Resolve();
             var myMetadataToken = st.GetFrame(0 + stackFrameIndexDiff).GetMethod().MetadataToken;
             var callingInstruction =
                 meth.Body.Instructions.Where(ins => ins.OpCode == OpCodes.Call).FirstOrDefault(ins => (ins.Operand as MethodReference).MetadataToken.ToInt32() == myMetadataToken);
@@ -176,16 +198,21 @@ namespace TestNess.Lib.Test
                     tracker.GetConsumedValues(graph, callingInstruction).ToList();
                 return consumedValues.Count > 0 ? consumedValues[0] : null;
             });
-            var funcDef = FindFunction(tracker, value);
+            var funcDef = FindFunction(typeOfCaller, tracker, value);
 
             if (funcDef == null)
-                throw new ArgumentException("Failed to find function...");
-            return new TestCase(funcDef);
+                throw new InvalidOperationException("Failed to find method for " + d);
+            return funcDef;
         }
 
         public static TestCase AsTestCase(this Delegate d)
         {
-            return ConstructTestCase(d, 1);
+            return new TestCase(FindMethodOfDelegate(d, 1));
+        }
+
+        public static MethodDefinition AsMethodDef(this Delegate d)
+        {
+            return FindMethodOfDelegate(d, 1);
         }
     }
 }
