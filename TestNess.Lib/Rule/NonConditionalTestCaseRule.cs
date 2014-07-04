@@ -3,9 +3,8 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
+using TestNess.Lib.Cil;
 
 namespace TestNess.Lib.Rule
 {
@@ -13,54 +12,29 @@ namespace TestNess.Lib.Rule
     {
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var count = BranchCount(testCase.TestMethod);
-            if (count == 0)
+            var paths = testCase.GetInstructionGraph().FindInstructionPaths().ToList();
+            var count = CountAssertsThatDontOccurInAllInstructionPaths(testCase, paths);
+            if (count == 0 && !ContainsLoopingPaths(paths))
             {
                 yield break;
             }
             yield return new Violation(this, testCase);
         }
 
-        public static int BranchCount(MethodDefinition method)
+        private static int CountAssertsThatDontOccurInAllInstructionPaths(TestCase testCase, IEnumerable<IList<Instruction>> paths)
         {
-            if (method.HasBody)
-            {
-                var bc = 0;
-                Instruction prev = null;
-                foreach (var ins in method.Body.Instructions)
-                {
-                    if (IsBranchingInstruction(ins))
-                    {
-                        // LINQ delegates may be cached, and the cache check leads to conditional
-                        // branching. To ignore that, check if the branching is preceded by the
-                        // loading of a static compiler-generated field.
-                        if (prev != null && prev.OpCode == OpCodes.Ldsfld)
-                        {
-                            var operand = prev.Operand as FieldDefinition;
-                            if (IsCompilerGenerated(operand))
-                            {
-                                continue;
-                            }
-                        }
-                        bc++;
-                    }
-                    prev = ins;
-                }
-                return bc;
-            }
-            return 0;
+            //TODO: Copied from LocalExpectationRule, need a better abstraction for this!
+            var calledAssertingMethods = testCase.GetCalledAssertingMethods();
+            var calledAssertingMethodsWithInstruction =
+                testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
+
+            return
+                calledAssertingMethodsWithInstruction.Count(cmi => paths.Any(path => !path.Contains(cmi.Instruction)));
         }
 
-        private static bool IsCompilerGenerated(FieldDefinition field)
+        private static bool ContainsLoopingPaths(IEnumerable<IList<Instruction>> paths)
         {
-            if (field == null)
-                return false;
-            return field.CustomAttributes.Any(a => a.AttributeType.FullName == typeof (CompilerGeneratedAttribute).FullName);
-        }
-
-        private static bool IsBranchingInstruction(Instruction inst)
-        {
-            return inst.OpCode.FlowControl == FlowControl.Cond_Branch; 
+            return paths.Any(p => p.ContainsLoop());
         }
 
         public override string ToString()

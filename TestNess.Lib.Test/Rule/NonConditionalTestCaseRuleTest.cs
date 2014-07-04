@@ -1,6 +1,8 @@
 ﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
+
+using System;
 using System.Linq;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
@@ -32,10 +34,25 @@ namespace TestNess.Lib.Test.Rule
         }
 
         [Test]
-        public void TestThatUseOfLinqDoesntCountTowardsBranchCount()
+        public void TestThatUseOfLinqIsntSeenAsViolation()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorConditionalTest>(_ => _.ATestWithNonConditionalLinq());
-            Assert.AreEqual(0, NonConditionalTestCaseRule.BranchCount(tc.TestMethod));
+            var rule = new NonConditionalTestCaseRule();
+            var violations = rule.Apply(tc);
+            Assert.AreEqual(0, violations.Count());
+        }
+
+        [Test]
+        public void ItShouldNotComplainAboutConditionalSetup()
+        {
+            Action a = () =>
+            {
+                var actual = new Random().Next(10) < 5 ? "foo" : "bar";
+                Assert.AreNotEqual(actual, "baz");
+            };
+            var rule = new NonConditionalTestCaseRule();
+            var violations = rule.Apply(a.AsTestCase());
+            Assert.AreEqual(0, violations.Count());
         }
     }
 }

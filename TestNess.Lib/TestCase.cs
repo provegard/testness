@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using GraphBuilder;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using TestNess.Lib.Cil;
 using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib
@@ -64,6 +66,14 @@ namespace TestNess.Lib
             TestMethod = method;
             _origin = testCaseOrigin;
             CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
+        }
+
+        /// <summary>
+        /// Exposes the instruction graph of the test method that contains this test case.
+        /// </summary>
+        public Graph<Instruction> GetInstructionGraph()
+        {
+            return InstructionGraph.CreateFrom(TestMethod);
         }
 
         /// <summary>
