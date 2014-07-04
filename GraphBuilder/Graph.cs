@@ -3,6 +3,7 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GraphBuilder
@@ -108,7 +109,7 @@ namespace GraphBuilder
             return paths;
         }
 
-        private void FindPaths(TNode start, TNode end, ICollection<Edge> visitedEdges, ICollection<IList<TNode>> paths)
+        private void FindPaths(TNode start, TNode end, List<Edge> visitedEdges, ICollection<IList<TNode>> paths)
         {
             if (start.Equals(end))
             {
@@ -118,13 +119,26 @@ namespace GraphBuilder
                 return;
             }
 
-            var edges = HeadsFor(start).Select(head => new Edge {Source = start, Target = head}).Where(e => !visitedEdges.Contains(e));
+            var edges = HeadsFor(start).Select(head => new Edge {Source = start, Target = head}).ToList();
+
+            // If we're at a branch point, don't continue on a path that we have alredy covered.
+            if (edges.Count > 1)
+            {
+                edges.RemoveAll(visitedEdges.Contains);
+            }
+
             foreach (var edge in edges)
             {
                 visitedEdges.Add(edge);
                 var target = edge.Target;
+
                 FindPaths(target, end, visitedEdges, paths);
-                visitedEdges.Remove(edge);
+
+                // Since we now handle cycles, we might end up having the same edge multiple times in
+                // our list, and we cannot simple use Remove as it removes the first one.
+                var idx = visitedEdges.LastIndexOf(edge);
+                Debug.Assert(idx >= 0);
+                visitedEdges.RemoveAt(idx);
             }
         }
 
@@ -132,6 +146,11 @@ namespace GraphBuilder
         {
             internal TNode Source;
             internal TNode Target;
+
+            public override string ToString()
+            {
+                return Source + " -> " + Target;
+            }
         }
     }
 }
