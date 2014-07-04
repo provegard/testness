@@ -38,14 +38,14 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationContainsLocation()
         {
             var violation = FindViolations("TestAddWithExternallyCalculatedExpectation()").First();
             Assert.IsNotNull(violation.Location);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationContainsLocationOfExternalSource()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
@@ -54,7 +54,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(24, violation.Location.StartLine);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationMessageRefersToConsumerIfPossible()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithExternallyCalculatedExpectation());
@@ -62,7 +62,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual("external production of (possibly) expected value (argument 1 of AreEqual on line 26)", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationForUncertainCaseContainsLocationOfValueUsage()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithManuallyComparedExternallyCalculatedExpectation());
@@ -71,7 +71,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(35, violation.Location.StartLine);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationMessageForUncertainCaseRefersToValueUser()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAddWithManuallyComparedExternallyCalculatedExpectation());
@@ -79,14 +79,14 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual("the expected value used by IsTrue should be produced locally", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesRule()
         {
             var rule = new LocalExpectationRule();
             Assert.AreEqual("an assert expectation should be locally produced", rule.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatObjectConstructionCountsAsLocalProduction()
         {
             var rule = new LocalExpectationRule();
@@ -95,7 +95,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(0, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatTypeOfCountsAsLocalProduction()
         {
             var rule = new LocalExpectationRule();

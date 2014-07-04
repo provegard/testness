@@ -20,49 +20,49 @@ namespace TestNess.Lib.Test.Rule
             _rules = new Rules(typeof(IRule).Assembly);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorAcceptsEmptyConfiguration()
         {
             _configurator.ReadConfiguration("");
             Assert.AreEqual(0, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorAcceptsSingleKeyValuePair()
         {
             _configurator.ReadConfiguration("Rule.Setting=5");
             Assert.AreEqual(1, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorAcceptsMultipleKeyValuePair()
         {
             _configurator.ReadConfiguration("Rule.Setting=5\nRule2.Setting=1");
             Assert.AreEqual(2, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorAcceptsMultipleKeyValuePairWithCrLf()
         {
             _configurator.ReadConfiguration("Rule.Setting=5\r\nRule2.Setting=1");
             Assert.AreEqual(2, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorIgnoresBlankLinesInConfig()
         {
             _configurator.ReadConfiguration("Rule.Setting=5\n  \nRule2.Setting=1");
             Assert.AreEqual(2, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorIgnoresCommentLinesInConfig()
         {
             _configurator.ReadConfiguration("Rule.Setting=5\n# a comment\nRule2.Setting=1");
             Assert.AreEqual(2, _configurator.NumberOfRulesToConfigure);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfiguratorCountsRulesNotSettings()
         {
             _configurator.ReadConfiguration("Rule.Setting1=5\n\nRule.Setting2=1");
@@ -87,7 +87,7 @@ namespace TestNess.Lib.Test.Rule
             _configurator.ReadConfiguration("Rule=5");
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfigurationCanBeAppliedToRules()
         {
             _configurator.ReadConfiguration("LimitAssertsPerTestCase.MaxNumberOfAsserts=2");
@@ -97,7 +97,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(2, ((LimitAssertsPerTestCaseRule) rule).MaxNumberOfAsserts);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfigurationWithWhitespaceCanBeAppliedToRules()
         {
             _configurator.ReadConfiguration("LimitAssertsPerTestCase.MaxNumberOfAsserts = 2 ");

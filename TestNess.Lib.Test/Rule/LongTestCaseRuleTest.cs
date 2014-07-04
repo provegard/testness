@@ -32,28 +32,28 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationMessageContainsTestCaseSpecificInformation()
         {
             var violation = FindViolations("ThenWeShouldBeAbleToAdd_Long()").First();
             Assert.AreEqual("test case contains 11 code statements (limit is 10)", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesRule()
         {
             var rule = new LongTestCaseRule();
             Assert.AreEqual("a test case should contain at most 10 code statements", rule.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesConfiguredRule()
         {
             var rule = new LongTestCaseRule { MaxNumberOfLinesOfCode = 20 };
             Assert.AreEqual("a test case should contain at most 20 code statements", rule.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorMethodLengthTest>(t => t.ThenWeShouldBeAbleToAdd_Long());
@@ -69,7 +69,7 @@ namespace TestNess.Lib.Test.Rule
             new LongTestCaseRule { MaxNumberOfLinesOfCode = 0 };
         }
 
-        [TestCase]
+        [Test]
         public void TestThatAcceptableLocIsTenByDefault()
         {
             var rule = new LongTestCaseRule();

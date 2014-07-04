@@ -21,49 +21,49 @@ namespace TestNess.Lib.Test.TestFramework
             _framework = new MSTestTestFramework();
         }
 
-        [TestCase]
+        [Test]
         public void TestThatInitializeMethodIsDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTest).FindMethod("Setup()");
             Assert.IsTrue(_framework.IsSetupMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatTestMethodIsntDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTest).FindMethod("ItShouldBeAbleToAdd()");
             Assert.IsFalse(_framework.IsSetupMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatMethodIsDetectedAsTestMethod()
         {
             var method = typeof (IntegerCalculatorTest).FindMethod("TestAddBasic()");
             Assert.IsTrue(_framework.IsTestMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatMethodIsDetectedAsNonTestMethod()
         {
             var method = typeof(IntegerCalculator).FindMethod("Add(System.Int32,System.Int32)");
             Assert.IsFalse(_framework.IsTestMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatExpectedExceptionIsIdentified()
         {
             var method = typeof(IntegerCalculatorTest).FindMethod("TestDivideWithException()");
             Assert.IsTrue(_framework.HasExpectedException(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatNonExpectedExceptionIsIdentified()
         {
             var method = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
             Assert.IsFalse(_framework.HasExpectedException(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatAssertionThrowingMethodIsDetected()
         {
             var method =
@@ -72,7 +72,7 @@ namespace TestNess.Lib.Test.TestFramework
             Assert.IsTrue(_framework.DoesContainAssertion(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatNonAssertionThrowingMethodIsDetected()
         {
             var method = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");

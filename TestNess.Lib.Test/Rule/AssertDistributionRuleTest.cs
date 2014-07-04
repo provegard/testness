@@ -21,7 +21,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesRule()
         {
             var rule = new AssertDistributionRule();

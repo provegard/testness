@@ -16,14 +16,14 @@ namespace TestNess.Lib.Test.Cil
     [TestFixture]
     public class MethodValueTrackerTest
     {
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestThrowOnNullMethod()
         {
             new MethodValueTracker(null);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConsumedValueCountCorrespondsToActualConsumption()
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
@@ -32,7 +32,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(1, consumedValues.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConsumedConstantIsFound()
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
@@ -42,7 +42,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(OpCodes.Ldc_I4_S, consumedValue.Producer.OpCode);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConstantConsumedViaBoxedValueIsFound()
         {
             var method = GetType().FindMethod("BoxedConstantUseByStaticMethod()");
@@ -53,7 +53,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(OpCodes.Ldc_I4_S, roots.First().Producer.OpCode);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConsumedValuesExcludesThisObjectForVirtualCall()
         {
             var method = GetType().FindMethod("DirectConstantUseByVirtualMethod()");
@@ -65,7 +65,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEqual(new[] { OpCodes.Ldc_I4_S }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConsumedValuesIncludesFirstArgOfStaticCallInStatic()
         {
             var method = GetType().FindMethod("StaticMethodWithStaticCall(System.Int32)");
@@ -77,7 +77,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEqual(new[] { OpCodes.Ldarg_0 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatSourceValuesAreFoundThroughSequenceOfCalculations()
         {
             var method = GetType().FindMethod("CalculatedValueUseByStaticMethod(System.Int32,System.Int32)");
@@ -87,7 +87,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldarg_1, OpCodes.Ldarg_2, OpCodes.Ldc_I4_1 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestThatQueryInstructionCannotBeNull()
         {
@@ -96,7 +96,7 @@ namespace TestNess.Lib.Test.Cil
             tracker.GetConsumedValues(tracker.ValueGraphs[0], null);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestThatGraphCannotBeNullWhenQueryingConsumedValues()
         {
@@ -105,7 +105,7 @@ namespace TestNess.Lib.Test.Cil
             tracker.GetConsumedValues(null, LastCall(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConsumedValuesAreEmptyWhenQueryInstructionIsNotPartOfMethod()
         {
             var method = GetType().FindMethod("DirectConstantUseByStaticMethod()");
@@ -115,7 +115,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(0, values.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatSourceValueIsTrackedThroughRefManipulation()
         {
             var method = GetType().FindMethod("UseOfValueManipulatedAsReference()");
@@ -125,7 +125,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_5 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatSourceValueIsTrackedThroughtOutValue()
         {
             var method = GetType().FindMethod("UseOfOutValue()");
@@ -135,7 +135,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatSourceValueIsTrackedThroughtOutValueDespitePreviousUseOfOutVariable()
         {
             var method = GetType().FindMethod("UseOfOutValueTwice()");
@@ -145,7 +145,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatSourceValueIsTrackedThroughReturnValue()
         {
             var method = GetType().FindMethod("UseOfReturnValue()");
@@ -155,7 +155,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEquivalent(new[] { OpCodes.Ldc_I4_5, OpCodes.Ldc_I4_6 }, opCodes);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatObjectConstructionIsHandled()
         {
             var method = GetType().FindMethod("ObjectConstruction()");

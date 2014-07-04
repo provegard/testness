@@ -17,7 +17,7 @@ namespace TestNess.Lib.Test.Rule
             new Rules(); // should throw
         }
 
-        [TestCase]
+        [Test]
         public void TestFindRulesInSuppliedAssembly()
         {
             var rules = new Rules(typeof(IRule).Assembly);
@@ -29,7 +29,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.IsNotNull(soughtRule.FirstOrDefault());
         }
 
-        [TestCase]
+        [Test]
         public void TestFindRuleByName()
         {
             var rules = new Rules(typeof(IRule).Assembly);
@@ -39,7 +39,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.IsNotNull(soughtRule);
         }
 
-        [TestCase]
+        [Test]
         public void TestFindRuleByNameWithoutRuleSuffix()
         {
             var rules = new Rules(typeof(IRule).Assembly);

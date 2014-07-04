@@ -24,21 +24,21 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationContainsSourceLocation()
         {
             var violation = FindViolations("TestAddWithUnhandledReturnValueFromStaticMethod()").First();
             Assert.IsNotNull(violation.Location);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationMessageRefersToMethod()
         {
             var violation = FindViolations("TestAddWithUnhandledReturnValueFromStaticMethod()").First();
             Assert.AreEqual("return value of method StaticMethod() is not used", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesRule()
         {
             var rule = new UnhandledReturnValueRule();

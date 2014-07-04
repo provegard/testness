@@ -11,7 +11,7 @@ namespace TestNess.Lib.Test
     [TestFixture]
     public class TestCasesTest
     {
-        [TestCase]
+        [Test]
         public void TestThatMsTestCaseCanBeRetrievedFromRepository()
         {
             var repo = CreateTestCaseRepository();
@@ -19,7 +19,7 @@ namespace TestNess.Lib.Test
             Assert.IsInstanceOf(typeof(TestCase), testCase);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatRetrievalByNameFromRepositoryThrowsForNonTestMethod()
         {
             var repo = CreateTestCaseRepository();
@@ -27,7 +27,7 @@ namespace TestNess.Lib.Test
                 () => repo.GetTestCaseByName("TestNess.Target.IntegerCalculator::Add(System.Int32,System.Int32)"));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatRetrievalByNameFromRepositoryThrowsForMissingMethod()
         {
             var repo = CreateTestCaseRepository();
@@ -35,7 +35,7 @@ namespace TestNess.Lib.Test
                 () => repo.GetTestCaseByName("TestNess.Target.IntegerCalculatorTest::NoSuchMethod()"));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatAllTestCasesCanBeRetrievedFromRepository()
         {
             var repo = CreateTestCaseRepository();
@@ -46,7 +46,7 @@ namespace TestNess.Lib.Test
             CollectionAssert.IsSubsetOf(new List<TestCase> {testCase1, testCase2}, testCases.AsNonGeneric());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatCollectionOfAllTestCasesIsEmptyIfNoTestCases()
         {
             var assembly = Assembly.GetCallingAssembly();
@@ -55,7 +55,7 @@ namespace TestNess.Lib.Test
             Assert.AreEqual(0, testCases.Count);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatRepositoryCanBeLoadedFromFile()
         {
             var assembly = Assembly.GetCallingAssembly();
@@ -63,7 +63,7 @@ namespace TestNess.Lib.Test
             Assert.IsNotNull(repo);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatTestMethodsInRepositoryContainsSequencePoints()
         {
             var repo = TestCases.FromAssembly(TestHelper.GetTargetAssembly());

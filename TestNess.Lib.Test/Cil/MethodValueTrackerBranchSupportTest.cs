@@ -12,7 +12,7 @@ namespace TestNess.Lib.Test.Cil
     [TestFixture]
     public class MethodValueTrackerBranchSupportTest
     {
-        [TestCase]
+        [Test]
         public void TestThatTrackerExposesTwoValueGraphsForMethodWithTwoPaths()
         {
             var method = GetType().FindMethod("MethodWithBranch()");
@@ -20,7 +20,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(2, tracker.ValueGraphs.Count);
         }
         
-        [TestCase]
+        [Test]
         public void TestThatTrackerExposesValueGraphsForAllCasesOfSwitchStatement()
         {
             var method = GetType().FindMethod("MethodWithSwitch()");
@@ -28,7 +28,7 @@ namespace TestNess.Lib.Test.Cil
             Assert.AreEqual(3, tracker.ValueGraphs.Count);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatValueConsumptionForInstructionMatchesPath()
         {
             var method = GetType().FindMethod("MethodWithBranch()");
@@ -41,7 +41,7 @@ namespace TestNess.Lib.Test.Cil
             CollectionAssert.AreEqual(new[] { OpCodes.Ldloc_2 }, producers);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatValueConsumptionForInstructionOutsidePathIsEmpty()
         {
             var method = GetType().FindMethod("MethodWithBranch()");

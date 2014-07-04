@@ -19,19 +19,19 @@ namespace TestNess.Lib.Test.Rule
             _violation = new Violation(new ViolationTest.SomeRule(), tc);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheDocumentShouldBeExposed()
         {
             StringAssert.EndsWith("\\IntegerCalculatorLocationTest.cs", _violation.DocumentUrl);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheLocationShouldBeUnknown()
         {
             Assert.IsNull(_violation.Location);
         }
 
-        [TestCase]
+        [Test]
         public void ThenToStringShouldContainDocumentAndMethod()
         {
             const string expectedEnd = "\\IntegerCalculatorLocationTest.cs(TestAdd()): violation of \"some rule\"";

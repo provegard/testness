@@ -12,7 +12,7 @@ namespace TestNess.Lib.Test.Rule
     [TestFixture]
     public class ViolationTest
     {
-        [TestCase]
+        [Test]
         public void TestThatViolationExposesRule()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
@@ -23,7 +23,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreSame(rule, violation.Rule);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationExposesTestCase()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
@@ -33,7 +33,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreSame(tc, violation.TestCase);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringWithoutDebugSymbolsIncludesTypeAndMethod()
         {
             var tm = typeof(IntegerCalculatorTest).FindMethod("TestAddBasic()");
@@ -45,7 +45,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expected, violation.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationExposesMessage()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(x => x.TestAddBasic());
@@ -55,7 +55,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual("violation of \"some rule\"", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatMessageCanBeCustomized()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
@@ -65,7 +65,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual("a message", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatCustomizedMessageOccursInToString()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());

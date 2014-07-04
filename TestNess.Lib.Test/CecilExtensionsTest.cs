@@ -31,14 +31,14 @@ namespace TestNess.Lib.Test
                     select m).First();
         }
 
-        [TestCase]
+        [Test]
         public void TestThatCalledMethodCanBeExtracted()
         {
             var calledMethods = GetReferringMethod("ReferringMethod").CalledMethods();
             CollectionAssert.Contains(calledMethods.Select(m => m.Method.Name).ToList(), "AMethod");
         }
 
-        [TestCase]
+        [Test]
         public void TestThatCalledMethodsFromAbstractClassAreEmpty()
         {
             var calledMethods = GetReferringMethod("AnAbstractMethod").CalledMethods();

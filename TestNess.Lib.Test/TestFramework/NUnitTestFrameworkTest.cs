@@ -21,63 +21,63 @@ namespace TestNess.Lib.Test.TestFramework
             _framework = new NUnitTestFramework();
         }
 
-        [TestCase]
+        [Test]
         public void TestThatBeforeAllMethodIsDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTestNUnit).FindMethod("BeforeAll()");
             Assert.IsTrue(_framework.IsSetupMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatBeforeEachMethodIsDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTestNUnit).FindMethod("BeforeEach()");
             Assert.IsTrue(_framework.IsSetupMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatTestMethodIsntDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTestNUnit).FindMethod("ItShouldBeAbleToAdd()");
             Assert.IsFalse(_framework.IsSetupMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatMethodIsDetectedAsTestMethod()
         {
             var method = typeof (IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");
             Assert.IsTrue(_framework.IsTestMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatDataDrivenMethodIsDetectedAsTestMethod()
         {
             var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestDataDriven(System.Int32,System.Int32,System.Int32)");
             Assert.IsTrue(_framework.IsTestMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatMethodIsDetectedAsNonTestMethod()
         {
             var method = typeof(IntegerCalculator).FindMethod("Add(System.Int32,System.Int32)");
             Assert.IsFalse(_framework.IsTestMethod(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatExpectedExceptionIsIdentified()
         {
             var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestDivideWithException()");
             Assert.IsTrue(_framework.HasExpectedException(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatNonExpectedExceptionIsIdentified()
         {
             var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");
             Assert.IsFalse(_framework.HasExpectedException(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatAssertionThrowingMethodIsDetected()
         {
             // That(object actual, IResolveConstraint expression, string message, params object[] args)
@@ -87,7 +87,7 @@ namespace TestNess.Lib.Test.TestFramework
             Assert.IsTrue(_framework.DoesContainAssertion(method));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatNonAssertionThrowingMethodIsDetected()
         {
             var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestAddBasic()");

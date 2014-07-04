@@ -23,21 +23,21 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatViolationMessageContainsTestCaseSpecificInformation()
         {
             var violation = FindViolations("TestAddTwoAsserts()").First();
             Assert.AreEqual("test case contains 2 asserts (limit is 1)", violation.Message);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesRule()
         {
             var rule = new LimitAssertsPerTestCaseRule();
             Assert.AreEqual("a test case should have 1 assert or expect an exception", rule.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestThatToStringDescribesConfiguredRule()
         {
             var rule = new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 2 };
@@ -45,7 +45,7 @@ namespace TestNess.Lib.Test.Rule
         }
 
 
-        [TestCase]
+        [Test]
         public void TestThatRuleCanBeConfiguredWithAcceptedNumberOfAsserts()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddTwoAsserts());
@@ -61,7 +61,7 @@ namespace TestNess.Lib.Test.Rule
             new LimitAssertsPerTestCaseRule { MaxNumberOfAsserts = 0 };
         }
 
-        [TestCase]
+        [Test]
         public void TestThatAcceptableAssertsIsOneByDefault()
         {
             var rule = new LimitAssertsPerTestCaseRule();

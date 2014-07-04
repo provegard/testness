@@ -22,37 +22,37 @@ namespace TestNess.Lib.Test.Rule
                 tc.TestMethod.Body.Instructions.First(i => i.OpCode != OpCodes.Nop && i.SequencePoint != null));
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheDocumentShouldBeExposed()
         {
             StringAssert.EndsWith("\\IntegerCalculatorLocationTest.cs", _violation.DocumentUrl);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheStartLineLocationShouldBeExposed()
         {
             Assert.AreEqual(15, _violation.Location.StartLine);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheEndLineLocationShouldBeExposed()
         {
             Assert.AreEqual(16, _violation.Location.EndLine);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheStartColumnLocationShouldBeExposed()
         {
             Assert.AreEqual(13, _violation.Location.StartColumn);
         }
 
-        [TestCase]
+        [Test]
         public void ThenTheEndColumnLocationShouldBeExposed()
         {
             Assert.AreEqual(41, _violation.Location.EndColumn);
         }
 
-        [TestCase]
+        [Test]
         public void ThenToStringShouldContainDocumentAndLocation()
         {
             const string expectedEnd = "\\IntegerCalculatorLocationTest.cs(15,13): violation of \"some rule\"";

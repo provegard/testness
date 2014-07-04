@@ -10,132 +10,132 @@ namespace TestNess.Lib.Test
     [TestFixture]
     public class ArgumentsTest
     {
-        [TestCase]
+        [Test]
         public void TestWithoutAssemblyName()
         {
             var args = Arguments.Parse(new string[0]);
             Assert.IsFalse(args.HasAssemblyFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestPresenceOfAssemblyNameCanBeChecked()
         {
             var args = Arguments.Parse(new[] { "anassembly.dll" });
             Assert.IsTrue(args.HasAssemblyFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestAssemblyNameIsRead()
         {
             var args = Arguments.Parse(new[] { "anassembly.dll" });
             Assert.AreEqual("anassembly.dll", args.AssemblyFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatOptionIsNotMistakenForAssemblyName()
         {
             var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
             Assert.AreEqual("anassembly.dll", args.AssemblyFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfigFileIsReadFromOption()
         {
             var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
             Assert.AreEqual("testness.cfg", args.ConfigurationFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatConfigFileIsReadFromLongOption()
         {
             var args = Arguments.Parse(new[] { "/config:testness.cfg", "anassembly.dll" });
             Assert.AreEqual("testness.cfg", args.ConfigurationFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatPreseceOfConfigFileCanBeChecked()
         {
             var args = Arguments.Parse(new[] { "/c:testness.cfg", "anassembly.dll" });
             Assert.IsTrue(args.HasConfigurationFileName);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatUnrecognizedOptionThrows()
         {
             Assert.Throws<ArgumentException>(() => Arguments.Parse(new[] { "/x" }));
         }
 
-        [TestCase]
+        [Test]
         public void TestThatDefaultReporterIsPlain()
         {
             var args = Arguments.Parse(new string[0]);
             Assert.AreEqual(ReporterType.Plain, args.ReporterType);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatPlainReporterCanBeSelectedWithArgument()
         {
             var args = Arguments.Parse(new[] { "/plain" });
             Assert.AreEqual(ReporterType.Plain, args.ReporterType);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatReportPathCanBeSelectedWithArgument()
         {
             var args = Arguments.Parse(new[] { "/output:foo.txt" });
             Assert.AreEqual("foo.txt", args.ReportFilePath);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatXunitXmlReporterCanBeSelectedWithArgument()
         {
             var args = Arguments.Parse(new[] { "/xxml" });
             Assert.AreEqual(ReporterType.XunitXml, args.ReporterType);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatXunitHtmlReporterCanBeSelectedWithArgument()
         {
             var args = Arguments.Parse(new[] { "/xhtml" });
             Assert.AreEqual(ReporterType.XunitHtml, args.ReporterType);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatEncodingCanBeSpecified()
         {
             var args = Arguments.Parse(new[] { "/e:utf-8" });
             Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatEncodingCanBeSpecifiedUsingLongOption()
         {
             var args = Arguments.Parse(new[] { "/encoding:utf-8" });
             Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatEncodingCanBeSpecifiedUsingMediumOption()
         {
             var args = Arguments.Parse(new[] { "/enc:utf-8" });
             Assert.AreEqual(Encoding.UTF8, args.OutputEncoding);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatThereIsNoEncodingByDefault()
         {
             var args = Arguments.Parse(new string[0]);
             Assert.IsFalse(args.HasOutputEncoding);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatThereIsAnEncodingWhenSpecified()
         {
             var args = Arguments.Parse(new[] { "/e:utf-8" });
             Assert.IsTrue(args.HasOutputEncoding);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatUnrecognizedEncodingThrows()
         {
             Assert.Catch<ArgumentException>(() => Arguments.Parse(new[] { "/e:adfasdf" }));
