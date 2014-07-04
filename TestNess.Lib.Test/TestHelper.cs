@@ -4,10 +4,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using GraphBuilder;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using TestNess.Lib.Cil;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
@@ -47,9 +51,7 @@ namespace TestNess.Lib.Test
             var call = expr.Body as MethodCallExpression;
             if (call == null)
                 throw new InvalidOperationException("A method call is necessary.");
-            var signature = call.Method.ToString();
-            // strip the return type
-            signature = signature.Substring(signature.IndexOf(' ') + 1);
+            var signature = Signature.Of(call.Method).WithoutReturnType();
             return typeof(T).FindTestCase(signature);
         }
 
@@ -96,6 +98,94 @@ namespace TestNess.Lib.Test
         public static ICollection<TestCase> GetAllTestCases(this TestCases repo)
         {
             return repo.ToList();
+        }
+
+        private static MethodValueTracker.Value FindValue(MethodValueTracker tracker,
+            Func<Graph<MethodValueTracker.Value>, MethodValueTracker.Value> func)
+        {
+            return tracker.ValueGraphs.Select(func).FirstOrDefault(val => val != null);
+        }
+
+        private static MethodDefinition FindFunction(MethodValueTracker tracker, MethodValueTracker.Value value)
+        {
+            var queue = new Queue<MethodValueTracker.Value>(new[] { value });
+            MethodDefinition funcDef = null;
+            while (queue.Count > 0)
+            {
+                var val = queue.Dequeue();
+
+                if (val.Producer.OpCode == OpCodes.Ldftn)
+                {
+                    //TODO: Check the type to verify that it's the correct one
+                    // Something like:
+                    // ldftn      instance bool TestNess.Lib.Test.TestCaseTest/'<>c__DisplayClasse'::'<TestFoo>b__d'(int32)
+                    funcDef = val.Producer.Operand as MethodDefinition;
+                    break;
+                }
+                if (val.Producer.OpCode == OpCodes.Ldsfld)
+                {
+                    //TODO: Check the type to verify that it's the correct one
+                    var field = val.Producer.Operand as FieldDefinition;
+
+                    // Find:
+                    // stsfld     class [mscorlib]System.Func`2<int32,bool> TestNess.Lib.Test.TestCaseTest::'CS$<>9__CachedAnonymousMethodDelegate11'
+
+                    var xval = FindValue(tracker, graph => graph.Walk().FirstOrDefault(v =>
+                    {
+                        if (v.Consumer != null && v.Consumer.OpCode == OpCodes.Stsfld)
+                        {
+                            var stField = v.Consumer.Operand as FieldDefinition;
+                            if (stField == field)
+                                return true;
+                        }
+                        return false;
+                    }));
+
+                    funcDef = FindFunction(tracker, xval);
+                    if (funcDef != null)
+                        break;
+                }
+
+                foreach (var parent in val.Parents)
+                    queue.Enqueue(parent);
+            }
+            return funcDef;
+        }
+
+        private static TestCase ConstructTestCase(object o, int stackFrameIndexDiff)
+        {
+            var st = new StackTrace();
+            var frame = st.GetFrame(1 + stackFrameIndexDiff);
+
+            var callingMethod = frame.GetMethod();
+            var callingType = callingMethod.DeclaringType;
+
+            var path = new Uri(callingType.Assembly.CodeBase).LocalPath;
+            var mm = AssemblyDefinition.ReadAssembly(path).MainModule;
+
+            var tp = mm.Types.First(t => t.FullName == callingType.FullName);
+            var meth = tp.Methods.First(m => m.MetadataToken.ToInt32() == callingMethod.MetadataToken).Resolve();
+            var myMetadataToken = st.GetFrame(0 + stackFrameIndexDiff).GetMethod().MetadataToken;
+            var callingInstruction =
+                meth.Body.Instructions.Where(ins => ins.OpCode == OpCodes.Call).FirstOrDefault(ins => (ins.Operand as MethodReference).MetadataToken.ToInt32() == myMetadataToken);
+            var tracker = new MethodValueTracker(meth);
+
+            var value = FindValue(tracker, graph =>
+            {
+                var consumedValues =
+                    tracker.GetConsumedValues(graph, callingInstruction).ToList();
+                return consumedValues.Count > 0 ? consumedValues[0] : null;
+            });
+            var funcDef = FindFunction(tracker, value);
+
+            if (funcDef == null)
+                throw new ArgumentException("Failed to find function...");
+            return new TestCase(funcDef);
+        }
+
+        public static TestCase AsTestCase(this Delegate d)
+        {
+            return ConstructTestCase(d, 1);
         }
     }
 }
