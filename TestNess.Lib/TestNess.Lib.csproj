@@ -61,6 +61,7 @@
     <Compile Include="Analysis\ViolationScorer.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="Cil\InstructionGraph.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
     <Compile Include="TestFramework\NSubstituteTestFramework.cs" />
     <Compile Include="TestFramework\NUnitTestFramework.cs" />

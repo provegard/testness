@@ -75,6 +75,7 @@
     <Compile Include="Analysis\TestCaseRuleApplicationScorerTest.cs" />
     <Compile Include="Analysis\TestCaseRuleApplicationViolationTest.cs" />
     <Compile Include="ArgumentsTest.cs" />
+    <Compile Include="Cil\InstructionGraphTest.cs" />
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
     <Compile Include="Signature.cs" />
