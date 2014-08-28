@@ -80,12 +80,17 @@ namespace TestNess.Lib.Test.Reporting.XUnit
             var raw = _doc.XPathEvaluate(xpath);
             var obj = ((IEnumerable) raw).Cast<XObject>().FirstOrDefault();
 
-            string value = null;
-            if (obj is XElement)
-                value = TextValue((XElement) obj);
-            else if (obj is XAttribute)
-                value = ((XAttribute) obj).Value;
+            var value = GetXObjectValue(obj);
             StringAssert.IsMatch(valueRegEx, value);
+        }
+
+        private string GetXObjectValue(XObject obj)
+        {
+            if (obj is XElement)
+                return TextValue((XElement)obj);
+            if (obj is XAttribute)
+                return ((XAttribute)obj).Value;
+            return null;
         }
 
         [TestCase("/assembly/class/test[2]/failure")]
