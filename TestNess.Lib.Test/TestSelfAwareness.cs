@@ -20,11 +20,16 @@ namespace TestNess.Lib.Test
             var rules = new Rules(typeof(IRule).Assembly);
             var results = AnalysisResults.Create(repo, rules, new ViolationScorer());
             var score = results.Applications.Sum(a => a.Score);
+            PrintViolationsToConsole(results);
+            Assert.AreEqual(0m, score);
+        }
+
+        private void PrintViolationsToConsole(AnalysisResults results)
+        {
             foreach (var v in results.Applications.SelectMany(a => a.Violations))
             {
                 Console.WriteLine(v);
             }
-            Assert.AreEqual(0m, score);
         }
     }
 }
