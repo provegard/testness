@@ -51,3 +51,4 @@ _ReSharper*/
 ~$*
 *.dotCover
 *.DotSettings
+packages
