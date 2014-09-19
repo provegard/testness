@@ -1,10 +1,9 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
 using NUnit.Framework;
@@ -17,6 +16,18 @@ namespace TestNess.Lib.Test.TestFramework
     public class MSTestTestFrameworkTest
     {
         private MSTestTestFramework _framework;
+        private Assembly _msTestAssembly;
+
+        [TestFixtureSetUp]
+        public void FindMSTestAssembly()
+        {
+            // Find the assembly but without having a static reference to it, because that
+            // causes problems in Mono.
+            var attrs = typeof(IntegerCalculatorTest).GetCustomAttributes(false);
+            if (attrs.Length == 0)
+                throw new Exception("Huh, failed to get attributes for IntegerCalculatorTest.");
+            _msTestAssembly = attrs[0].GetType().Assembly;
+        }
 
         [SetUp]
         public void GivenFramework()
@@ -102,7 +113,7 @@ namespace TestNess.Lib.Test.TestFramework
         [TestCase("IsTrue(System.Boolean)", new[] { ParameterPurpose.Actual })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForAssert(string methodName, ParameterPurpose[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(methodName);
+            var method = FindTypeInMSTestAssembly("Microsoft.VisualStudio.TestTools.UnitTesting.Assert").FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
@@ -111,7 +122,7 @@ namespace TestNess.Lib.Test.TestFramework
         [TestCase("Matches(System.String,System.Text.RegularExpressions.Regex)", new[] { ParameterPurpose.Actual, ParameterPurpose.Expected })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForStringAssert(string methodName, ParameterPurpose[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.StringAssert).FindMethod(methodName);
+            var method = FindTypeInMSTestAssembly("Microsoft.VisualStudio.TestTools.UnitTesting.StringAssert").FindMethod(methodName);
             VerifyExpectedTypes(method, types);
         }
 
@@ -123,8 +134,13 @@ namespace TestNess.Lib.Test.TestFramework
         [TestCase("IsSubsetOf(System.Collections.ICollection,System.Collections.ICollection)", new[] { ParameterPurpose.ExpectedOrActual, ParameterPurpose.ExpectedOrActual })]
         public void TestThatParameterIndexIsIdentifiedCorrectlyForCollectionAssert(string methodName, ParameterPurpose[] types)
         {
-            var method = typeof(Microsoft.VisualStudio.TestTools.UnitTesting.CollectionAssert).FindMethod(methodName);
+            var method = FindTypeInMSTestAssembly("Microsoft.VisualStudio.TestTools.UnitTesting.CollectionAssert").FindMethod(methodName);
             VerifyExpectedTypes(method, types);
+        }
+
+        private Type FindTypeInMSTestAssembly(string typeName)
+        {
+            return _msTestAssembly.GetType(typeName, true);
         }
 
         private void VerifyExpectedTypes(MethodReference method, IEnumerable<ParameterPurpose> types)
