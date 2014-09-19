@@ -20,6 +20,8 @@ namespace TestNess.Lib.TestFramework
             "Microsoft.VisualStudio.TestTools.UnitTesting.TestContext";
         private const string TestSetupAttributeName =
             "Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute";
+        private const string IgnoreAttributeName =
+            "Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute";
 
         public bool IsSetupMethod(MethodDefinition method)
         {
@@ -29,6 +31,16 @@ namespace TestNess.Lib.TestFramework
         public bool IsTestMethod(MethodDefinition method)
         {
             return method.CustomAttributes.Where(IsTestAttribute).Any();
+        }
+
+        public bool IsIgnoredTest(MethodDefinition method)
+        {
+            return method.CustomAttributes.Where(IsIgnoreAttribute).Any();
+        }
+
+        private static bool IsIgnoreAttribute(CustomAttribute attr)
+        {
+            return IgnoreAttributeName.Equals(attr.AttributeType.FullName);
         }
 
         private static bool IsTestAttribute(CustomAttribute attr)

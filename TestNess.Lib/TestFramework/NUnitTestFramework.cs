@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Collections.Generic;
 
 namespace TestNess.Lib.TestFramework
 {
@@ -23,6 +22,8 @@ namespace TestNess.Lib.TestFramework
             "NUnit.Framework.SetUpAttribute";
         private const string TestFixtureSetUpAttributeName =
             "NUnit.Framework.TestFixtureSetUpAttribute";
+        private const string IgnoreAttributeName =
+            "NUnit.Framework.IgnoreAttribute";
 
         public bool IsSetupMethod(MethodDefinition method)
         {
@@ -133,6 +134,16 @@ namespace TestNess.Lib.TestFramework
                 }
             }
             return isAssert;
+        }
+
+        public bool IsIgnoredTest(MethodDefinition method)
+        {
+            return method.CustomAttributes.Where(IsIgnoreAttribute).Any();
+        }
+
+        private static bool IsIgnoreAttribute(CustomAttribute attr)
+        {
+            return IgnoreAttributeName.Equals(attr.AttributeType.FullName);
         }
     }
 }

@@ -22,6 +22,8 @@ namespace TestNess.Lib.TestFramework
 
         bool IsTestMethod(MethodDefinition method);
 
+        bool IsIgnoredTest(MethodDefinition method);
+
         bool HasExpectedException(MethodDefinition method);
 
         bool DoesContainAssertion(MethodDefinition method);

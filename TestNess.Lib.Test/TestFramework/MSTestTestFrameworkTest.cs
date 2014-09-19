@@ -22,6 +22,13 @@ namespace TestNess.Lib.Test.TestFramework
         }
 
         [Test]
+        public void TestThatIgnoredTestMethodIsRecognized()
+        {
+            var method = typeof(IntegerCalculatorTest).FindMethod("TestIgnoredAdd()");
+            Assert.IsTrue(_framework.IsIgnoredTest(method));
+        }
+
+        [Test]
         public void TestThatInitializeMethodIsDetectedAsSetupMethod()
         {
             var method = typeof(IntegerCalculatorBddStyleTest).FindMethod("Setup()");

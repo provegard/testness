@@ -26,6 +26,11 @@ namespace TestNess.Lib.TestFramework
             return false;
         }
 
+        public bool IsIgnoredTest(MethodDefinition method)
+        {
+            return false;
+        }
+
         public bool HasExpectedException(MethodDefinition method)
         {
             return false;

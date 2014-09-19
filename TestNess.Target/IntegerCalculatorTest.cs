@@ -10,6 +10,13 @@ namespace TestNess.Target
     [TestClass]
     public class IntegerCalculatorTest
     {
+        [TestMethod, Ignore]
+        public void TestIgnoredAdd()
+        {
+            var calculator = new IntegerCalculator();
+            Assert.AreEqual(3, calculator.Add(1, 2));
+        }
+
         [TestMethod]
         public void TestAddTwoAsserts()
         {
