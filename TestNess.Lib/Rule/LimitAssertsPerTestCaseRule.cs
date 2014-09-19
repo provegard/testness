@@ -9,7 +9,6 @@ namespace TestNess.Lib.Rule
 {
     public class LimitAssertsPerTestCaseRule : IRule
     {
-        private readonly ITestFramework _framework = TestFrameworks.Instance;
         private int _maxAsserts;
 
         public LimitAssertsPerTestCaseRule()
@@ -37,7 +36,7 @@ namespace TestNess.Lib.Rule
             var assertMethodCount = testCase.GetCalledAssertingMethods().Count;
             if (0 < assertMethodCount && assertMethodCount <= _maxAsserts)
                 yield break; // no violation
-            if (assertMethodCount == 0 && _framework.HasExpectedException(testCase.TestMethod))
+            if (assertMethodCount == 0 && testCase.Framework.HasExpectedException(testCase.TestMethod))
                 yield break; // no violation
             yield return new Violation(this, testCase, CreateViolationMessage(assertMethodCount));
         }

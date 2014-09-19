@@ -24,7 +24,6 @@ namespace TestNess.Lib
     public class TestCase
     {
         private ICollection<MethodDefinition> _assertingMethods;
-        private readonly ITestFramework _framework = TestFrameworks.Instance;
         private TestCaseOrigin _origin;
 
         /// <summary>
@@ -46,6 +45,8 @@ namespace TestNess.Lib
             get { return GetTestCaseName(TestMethod); }
         }
 
+        public ITestFramework Framework { get; private set; }
+
         internal static string GetTestCaseName(MethodDefinition method)
         {
             // FullName includes the return type, which is not interesting from
@@ -61,11 +62,13 @@ namespace TestNess.Lib
         /// <param name="method">The method that contains/defines the test case.</param>
         /// <param name="testCaseOrigin">Contains origin information about the test case. Not
         /// mandatory.</param>
-        public TestCase(MethodDefinition method, TestCaseOrigin testCaseOrigin = null)
+        /// <param name="framework">Test case framework that the test case belongs to.</param>
+        public TestCase(MethodDefinition method, ITestFramework framework, TestCaseOrigin testCaseOrigin = null)
         {
             TestMethod = method;
             _origin = testCaseOrigin;
             CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
+            Framework = framework;
         }
 
         /// <summary>
@@ -168,7 +171,7 @@ namespace TestNess.Lib
         {
             if (!method.IsDefinition || !((MethodDefinition)method).HasBody)
                 return false;
-            return _framework.DoesContainAssertion((MethodDefinition)method);
+            return Framework.DoesContainAssertion((MethodDefinition)method);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Mono.Cecil.Cil;
 using NUnit.Framework;
+using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib.Test
 {
@@ -20,7 +21,7 @@ namespace TestNess.Lib.Test
         {
             // IL_0000:  ldstr      "foo"
             Action a = () => Console.WriteLine("foo");
-            var tc = a.AsTestCase();
+            var tc = a.AsTestCase(new NUnitTestFramework());
 
             Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("foo")));
         }
@@ -31,7 +32,7 @@ namespace TestNess.Lib.Test
             // IL_0000:  ldstr      "foo"
             var x = 5;
             Action a = () => Console.WriteLine("bar" + x);
-            var tc = a.AsTestCase();
+            var tc = a.AsTestCase(new NUnitTestFramework());
 
             Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("bar")));
         }
@@ -39,7 +40,7 @@ namespace TestNess.Lib.Test
         [Test]
         public void ShouldProduceTestCaseFromStaticMemberAction()
         {
-            var tc = sa.AsTestCase();
+            var tc = sa.AsTestCase(new NUnitTestFramework());
 
             Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("sfoo")));
         }

@@ -13,6 +13,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using TestNess.Lib.Cil;
+using TestNess.Lib.TestFramework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
@@ -205,9 +206,9 @@ namespace TestNess.Lib.Test
             return funcDef;
         }
 
-        public static TestCase AsTestCase(this Delegate d)
+        public static TestCase AsTestCase(this Delegate d, ITestFramework framework)
         {
-            return new TestCase(FindMethodOfDelegate(d, 1));
+            return new TestCase(FindMethodOfDelegate(d, 1), framework);
         }
 
         public static MethodDefinition AsMethodDef(this Delegate d)

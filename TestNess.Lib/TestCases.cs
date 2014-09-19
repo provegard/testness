@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using Mono.Cecil;
 using Mono.Cecil.Pdb;
@@ -22,7 +23,6 @@ namespace TestNess.Lib
     public class TestCases : IEnumerable<TestCase>
     {
         private readonly AssemblyDefinition _assembly;
-        private readonly ITestFramework _framework;
         private readonly IEnumerable<TestCase> _enumerable;
         private readonly string _fileName;
 
@@ -35,15 +35,21 @@ namespace TestNess.Lib
         {
             _assembly = assembly;
             _fileName = fileName;
-            _framework = TestFrameworks.Instance;
             _enumerable = CreateEnumerable();
         }
 
         private IEnumerable<TestCase> CreateEnumerable()
         {
-            return
-                _assembly.MainModule.Types.SelectMany(type => type.Methods).Where(_framework.IsTestMethod).Select(
-                    m => new TestCase(m, new TestCaseOrigin(_assembly, _fileName)));
+            foreach (var method in _assembly.MainModule.Types.SelectMany(type => type.Methods))
+            {
+                foreach (var fw in TestFrameworks.Instance.Frameworks)
+                {
+                    if (fw.IsTestMethod(method))
+                    {
+                        yield return new TestCase(method, fw, new TestCaseOrigin(_assembly, _fileName));
+                    }
+                }
+            }
         }
         
         /// <summary>

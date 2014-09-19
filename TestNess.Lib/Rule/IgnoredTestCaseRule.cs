@@ -9,12 +9,10 @@ namespace TestNess.Lib.Rule
 {
     public class IgnoredTestCaseRule : IRule
     {
-        private readonly ITestFramework _framework = TestFrameworks.Instance;
-
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
             string reason;
-            if (_framework.IsIgnoredTest(testCase.TestMethod, out reason))
+            if (testCase.Framework.IsIgnoredTest(testCase.TestMethod, out reason))
             {
                 // Ignored with a reason    => normal severity
                 // Ignored without a reason => high severity

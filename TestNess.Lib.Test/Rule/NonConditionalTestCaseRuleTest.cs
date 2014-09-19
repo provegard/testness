@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
+using TestNess.Lib.TestFramework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test.Rule
@@ -51,7 +52,7 @@ namespace TestNess.Lib.Test.Rule
                 Assert.AreNotEqual(actual, "baz");
             };
             var rule = new NonConditionalTestCaseRule();
-            var violations = rule.Apply(a.AsTestCase());
+            var violations = rule.Apply(a.AsTestCase(new NUnitTestFramework()));
             Assert.AreEqual(0, violations.Count());
         }
     }

@@ -22,10 +22,13 @@ namespace TestNess.Lib.Rule
         private static readonly IList<OpCode> FieldLoadOpCodes = new List<OpCode> { OpCodes.Ldfld, OpCodes.Ldflda, OpCodes.Ldsfld, OpCodes.Ldsflda };
         private static readonly IList<OpCode> StaticFieldLoadOpCodes = new List<OpCode> { OpCodes.Ldsfld, OpCodes.Ldsflda };
 
-        private readonly ITestFramework _framework = TestFrameworks.Instance;
+        private ITestFramework _framework;
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
+            // Store the framework so that we don't have to pass it around everywhere.
+            _framework = testCase.Framework;
+
             var calledAssertingMethods = testCase.GetCalledAssertingMethods();
             // TODO: Resolve needed for Reference -> Definition .. can we get rid of it??
             var calledMethods =

@@ -5,6 +5,7 @@ using System.Linq;
 using GraphBuilder;
 using Mono.Cecil;
 using NUnit.Framework;
+using TestNess.Lib.TestFramework;
 using TestNess.Target;
 
 namespace TestNess.Lib.Test
@@ -132,8 +133,15 @@ namespace TestNess.Lib.Test
         [Test]
         public void TestThatTestCaseWithUnspecifiedOriginFindsOriginAssemblyInTestMethod()
         {
-            var tc = new TestCase(_testCase.TestMethod);
+            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework());
             Assert.AreSame(tc.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
+        }
+
+        [Test]
+        public void TestThatTestCaseExposesFramework()
+        {
+            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework());
+            Assert.IsInstanceOf<MSTestTestFramework>(tc.Framework);
         }
     }
 }
