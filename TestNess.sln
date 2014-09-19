@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNess.Main", "TestNess.Main\TestNess.Main.csproj", "{225232DF-C22C-478B-B70F-016F6B96A96B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNess.Lib", "TestNess.Lib\TestNess.Lib.csproj", "{F5E06955-D551-437D-8C05-66DE17E1A68E}"
@@ -24,10 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graph", "Graph", "{45015DC1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4A80DC6E-EB0D-4F8C-AC2B-FC8A75F32710}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.TestTools.UnitTesting", "mono-unittest\Microsoft.VisualStudio.TestTools.UnitTesting\Microsoft.VisualStudio.TestTools.UnitTesting.csproj", "{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}"
+EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = TestNess.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -97,13 +98,26 @@ Global
 		{F1130593-0664-480F-84E1-70D4CB02543B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F1130593-0664-480F-84E1-70D4CB02543B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F1130593-0664-480F-84E1-70D4CB02543B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C351C718-BEEB-4D41-83FD-4015BDC1B0CB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{00732E60-8BB4-4138-8EAF-9ACD44585FAD} = {4A80DC6E-EB0D-4F8C-AC2B-FC8A75F32710}
-		{F1130593-0664-480F-84E1-70D4CB02543B} = {45015DC1-F40F-4C7C-89CA-6EA33B3F7250}
 		{BBFF7561-3653-4DAB-B251-374B934D738F} = {45015DC1-F40F-4C7C-89CA-6EA33B3F7250}
+		{F1130593-0664-480F-84E1-70D4CB02543B} = {45015DC1-F40F-4C7C-89CA-6EA33B3F7250}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = TestNess.vsmdi
 	EndGlobalSection
 EndGlobal
