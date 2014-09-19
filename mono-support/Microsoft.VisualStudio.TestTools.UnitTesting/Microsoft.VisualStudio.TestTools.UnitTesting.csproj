@@ -52,6 +52,8 @@
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CollectionAssert.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssIterationAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssProjectStructureAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DataAccessMethod.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DataSourceAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DeploymentItemAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DescriptionAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ExpectedExceptionAttribute.cs" />
