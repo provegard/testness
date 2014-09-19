@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
@@ -73,6 +73,37 @@ namespace TestNess.Lib.Test.Rule
             var violation = new Violation(rule, tc, "a message");
 
             StringAssert.EndsWith(": a message", violation.ToString());
+        }
+
+        [Test]
+        public void TestThatAViolationHasADefaultSeverityFactorOfOne()
+        {
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
+            var rule = new SomeRule();
+
+            var violation = new Violation(rule, tc);
+
+            Assert.AreEqual(1m, violation.SeverityFactor);
+        }
+
+        [Test]
+        public void TestThatAViolationCanHaveASeverityFactor()
+        {
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
+            var rule = new SomeRule();
+
+            var violation = new Violation(rule, tc, severityFactor:1.2m);
+
+            Assert.AreEqual(1.2m, violation.SeverityFactor);
+        }
+
+        [Test]
+        public void TestThatAViolationCannotHaveASeverityFactorOfZero()
+        {
+            var tc = TestHelper.FindTestCase<IntegerCalculatorTest>(t => t.TestAddBasic());
+            var rule = new SomeRule();
+
+            Assert.Catch<ArgumentException>(() => new Violation(rule, tc, severityFactor: 0m));
         }
 
         internal class SomeRule : IRule

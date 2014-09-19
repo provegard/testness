@@ -9,7 +9,7 @@ namespace TestNess.Lib.Analysis
     {
         public decimal CalculateScore(Violation v)
         {
-            return 1.0m;
+            return v.SeverityFactor;
         }
     }
 }

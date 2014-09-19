@@ -1,6 +1,8 @@
 ﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
+
+using System;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
@@ -13,6 +15,7 @@ namespace TestNess.Lib.Rule
         public string Message { get; private set; }
         public IRule Rule { get; private set; }
         public TestCase TestCase { get; private set; }
+        public decimal SeverityFactor { get; private set; }
 
         /// <summary>
         /// If non-<c>null</c>, contains the URL of the document (source file) that contains the
@@ -29,12 +32,15 @@ namespace TestNess.Lib.Rule
         /// </summary>
         public Coordinates Location { get; private set; }
 
-        public Violation(IRule rule, TestCase testCase, string message = null) : this(rule, testCase, null, message)
+        public Violation(IRule rule, TestCase testCase, string message = null, decimal severityFactor = 1m)
+            : this(rule, testCase, null, message, severityFactor)
         {
         }
 
-        public Violation(IRule rule, TestCase testCase, Instruction instruction, string message = null)
+        public Violation(IRule rule, TestCase testCase, Instruction instruction, string message = null, decimal severityFactor = 1m)
         {
+            if (severityFactor <= 0m)
+                throw new ArgumentException("The severity factor cannot be less than or equal to zero.", "severityFactor");
             Rule = rule;
             TestCase = testCase;
             Message = message ?? CreateDefaultMessage(rule);
@@ -47,6 +53,7 @@ namespace TestNess.Lib.Rule
             {
                 InitLocation(testCase.TestMethod);
             }
+            SeverityFactor = severityFactor;
         }
 
         private static string CreateDefaultMessage(IRule rule)
