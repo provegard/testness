@@ -12,69 +12,11 @@
 
 
 using System;
-using System.Windows;
-using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
-	public delegate void VisualElement (DependencyObject o);
-
 	public static class Assert
 	{
-		public static void VisualChildren (DependencyObject control, params VisualNode [ ] nodes)
-		{
-			VisualChildren (control, "", nodes);
-		}
-		public static void VisualChildren (DependencyObject control, string error, params VisualNode[] nodes)
-		{
-			int count = VisualTreeHelper.GetChildrenCount (control);
-			if (nodes.Length != count)
-				Assert.Fail ("Initial control has {0} children but should have {1}. {2}", count, nodes.Length, error);
-
-			for (int i = 0; i < count; i++) {
-				DependencyObject child = VisualTreeHelper.GetChild (control, i);
-				Assert.IsInstanceOfType (child, nodes [i].Type, "Node {0}", nodes[i].Name);
-				nodes [i].DoCheck (child);
-
-
-				// This means we explicitly don't want to check the children of this node
-				if (nodes[i].Siblings == null)
-					continue;
-
-				int children = VisualTreeHelper.GetChildrenCount (child);
-				if (children != nodes [i].Siblings.Length)
-				Assert.Fail ("Node {0} should have {1} children but has {2} children",
-																		nodes [i].Name,
-																		nodes [i].Siblings.Length,
-																		children);
-				VisualChildren (child, nodes [i].Siblings);
-			}
-		}
-
-		public static void VisualParent (DependencyObject control, VisualNode node)
-		{
-			DependencyObject p = VisualTreeHelper.GetParent (control);
-			Assert.IsInstanceOfType (p, node.Type, "Node {0}", node.Name);
-			if (node.Siblings.Length == 0)
-				return;
-			else if (node.Siblings.Length == 1)
-				VisualParent (p, node.Siblings [0]);
-			else
-				throw new Exception (string.Format ("Invalid test - Node {0} contains more than 1 parent", node.Name));
-		}
-
-		public static void VisualParent (DependencyObject element, params VisualNode [] parents)
-		{
-			foreach (VisualNode node in parents) {
-				if (node == null)
-					return;
-				DependencyObject p = VisualTreeHelper.GetParent (element);
-				Assert.IsInstanceOfType (p, node.Type, "Node {0}", node.Name);
-				element = p;
-			}
-
-			Assert.IsNull (VisualTreeHelper.GetParent (element), "Parent should be null");
-		}
 
 		public static void IsNull (object obj)
 		{
@@ -467,98 +409,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		public static void Fail (string message, params object [] parameters)
 		{
 			throw new AssertFailedException (string.Format (message, parameters));
-		}
-
-		public static void IsUnset (DependencyObject d, DependencyProperty prop, string message)
-		{
-			if (d.ReadLocalValue (prop) != DependencyProperty.UnsetValue)
-				Assert.Fail ("Property should not have a local value set. {0}", message);
-		}
-
-		// Moonlight addition
-		public static void Matrix (Matrix matrix, int m11, int m12, int m21, int m22, int offsetX, int offsetY, string message, params object [] paramters)
-		{
-			Assert.AreEqual (m11, matrix.M11, "{0} - {1}", message, "M11");
-			Assert.AreEqual (m12, matrix.M12, "{0} - {1}", message, "M12");
-			Assert.AreEqual (m21, matrix.M21, "{0} - {1}", message, "M21");
-			Assert.AreEqual (m22, matrix.M22, "{0} - {1}", message, "M22");
-			Assert.AreEqual (offsetX, matrix.OffsetX, "{0} - {1}", message, "OffsetX");
-			Assert.AreEqual (offsetY, matrix.OffsetY, "{0} - {1}", message, "OffsetY");
-		}
-
-		// Moonlight addition
-		public static void Throws<TException> (TestCode code) where TException : Exception
-		{
-			Throws (code, typeof (TException), null, String.Empty);
-		}
-
-		// Moonlight addition
-		public static void Throws<TException, TInnerException> (TestCode code)
-			where TException : Exception
-			where TInnerException : Exception
-		{
-			Throws (code, typeof (TException), typeof (TInnerException), String.Empty);
-		}
-
-		// Moonlight addition
-		public static void Throws<TException> (TestCode code, string message) where TException : Exception
-		{
-			Throws (code, typeof (TException), null, message);
-		}
-
-		// Moonlight addition
-		public static void Throws<TException, TInnerException> (TestCode code, string message)
-			where TException : Exception
-			where TInnerException : Exception
-		{
-			Throws (code, typeof (TException), typeof (TInnerException), message);
-		}
-
-		// Moonlight addition
-		public static void Throws (TestCode code, Type expected_exception)
-		{
-			Throws (code, expected_exception, null, String.Empty);
-		}
-		
- 		// Moonlight addition
-		public static void Throws (TestCode code, Type expected_exception, string message)
-		{
-			Throws (code, expected_exception, null, message);
-		}
-
-		// Moonlight addition
-		public static void Throws (TestCode code, Type expected_exception, Type expected_inner_exception, string message)
-		{
-			bool failed = false;
-			try {
-				code ();
-				failed = true;
-			} catch (Exception ex) {
-				if (!(ex.GetType () == expected_exception))
-					throw new AssertFailedException (string.Format ("Expected '{0}', got '{1}'. {2}", expected_exception.FullName, ex.GetType ().FullName, message));
-				//System.Diagnostics.Debug.WriteLine (ex.ToString ());
-				if (expected_inner_exception != null) {
-					// we only check if the inner exception was supplied
-					if (ex.InnerException.GetType () != expected_inner_exception)
-						throw new AssertFailedException (string.Format ("Expected InnerException '{0}', got '{1}'. {2}", expected_inner_exception.FullName, ex.InnerException.GetType ().FullName, message));
-				}
-			}
-			if (failed)
-				throw new AssertFailedException (string.Format ("Expected '{0}', but got no exception. {1}", expected_exception.FullName, message));
-		}
-
-		// Moonlight addition
-		public static void Throws (TestCode code, Type exception, string message, params object [] parameters)
-		{
-			Throws (code, exception, string.Format (message, parameters));
-		}
-		
-		// Moonlight addition
-		public static void AreEqualWithDelta (double expected, double actual, double delta, string message)
-		{
-			if (Math.Abs (expected - actual) > Math.Abs (delta))
-				throw new AssertFailedException (string.Format ("Expected difference between '{0}' (expected value) and '{1}' (actual value) to be less than or equal to '{2}', but the difference is '{3}'. {4}.",
-					expected, actual, delta, Math.Abs (expected - actual), message));
 		}
 	}
 }
