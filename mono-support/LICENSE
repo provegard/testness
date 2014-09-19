@@ -1,0 +1,12 @@
+The code under here is copied from (with some modifications):
+
+https://github.com/mono/moon
+
+The LICENSE file from that project contains the following text for
+the directory where the code was copied from:
+
+* Microsoft Silverlight Unit Test Framework (test/2.0/Microsoft.Silverlight.Testing)
+
+	The code is licensed under the terms of the Microsoft
+	Public License (MS-PL).
+
