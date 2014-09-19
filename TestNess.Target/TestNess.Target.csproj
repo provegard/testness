@@ -68,8 +68,8 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mono-unittest\Microsoft.VisualStudio.TestTools.UnitTesting\Microsoft.VisualStudio.TestTools.UnitTesting.csproj" Condition=" '$(OS)' == 'Unix' ">
-      <Project>{c351c718-beeb-4d41-83fd-4015bdc1b0cb}</Project>
+    <ProjectReference Include="..\mono-support\Microsoft.VisualStudio.TestTools.UnitTesting\Microsoft.VisualStudio.TestTools.UnitTesting.csproj" Condition=" '$(OS)' == 'Unix' ">
+      <Project>{57f52fd4-d987-4848-a150-2f030cea7e17}</Project>
       <Name>Microsoft.VisualStudio.TestTools.UnitTesting</Name>
     </ProjectReference>
   </ItemGroup>

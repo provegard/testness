@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57F52FD4-D987-4848-A150-2F030CEA7E17}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.VisualStudio.TestTools.UnitTesting</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.TestTools.UnitTesting</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssemblyCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssemblyInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\Assert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssertFailedException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\AssertInconclusiveException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ClassCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ClassInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CollectionAssert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssIterationAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\CssProjectStructureAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DeploymentItemAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\DescriptionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\ExpectedExceptionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\GenericParameterHelper.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\HostTypeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IgnoreAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\InternalTestFailureException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\IVerifiable.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\MaxRuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\MinRuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\NotRuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\OwnerAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\PriorityAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\RuntimeVersionAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\StringAssert.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestClassAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestCleanupAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestCode.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestContext.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestInitializeAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestMethodAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TestPropertyAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TimeoutAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestAssertException.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestOutcome.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\VisualNode.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\WorkItemAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Microsoft.VisualStudio.TestTools.UnitTesting\ChangeLog" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
