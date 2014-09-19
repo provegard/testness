@@ -33,8 +33,9 @@ namespace TestNess.Lib.TestFramework
             return method.CustomAttributes.Where(IsTestAttribute).Any();
         }
 
-        public bool IsIgnoredTest(MethodDefinition method)
+        public bool IsIgnoredTest(MethodDefinition method, out string reason)
         {
+            reason = null; // MSTest doesn't support reason
             return method.CustomAttributes.Where(IsIgnoreAttribute).Any();
         }
 

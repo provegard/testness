@@ -26,8 +26,9 @@ namespace TestNess.Lib.TestFramework
             return false;
         }
 
-        public bool IsIgnoredTest(MethodDefinition method)
+        public bool IsIgnoredTest(MethodDefinition method, out string reason)
         {
+            reason = null;
             return false;
         }
 

@@ -136,9 +136,19 @@ namespace TestNess.Lib.TestFramework
             return isAssert;
         }
 
-        public bool IsIgnoredTest(MethodDefinition method)
+        public bool IsIgnoredTest(MethodDefinition method, out string reason)
         {
-            return method.CustomAttributes.Where(IsIgnoreAttribute).Any();
+            reason = null;
+            foreach (var attr in method.CustomAttributes.Where(IsIgnoreAttribute))
+            {
+                var stringArg = attr.ConstructorArguments.FirstOrDefault(arg => arg.Type.FullName == "System.String");
+                if (stringArg.Value != null) // CustomAttributeArgument is a struct
+                {
+                    reason = stringArg.Value.ToString();
+                }
+                return true;
+            }
+            return false;
         }
 
         private static bool IsIgnoreAttribute(CustomAttribute attr)

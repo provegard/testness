@@ -13,8 +13,16 @@ namespace TestNess.Lib.Rule
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            if (_framework.IsIgnoredTest(testCase.TestMethod))
-                yield return new Violation(this, testCase, "Test case is ignored.");
+            string reason;
+            if (_framework.IsIgnoredTest(testCase.TestMethod, out reason))
+            {
+                // Ignored with a reason    => normal severity
+                // Ignored without a reason => high severity
+                var severityFactory = reason != null ? 1m : 1.5m;
+                var msg = string.Format("Test case is ignored (with{0} reason).",
+                    reason != null ? "" : "out");
+                yield return new Violation(this, testCase, msg, severityFactory);
+            }
         }
 
         public override string ToString()

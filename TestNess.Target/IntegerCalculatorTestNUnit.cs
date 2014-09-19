@@ -25,6 +25,13 @@ namespace TestNess.Target
             Assert.AreEqual(3, calculator.Add(1, 2));
         }
 
+        [Test, Ignore("because I say so")]
+        public void TestIgnoredAddWithReason()
+        {
+            var calculator = new IntegerCalculator();
+            Assert.AreEqual(3, calculator.Add(1, 2));
+        }
+
         [TestCase(1, 2, 3)]
         public void TestDataDriven(int a, int b, int sum)
         {

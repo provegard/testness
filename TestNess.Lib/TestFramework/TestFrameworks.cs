@@ -52,9 +52,15 @@ namespace TestNess.Lib.TestFramework
             return _frameworks.Any(f => f.IsTestMethod(method));
         }
 
-        public bool IsIgnoredTest(MethodDefinition method)
+        public bool IsIgnoredTest(MethodDefinition method, out string reason)
         {
-            return _frameworks.Any(f => f.IsIgnoredTest(method));
+            reason = null;
+            foreach (var fw in _frameworks)
+            {
+                if (fw.IsIgnoredTest(method, out reason))
+                    return true;
+            }
+            return false;
         }
 
         public bool HasExpectedException(MethodDefinition method)

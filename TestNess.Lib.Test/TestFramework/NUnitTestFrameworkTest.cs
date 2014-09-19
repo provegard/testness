@@ -24,8 +24,18 @@ namespace TestNess.Lib.Test.TestFramework
         [Test]
         public void TestThatIgnoredTestMethodIsRecognized()
         {
+            string dummy;
             var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestIgnoredAdd()");
-            Assert.IsTrue(_framework.IsIgnoredTest(method));
+            Assert.IsTrue(_framework.IsIgnoredTest(method, out dummy));
+        }
+
+        [Test]
+        public void TestThatIgnoredTestReasonIsRetrieved()
+        {
+            string reason;
+            var method = typeof(IntegerCalculatorTestNUnit).FindMethod("TestIgnoredAddWithReason()");
+            _framework.IsIgnoredTest(method, out reason);
+            Assert.AreEqual("because I say so", reason);
         }
 
         [Test]
