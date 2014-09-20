@@ -3,8 +3,6 @@
 set -e
 set -x
 
-#export EnableNuGetPackageRestore=true
-
 mono --runtime=v4.0 .nuget/NuGet.exe install NUnit.Runners -Version 2.6.2 -o packages
 
 runTest(){
@@ -16,6 +14,6 @@ runTest(){
 }
 
 #runTest $1 -exclude=Performance
-runTest $1
+runTest $@
 
 exit $?
