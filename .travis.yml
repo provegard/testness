@@ -1,8 +1,6 @@
 language: objective-c
 
 env:
- global:
-  - EnableNuGetPackageRestore=true 
  matrix:
   - MONO_VERSION="3.8.0"
 
@@ -12,5 +10,6 @@ before_install:
  - mozroots --import --sync
 
 script:
+ - mono .nuget/NuGet.exe restore TestNess.sln
  - xbuild 
  - .ci/nunit.sh TestNess.Lib.Test/bin/Debug/TestNess.Lib.Test.dll
