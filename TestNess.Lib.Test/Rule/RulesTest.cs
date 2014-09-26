@@ -54,8 +54,7 @@ namespace TestNess.Lib.Test.Rule
         {
             var rules = new Rules(typeof(IRule).Assembly);
 
-            Assert.Catch<ArgumentException>(() => rules.RuleByName("Dummy"));
+            Assert.Catch<NoSuchRuleException>(() => rules.RuleByName("Dummy"));
         }
-
     }
 }
