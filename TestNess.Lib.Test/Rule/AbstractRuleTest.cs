@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using TestNess.Lib.Rule;
 
 namespace TestNess.Lib.Test.Rule
@@ -11,6 +12,14 @@ namespace TestNess.Lib.Test.Rule
         protected IEnumerable<Violation> FindViolations(string method)
         {
             var tc = typeof(TTestClass).FindTestCase(method);
+            var rule = new TRule();
+            return rule.Apply(tc);
+        }
+
+        protected IEnumerable<Violation> FindViolations(string method, out IList<Instruction> instructions)
+        {
+            var tc = typeof(TTestClass).FindTestCase(method);
+            instructions = tc.TestMethod.Body.Instructions;
             var rule = new TRule();
             return rule.Apply(tc);
         }
