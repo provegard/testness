@@ -23,7 +23,13 @@ namespace TestNess.Lib.Test.Rule
         {
             IList<Instruction> instructions;
             var violations = FindViolations(method, out instructions);
-            Assert.AreEqual(expectedViolationCount, violations.Count(), string.Join(Environment.NewLine, instructions));
+            Assert.AreEqual(expectedViolationCount, violations.Count(), string.Join(Environment.NewLine, instructions.Select(DescIns)));
+        }
+
+        private object DescIns(Instruction i)
+        {
+            var sp = i.SequencePoint;
+            return i + (sp != null ? string.Format(" SP:{0}-{1}", sp.StartLine, sp.EndLine) : "");
         }
 
         [Test]
