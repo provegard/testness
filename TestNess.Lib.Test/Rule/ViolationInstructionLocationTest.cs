@@ -1,6 +1,8 @@
 ﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
+
+using System.IO;
 using System.Linq;
 using Mono.Cecil.Cil;
 using NUnit.Framework;
@@ -25,7 +27,7 @@ namespace TestNess.Lib.Test.Rule
         [Test]
         public void ThenTheDocumentShouldBeExposed()
         {
-            StringAssert.EndsWith("\\IntegerCalculatorLocationTest.cs", _violation.DocumentUrl);
+            StringAssert.EndsWith(Path.DirectorySeparatorChar + "IntegerCalculatorLocationTest.cs", _violation.DocumentUrl);
         }
 
         [Test]
@@ -55,7 +57,7 @@ namespace TestNess.Lib.Test.Rule
         [Test]
         public void ThenToStringShouldContainDocumentAndLocation()
         {
-            const string expectedEnd = "\\IntegerCalculatorLocationTest.cs(15,13): violation of \"some rule\"";
+            var expectedEnd = Path.DirectorySeparatorChar + "IntegerCalculatorLocationTest.cs(15,13): violation of \"some rule\"";
             StringAssert.EndsWith(expectedEnd, _violation.ToString());
         }
     }
