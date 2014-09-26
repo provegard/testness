@@ -11,10 +11,10 @@ namespace TestNess.Lib.Test.Rule
     [TestFixture]
     public class RulesTest
     {
-        [TestCase, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void TestAtLeastOneAssemblyIsRequired()
         {
-            new Rules(); // should throw
+            Assert.Catch<ArgumentException>(() => new Rules());
         }
 
         [Test]
@@ -49,12 +49,12 @@ namespace TestNess.Lib.Test.Rule
             Assert.IsNotNull(soughtRule);
         }
 
-        [TestCase, ExpectedException(typeof(NoSuchRuleException))]
+        [Test]
         public void TestFindingMissingRuleThrows()
         {
             var rules = new Rules(typeof(IRule).Assembly);
 
-            rules.RuleByName("Dummy"); // should throw
+            Assert.Catch<ArgumentException>(() => rules.RuleByName("Dummy"));
         }
 
     }

@@ -14,14 +14,14 @@ namespace GraphBuilder.Test
             return node.GetChildren();
         }
 
-        [TestCase]
+        [Test]
         public void TestThatGraphCanBeCreatedWithSingleValueNode()
         {
             var graph = new GraphBuilder<SimpleNode>(GetChildren).Build(new SimpleNode("root"));
             Assert.AreEqual(1, graph.Order);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatGraphCanBeCreatedWithTwoConnectedNodes()
         {
             var root = new SimpleNode("root");
@@ -30,7 +30,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(2, graph.Order);
         }
 
-        [TestCase]
+        [Test]
         public void TestThatBuilderHandlesCycle()
         {
             var root = new SimpleNode("root");

@@ -10,21 +10,21 @@ namespace GraphBuilder.Test
     [TestFixture]
     public class SimpleNodeTest
     {
-        [TestCase]
+        [Test]
         public void TestNodeHasValue()
         {
             var sn = new SimpleNode("test");
             Assert.AreEqual("test", sn.Value);
         }
 
-        [TestCase]
+        [Test]
         public void TestNodeToStringIsValue()
         {
             var sn = new SimpleNode("test");
             Assert.AreEqual("test", sn.ToString());
         }
 
-        [TestCase]
+        [Test]
         public void TestNodesWithSameValueAreEqual()
         {
             var sn1 = new SimpleNode("test");
@@ -32,7 +32,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(sn1, sn2);
         }
 
-        [TestCase]
+        [Test]
         public void TestNodesWithDifferentValuesAreNotEqual()
         {
             var sn1 = new SimpleNode("test");
@@ -40,7 +40,7 @@ namespace GraphBuilder.Test
             Assert.AreNotEqual(sn1, sn2);
         }
 
-        [TestCase]
+        [Test]
         public void TestNodesWithSameValueHaveSameHashCode()
         {
             var sn1 = new SimpleNode("test");
@@ -48,7 +48,7 @@ namespace GraphBuilder.Test
             Assert.AreEqual(sn1.GetHashCode(), sn2.GetHashCode());
         }
 
-        [TestCase]
+        [Test]
         public void TestNodesWithDifferentValuesHaveDifferentHashCodes()
         {
             var sn1 = new SimpleNode("test");
@@ -56,14 +56,14 @@ namespace GraphBuilder.Test
             Assert.AreNotEqual(sn1.GetHashCode(), sn2.GetHashCode());
         }
 
-        [TestCase]
+        [Test]
         public void TestChildListIsInitiallyEmpty()
         {
             var sn1 = new SimpleNode("test");
             Assert.AreEqual(0, sn1.GetChildren().Count());
         }
 
-        [TestCase]
+        [Test]
         public void TestAddedNodeIsReturnedInChildEnumeration()
         {
             var child = new SimpleNode("child");
