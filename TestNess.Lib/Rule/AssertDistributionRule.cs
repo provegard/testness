@@ -19,8 +19,12 @@ namespace TestNess.Lib.Rule
 
             var assertingMethods = testCase.GetCalledAssertingMethods();
 
-            var sequencePointCount = 0;
-            var assertingSequencePoints = new List<int>();
+            // Note: The Mono compiler appears to emit multiple sequence points with the same start line,
+            // i.e. so there are multiple instructions with sequence points that refer to the same line.
+            // Therefore, let's store line numbers and associate line numbers with asserting calls.
+
+            var sequencePointsStartLines = new SortedSet<int>();
+            var assertingSequencePointsStartLines = new SortedSet<int>();
 
             var tm = testCase.TestMethod;
             foreach (var ins in tm.Body.Instructions)
@@ -28,18 +32,21 @@ namespace TestNess.Lib.Rule
                 var sp = ins.SequencePoint;
                 if (sp != null && IsSignificantSequencePoint(ins, sp))
                 {
-                    sequencePointCount++;
+                    sequencePointsStartLines.Add(sp.StartLine);
                 }
-                if (sequencePointCount > 0 && IsAssertCall(ins, assertingMethods))
+                if (sequencePointsStartLines.Count > 0 && IsAssertCall(ins, assertingMethods))
                 {
-                    assertingSequencePoints.Add(sequencePointCount - 1);
+                    // As sequence point, use the last one added, which isn't necessarily sp,
+                    // since the asserting instruction may lack sequence point.
+                    var lastSpLineNumber = sequencePointsStartLines.Last();
+                    assertingSequencePointsStartLines.Add(lastSpLineNumber);
                 }
             }
 
-            if (assertingSequencePoints.Count == 0)
+            if (assertingSequencePointsStartLines.Count == 0)
                 yield break; // this rule doesn't apply
             // If the X asserting sps are the X last ones, then it's ok!
-            if (assertingSequencePoints[0] + assertingSequencePoints.Count == sequencePointCount)
+            if (assertingSequencePointsStartLines.First() + assertingSequencePointsStartLines.Count == sequencePointsStartLines.Count)
                 yield break;
             yield return new Violation(this, testCase);
         }
