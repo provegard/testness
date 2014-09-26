@@ -85,13 +85,13 @@ namespace TestNess.Lib.Test.TestFramework
             Assert.IsFalse(_framework.HasExpectedException(method));
         }
 
-        [Test, Ignore("This test case won't work both under Windows and Mono as it is written given that our Mono version of MSTest doesn't have the specified method.")]
+        [Test]
         public void TestThatAssertionThrowingMethodIsDetected()
         {
-            //var method =
-            //    typeof (Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(
-            //        "HandleFailure(System.String,System.String)");
-            //Assert.IsTrue(_framework.DoesContainAssertion(method));
+            var method =
+                typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).FindMethod(
+                    "HandleFailure(System.String,System.String)");
+            Assert.IsTrue(_framework.DoesContainAssertion(method));
         }
 
         [Test]
