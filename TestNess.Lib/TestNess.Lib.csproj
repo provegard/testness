@@ -66,6 +66,7 @@
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\InstructionGraph.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Rule\IgnoredTestCaseRule.cs" />
     <Compile Include="TestFramework\NSubstituteTestFramework.cs" />
     <Compile Include="TestFramework\NUnitTestFramework.cs" />

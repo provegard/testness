@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace TestNess.Lib.Rule
             if (assertingSequencePointsStartLines.Count == 0)
                 yield break; // this rule doesn't apply
             // If the X asserting sps are the X last ones, then it's ok!
-            if (assertingSequencePointsStartLines.First() + assertingSequencePointsStartLines.Count == sequencePointsStartLines.Count)
+            if (sequencePointsStartLines.EndsWith(assertingSequencePointsStartLines))
                 yield break;
             yield return new Violation(this, testCase);
         }
