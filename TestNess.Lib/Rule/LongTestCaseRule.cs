@@ -25,9 +25,11 @@ namespace TestNess.Lib.Rule
         {
             var instructions = testCase.TestMethod.Body.Instructions.Where(IsRelevant).ToList();
             var ilCount = instructions.Count;
-            var spCount = instructions.Where(i => i.SequencePoint != null).Count();
+            var sequencePoints = instructions.Select(i => i.SequencePoint).Where(sp => sp != null).ToList();
+            var lineNumbers = new HashSet<int>(sequencePoints.Select(sp => sp.StartLine));
+            var spCount = sequencePoints.Count;
 
-            var actual = spCount > 0 ? spCount : (int) (ilCount / IL_PER_LOC);
+            var actual = spCount > 0 ? lineNumbers.Count : (int)(ilCount / IL_PER_LOC);
             if (actual <= _maxLinesOfCode)
                 yield break; // no violation
             yield return new Violation(this, testCase, CreateMessage(actual));
