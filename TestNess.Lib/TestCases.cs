@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using Mono.Cecil;
+using Mono.Cecil.Mdb;
 using Mono.Cecil.Pdb;
 using TestNess.Lib.TestFramework;
 
@@ -93,9 +94,18 @@ namespace TestNess.Lib
             } 
             catch (FileNotFoundException)
             {
-                // Might be the PDB file that is missing!
-                parameters.SymbolReaderProvider = null;
-                assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
+                // Perhaps we have an MDB file (Mono), or there is no symbol file to load.
+                // Try MDB first!
+                parameters.SymbolReaderProvider = new MdbReaderProvider();
+                try
+                {
+                    assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
+                }
+                catch (FileNotFoundException)
+                {
+                    parameters.SymbolReaderProvider = null;
+                    assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
+                }
             }
             if (assemblyDef.Modules.Count > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
