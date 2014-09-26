@@ -2,11 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using NUnit.Framework;
 using TestNess.Lib.Rule;
 using TestNess.Target;
@@ -22,15 +18,8 @@ namespace TestNess.Lib.Test.Rule
         [TestCase("TestAddWithWhitespaceSeparatedAssertsTowardsTheEnd()", 0)]
         public void TestViolationCountForDifferentMethods(string method, int expectedViolationCount)
         {
-            IList<Instruction> instructions;
-            var violations = FindViolations(method, out instructions);
-            Assert.AreEqual(expectedViolationCount, violations.Count(), string.Join(Environment.NewLine, instructions.Select(DescIns)));
-        }
-
-        private object DescIns(Instruction i)
-        {
-            var sp = i.SequencePoint;
-            return i + (sp != null ? string.Format(" SP:{0}-{1}", sp.StartLine, sp.EndLine) : "");
+            var violations = FindViolations(method);
+            Assert.AreEqual(expectedViolationCount, violations.Count());
         }
 
         [Test]

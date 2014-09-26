@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 
+using System;
 using System.IO;
 using System.Linq;
 using Mono.Cecil.Cil;
@@ -20,6 +21,17 @@ namespace TestNess.Lib.Test.Rule
         public void GivenAViolationCreatedFromAnInstruction()
         {
             var tc = TestHelper.FindTestCase<IntegerCalculatorLocationTest>(t => t.TestAdd());
+
+            foreach (var ins in tc.TestMethod.Body.Instructions)
+            {
+                Console.Write(ins);
+                if (ins.SequencePoint != null)
+                {
+                    Console.Write(" SP:{0}-{1} {2}-{3}", ins.SequencePoint.StartLine, ins.SequencePoint.EndLine, ins.SequencePoint.StartColumn, ins.SequencePoint.EndColumn);
+                }
+                Console.WriteLine();
+            }
+
             _violation = new Violation(new ViolationTest.SomeRule(), tc, 
                 tc.TestMethod.Body.Instructions.First(i => i.OpCode != OpCodes.Nop && i.SequencePoint != null));
         }
