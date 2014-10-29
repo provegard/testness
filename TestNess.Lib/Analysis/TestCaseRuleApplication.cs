@@ -8,6 +8,7 @@ using TestNess.Lib.Rule;
 
 namespace TestNess.Lib.Analysis
 {
+    // Applies a rule to a test case and collects information about the outcome.
     public class TestCaseRuleApplication
     {
         private decimal _score = -1;

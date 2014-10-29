@@ -16,10 +16,6 @@ namespace TestNess.Lib
     /// Class that represents a single unit test case to be evaluated by TestNess. A instance of this class 
     /// encapsulates a Cecil <see cref="MethodDefinition"/> instance, which is the method that contains (or
     /// defines, if you will) the test case.
-    /// <para>
-    /// This is a DDD aggregate root, which means that clients should not store data fetched from an 
-    /// instance of this class, other than temporarily.
-    /// </para>
     /// </summary>
     public class TestCase
     {

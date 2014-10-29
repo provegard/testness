@@ -54,7 +54,7 @@ namespace TestNess.Lib.Test.Rule
             Assert.AreEqual(0, rule.Apply(tc).Count());
         }
 
-        [TestCase, ExpectedException(typeof(ArgumentException))]
+        [Test, ExpectedException(typeof(ArgumentException))]
         public void TestThatRuleCannotBeConfiguredWithZeroAsserts()
         {
             // should throw
