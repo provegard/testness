@@ -62,6 +62,15 @@ namespace TestNess.Lib.Test.Rule
         }
 
         [Test]
+        public void TestThatAssertViaMockFrameworkIsDetected()
+        {
+            var tc = TestHelper.FindTestCase<MixedMockAndTestFrameworksTest>(t => t.TestMix());
+            var rule = new LimitAssertsPerTestCaseRule();
+
+            Assert.AreEqual(0, rule.Apply(tc).Count());
+        }
+
+        [Test]
         public void TestThatAcceptableAssertsIsOneByDefault()
         {
             var rule = new LimitAssertsPerTestCaseRule();
