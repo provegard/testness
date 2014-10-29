@@ -68,7 +68,7 @@
     <Compile Include="Cil\TrackerHelper.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Feature\AbstractFeature.cs" />
-    <Compile Include="Feature\AssertingMethodFeature.cs" />
+    <Compile Include="Feature\AssertionCountFeature.cs" />
     <Compile Include="Feature\CountFeature.cs" />
     <Compile Include="Feature\HasLoops.cs" />
     <Compile Include="Feature\IFeature.cs" />
@@ -76,8 +76,10 @@
     <Compile Include="Feature\Features.cs" />
     <Compile Include="Feature\SingleCodePathAssertionCount.cs" />
     <Compile Include="Feature\StatementCount.cs" />
+    <Compile Include="RelatedFrameworks.cs" />
     <Compile Include="Rule\IgnoredTestCaseRule.cs" />
-    <Compile Include="TestFramework\NSubstituteTestFramework.cs" />
+    <Compile Include="TestFramework\IMockFramework.cs" />
+    <Compile Include="TestFramework\NSubstituteMockFramework.cs" />
     <Compile Include="TestFramework\NUnitTestFramework.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

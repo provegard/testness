@@ -8,7 +8,7 @@ using Mono.Cecil;
 
 namespace TestNess.Lib.TestFramework
 {
-    public class NSubstituteTestFramework : ITestFramework
+    public class NSubstituteMockFramework : IMockFramework
     {
         private static readonly string[] ExpectationMethodNames =
         {

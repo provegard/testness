@@ -41,13 +41,16 @@ namespace TestNess.Lib
 
         private IEnumerable<TestCase> CreateEnumerable()
         {
+            var mockFrameworks = TestFrameworks.Instance.Frameworks.OfType<IMockFramework>().ToArray();
             foreach (var method in _assembly.MainModule.Types.SelectMany(type => type.Methods))
             {
                 foreach (var fw in TestFrameworks.Instance.Frameworks)
                 {
                     if (fw.IsTestMethod(method))
                     {
-                        yield return new TestCase(method, fw, new TestCaseOrigin(_assembly, _fileName));
+                        yield return new TestCase(method, 
+                            new RelatedFrameworks(fw, mockFrameworks),
+                            new TestCaseOrigin(_assembly, _fileName));
                     }
                 }
             }

@@ -33,7 +33,7 @@ namespace TestNess.Lib.Rule
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var assertMethodCount = testCase.Features.Get<AssertingMethodFeature>().Value;
+            var assertMethodCount = testCase.Features.Get<AssertionCountFeature>().Value;
             if (0 < assertMethodCount && assertMethodCount <= _maxAsserts)
                 yield break; // no violation
             if (assertMethodCount == 0 && testCase.Framework.HasExpectedException(testCase.TestMethod))

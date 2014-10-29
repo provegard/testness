@@ -208,7 +208,7 @@ namespace TestNess.Lib.Test
 
         public static TestCase AsTestCase(this Delegate d, ITestFramework framework)
         {
-            return new TestCase(FindMethodOfDelegate(d, 1), framework);
+            return new TestCase(FindMethodOfDelegate(d, 1), framework.AsRelated());
         }
 
         public static MethodDefinition AsMethodDef(this Delegate d)

@@ -43,7 +43,12 @@ namespace TestNess.Lib
             get { return GetTestCaseName(TestMethod); }
         }
 
+        /// <summary>
+        /// The test framework that this test case belongs to.
+        /// </summary>
         public ITestFramework Framework { get; private set; }
+
+        private readonly IEnumerable<IMockFramework> _mockFrameworks;
 
         public Features Features
         {
@@ -65,13 +70,14 @@ namespace TestNess.Lib
         /// <param name="method">The method that contains/defines the test case.</param>
         /// <param name="testCaseOrigin">Contains origin information about the test case. Not
         /// mandatory.</param>
-        /// <param name="framework">Test case framework that the test case belongs to.</param>
-        public TestCase(MethodDefinition method, ITestFramework framework, TestCaseOrigin testCaseOrigin = null)
+        /// <param name="frameworks">Test and mock frameworks for this test case.</param>
+        public TestCase(MethodDefinition method, RelatedFrameworks frameworks, TestCaseOrigin testCaseOrigin = null)
         {
             TestMethod = method;
             _origin = testCaseOrigin;
             CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
-            Framework = framework;
+            Framework = frameworks != null ? frameworks.TestFramework : null;
+            _mockFrameworks = frameworks != null ? frameworks.MockFrameworks : new IMockFramework[0];
         }
 
         /// <summary>
@@ -174,7 +180,8 @@ namespace TestNess.Lib
         {
             if (!method.IsDefinition || !((MethodDefinition)method).HasBody)
                 return false;
-            return Framework.DoesContainAssertion((MethodDefinition)method);
+            var frameworks = new[] {Framework}.Concat(_mockFrameworks);
+            return frameworks.Any(fw => fw.DoesContainAssertion((MethodDefinition) method));
         }
     }
 }

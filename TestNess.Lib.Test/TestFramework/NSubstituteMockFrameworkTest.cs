@@ -9,14 +9,14 @@ using TestNess.Lib.TestFramework;
 namespace TestNess.Lib.Test.TestFramework
 {
     [TestFixture]
-    public class NSubstituteTestFrameworkTest
+    public class NSubstituteMockFrameworkTest
     {
-        private NSubstituteTestFramework _framework;
+        private NSubstituteMockFramework _framework;
 
         [SetUp]
         public void GivenFramework()
         {
-            _framework = new NSubstituteTestFramework();
+            _framework = new NSubstituteMockFramework();
         }
 
         [TestCase("Received(T)", true)]
@@ -39,7 +39,7 @@ namespace TestNess.Lib.Test.TestFramework
         [Test]
         public void TestThatWhatLooksLikeExpectationMethodDoesntCountAsAssert()
         {
-            var method = typeof(NSubstituteTestFrameworkTest).FindMethod("Received()");
+            var method = typeof(NSubstituteMockFrameworkTest).FindMethod("Received()");
             Assert.That(_framework.DoesContainAssertion(method), Is.False);
         }
     }

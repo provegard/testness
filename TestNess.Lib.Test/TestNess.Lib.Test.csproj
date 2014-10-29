@@ -84,9 +84,10 @@
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
+    <Compile Include="RelatedFrameworksHelper.cs" />
     <Compile Include="Rule\IgnoredTestCaseRuleTest.cs" />
     <Compile Include="Signature.cs" />
-    <Compile Include="TestFramework\NSubstituteTestFrameworkTest.cs" />
+    <Compile Include="TestFramework\NSubstituteMockFrameworkTest.cs" />
     <Compile Include="TestFramework\NUnitTestFrameworkTest.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

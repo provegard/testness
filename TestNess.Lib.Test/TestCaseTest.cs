@@ -133,14 +133,14 @@ namespace TestNess.Lib.Test
         [Test]
         public void TestThatTestCaseWithUnspecifiedOriginFindsOriginAssemblyInTestMethod()
         {
-            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework());
+            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework().AsRelated());
             Assert.AreSame(tc.TestMethod.Module.Assembly, _testCase.Origin.Assembly);
         }
 
         [Test]
         public void TestThatTestCaseExposesFramework()
         {
-            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework());
+            var tc = new TestCase(_testCase.TestMethod, new MSTestTestFramework().AsRelated());
             Assert.IsInstanceOf<MSTestTestFramework>(tc.Framework);
         }
     }

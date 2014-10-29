@@ -35,7 +35,7 @@ namespace TestNess.Lib.TestFramework
 
         private bool IsTestFramework(Type t)
         {
-            return t.IsPublic && typeof(ITestFramework).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && t != GetType();
+            return t.IsPublic && typeof(ITestFramework).IsAssignableFrom(t) && !t.IsAbstract && t != GetType();
         }
     }
 }

@@ -4,9 +4,9 @@
 
 namespace TestNess.Lib.Feature
 {
-    public class AssertingMethodFeature : CountFeature
+    public class AssertionCountFeature : CountFeature
     {
-        public AssertingMethodFeature(TestCase testCase, Features f) : base(testCase, f)
+        public AssertionCountFeature(TestCase testCase, Features f) : base(testCase, f)
         {
         }
 
