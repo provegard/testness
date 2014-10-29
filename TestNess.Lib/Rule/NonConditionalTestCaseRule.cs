@@ -1,10 +1,8 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
-using System.Linq;
-using Mono.Cecil.Cil;
-using TestNess.Lib.Cil;
+using TestNess.Lib.Feature;
 
 namespace TestNess.Lib.Rule
 {
@@ -12,29 +10,14 @@ namespace TestNess.Lib.Rule
     {
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var paths = testCase.GetInstructionGraph().FindInstructionPaths().ToList();
-            var count = CountAssertsThatDontOccurInAllInstructionPaths(testCase, paths);
-            if (count == 0 && !ContainsLoopingPaths(paths))
+            var features = testCase.Features;
+            var count = features.Get<SingleCodePathAssertionCount>().Value;
+            var hasLoops = features.Get<HasLoops>().Value;
+            if (count == 0 && !hasLoops)
             {
                 yield break;
             }
             yield return new Violation(this, testCase);
-        }
-
-        private static int CountAssertsThatDontOccurInAllInstructionPaths(TestCase testCase, IEnumerable<IList<Instruction>> paths)
-        {
-            //TODO: Copied from LocalExpectationRule, need a better abstraction for this!
-            var calledAssertingMethods = testCase.GetCalledAssertingMethods();
-            var calledAssertingMethodsWithInstruction =
-                testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
-
-            return
-                calledAssertingMethodsWithInstruction.Count(cmi => paths.Any(path => !path.Contains(cmi.Instruction)));
-        }
-
-        private static bool ContainsLoopingPaths(IEnumerable<IList<Instruction>> paths)
-        {
-            return paths.Any(p => p.ContainsLoop());
         }
 
         public override string ToString()

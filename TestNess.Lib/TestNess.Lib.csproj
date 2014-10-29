@@ -67,6 +67,15 @@
     <Compile Include="Cil\InstructionGraph.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Feature\AbstractFeature.cs" />
+    <Compile Include="Feature\AssertingMethodFeature.cs" />
+    <Compile Include="Feature\CountFeature.cs" />
+    <Compile Include="Feature\HasLoops.cs" />
+    <Compile Include="Feature\IFeature.cs" />
+    <Compile Include="Feature\InstructionPaths.cs" />
+    <Compile Include="Feature\Features.cs" />
+    <Compile Include="Feature\SingleCodePathAssertionCount.cs" />
+    <Compile Include="Feature\StatementCount.cs" />
     <Compile Include="Rule\IgnoredTestCaseRule.cs" />
     <Compile Include="TestFramework\NSubstituteTestFramework.cs" />
     <Compile Include="TestFramework\NUnitTestFramework.cs" />

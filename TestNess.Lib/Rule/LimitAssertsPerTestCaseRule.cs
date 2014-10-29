@@ -3,7 +3,7 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections.Generic;
-using TestNess.Lib.TestFramework;
+using TestNess.Lib.Feature;
 
 namespace TestNess.Lib.Rule
 {
@@ -33,7 +33,7 @@ namespace TestNess.Lib.Rule
 
         public IEnumerable<Violation> Apply(TestCase testCase)
         {
-            var assertMethodCount = testCase.GetCalledAssertingMethods().Count;
+            var assertMethodCount = testCase.Features.Get<AssertingMethodFeature>().Value;
             if (0 < assertMethodCount && assertMethodCount <= _maxAsserts)
                 yield break; // no violation
             if (assertMethodCount == 0 && testCase.Framework.HasExpectedException(testCase.TestMethod))

@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using TestNess.Lib.Cil;
+using TestNess.Lib.Feature;
 using TestNess.Lib.TestFramework;
 
 namespace TestNess.Lib
@@ -21,6 +22,7 @@ namespace TestNess.Lib
     {
         private ICollection<MethodDefinition> _assertingMethods;
         private TestCaseOrigin _origin;
+        private Features _features;
 
         /// <summary>
         /// The test method that contains this test case.
@@ -42,6 +44,11 @@ namespace TestNess.Lib
         }
 
         public ITestFramework Framework { get; private set; }
+
+        public Features Features
+        {
+            get { return _features ?? (_features = new Features(this)); }
+        }
 
         internal static string GetTestCaseName(MethodDefinition method)
         {
