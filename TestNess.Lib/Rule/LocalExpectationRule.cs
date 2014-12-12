@@ -1,10 +1,9 @@
-﻿// Copyright (C) 2011-2012 Per Rovegård, http://rovegard.com
+﻿// Copyright (C) 2011-2014 Per Rovegård, http://rovegard.com
 // This file is subject to the terms and conditions of the MIT license. See the file 'LICENSE',
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using GraphBuilder;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -30,20 +29,18 @@ namespace TestNess.Lib.Rule
             _framework = testCase.Framework;
 
             var calledAssertingMethods = testCase.GetCalledAssertingMethods();
-            // TODO: Resolve needed for Reference -> Definition .. can we get rid of it??
-            var calledMethods =
-                testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
             var tracker = new MethodValueTracker(testCase.TestMethod);
 
             var whitelistedFields = FindWhitelistedFields(testCase.TestMethod.DeclaringType);
 
             // For each asserting method with >= 1 parameters:
-            foreach (var cm in calledMethods.Where(cm => cm.Method.HasParameters))
+            foreach (var cm in calledAssertingMethods.Where(cm => cm.MethodDefinition.HasParameters))
             {
+                var method = cm.MethodDefinition;
                 //TODO: if the method is a helper, we need to "unfold" the helper
                 // to get to the real asserting methods, and this will require us
                 // to join value-generation graphs across method calls...
-                var paramPurposes = _framework.GetParameterPurposes(cm.Method);
+                var paramPurposes = _framework.GetParameterPurposes(method);
                 if (paramPurposes == null) continue; // unknown method, rule does not apply
 
                 foreach (var valueGraph in tracker.ValueGraphs)
@@ -53,11 +50,11 @@ namespace TestNess.Lib.Rule
                         continue; // not part of value graph
 
                     // Build a list of arguments with the details we need to know if the rule applies.
-                    var arguments = cm.Method.Parameters
-                        .Select((p, index) => new ArgumentDetails { Method = cm.Method, Index = index, Purpose = paramPurposes[index], ConsumedValue = consumedValues[index] }).ToList();
+                    var arguments = method.Parameters
+                        .Select((p, index) => new ArgumentDetails { Method = method, Index = index, Purpose = paramPurposes[index], ConsumedValue = consumedValues[index] }).ToList();
 
                     // Handle cases like Assert.IsTrue(x == 5) by expanding arguments
-                    ExpandIfSingleTruthCheckingMethod(cm.Method, ref arguments);
+                    ExpandIfSingleTruthCheckingMethod(method, ref arguments);
 
                     // We're only interested in arguments that represent expectations!
                     var interestingArguments = arguments.Where(a => IsPerhapsExpectation(a.Purpose)).ToList();

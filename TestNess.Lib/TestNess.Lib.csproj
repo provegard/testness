@@ -76,6 +76,7 @@
     <Compile Include="Feature\Features.cs" />
     <Compile Include="Feature\SingleCodePathAssertionCount.cs" />
     <Compile Include="Feature\StatementCount.cs" />
+    <Compile Include="MethodCall.cs" />
     <Compile Include="RelatedFrameworks.cs" />
     <Compile Include="Rule\IgnoredTestCaseRule.cs" />
     <Compile Include="TestFramework\IMockFramework.cs" />

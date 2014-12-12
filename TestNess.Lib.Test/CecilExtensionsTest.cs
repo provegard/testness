@@ -35,7 +35,7 @@ namespace TestNess.Lib.Test
         public void TestThatCalledMethodCanBeExtracted()
         {
             var calledMethods = GetReferringMethod("ReferringMethod").CalledMethods();
-            CollectionAssert.Contains(calledMethods.Select(m => m.Method.Name).ToList(), "AMethod");
+            CollectionAssert.Contains(calledMethods.Select(m => m.MethodReference.Name).ToList(), "AMethod");
         }
 
         [Test]

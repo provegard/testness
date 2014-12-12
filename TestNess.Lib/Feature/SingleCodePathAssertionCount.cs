@@ -25,7 +25,7 @@ namespace TestNess.Lib.Feature
             //TODO: Copied from LocalExpectationRule, need a better abstraction for this!
             var calledAssertingMethods = testCase.GetCalledAssertingMethods();
             var calledAssertingMethodsWithInstruction =
-                testCase.TestMethod.CalledMethods().Where(cm => calledAssertingMethods.Contains(cm.Method.Resolve()));
+                testCase.TestMethod.CalledMethods().Where(calledAssertingMethods.Contains);
 
             return
                 calledAssertingMethodsWithInstruction.Count(cmi => paths.Any(path => !path.Contains(cmi.Instruction)));

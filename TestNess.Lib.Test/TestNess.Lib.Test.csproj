@@ -84,6 +84,7 @@
     <Compile Include="Cil\MethodValueTrackerTest.cs" />
     <Compile Include="Cil\MethodValueTrackerBranchSupportTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
+    <Compile Include="MethodCallTest.cs" />
     <Compile Include="RelatedFrameworksHelper.cs" />
     <Compile Include="Rule\IgnoredTestCaseRuleTest.cs" />
     <Compile Include="Signature.cs" />

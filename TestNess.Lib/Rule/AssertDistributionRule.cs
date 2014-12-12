@@ -3,7 +3,6 @@
 // which is part of this source code package, or http://per.mit-license.org/2011.
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace TestNess.Lib.Rule
@@ -60,13 +59,11 @@ namespace TestNess.Lib.Rule
             return sp.StartLine != HiddenLine;
         }
 
-        private bool IsAssertCall(Instruction instruction, IEnumerable<MethodDefinition> assertingMethods)
+        private bool IsAssertCall(Instruction instruction, IEnumerable<MethodCall> assertingMethods)
         {
             if (instruction.OpCode.FlowControl != FlowControl.Call)
                 return false;
-            var methodReference = instruction.Operand as MethodReference;
-            var found = assertingMethods.Where(m => m.FullName.Equals(methodReference.FullName));
-            return found.Count() > 0;
+            return assertingMethods.Any(mc => mc.Instruction == instruction);
         }
 
         public override string ToString()

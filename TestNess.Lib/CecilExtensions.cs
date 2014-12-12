@@ -16,14 +16,14 @@ namespace TestNess.Lib
         /// </summary>
         /// <param name="definition">The method to extend.</param>
         /// <returns>The called methods.</returns>
-        public static IEnumerable<CalledMethod> CalledMethods(this MethodDefinition definition)
+        public static IEnumerable<MethodCall> CalledMethods(this MethodDefinition definition)
         {
             if (!definition.HasBody)
-                return new CalledMethod[0];
+                return new MethodCall[0];
             return from instruction in definition.Body.Instructions
                    where instruction.OpCode.FlowControl == FlowControl.Call
                    select
-                       new CalledMethod { Instruction = instruction, Method = instruction.Operand as MethodReference };
+                       new MethodCall(instruction, instruction.Operand as MethodReference);
         }
 
         /// <summary>
@@ -69,12 +69,6 @@ namespace TestNess.Lib
                 sp = i.SequencePoint;
             }
             return sp;
-        }
-
-        public struct CalledMethod
-        {
-            public Instruction Instruction;
-            public MethodReference Method;
         }
     }
 }

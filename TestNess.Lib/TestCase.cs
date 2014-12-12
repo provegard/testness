@@ -20,7 +20,7 @@ namespace TestNess.Lib
     /// </summary>
     public class TestCase
     {
-        private ICollection<MethodDefinition> _assertingMethods;
+        private ICollection<MethodCall> _assertingMethods;
         private TestCaseOrigin _origin;
         private Features _features;
 
@@ -33,7 +33,7 @@ namespace TestNess.Lib
         /// Exposes the call graph for the test method that contains this test case. The root of the
         /// call graph is the test method.
         /// </summary>
-        public Graph<MethodReference> CallGraph { get; private set; }
+        public Graph<MethodCall> CallGraph { get; private set; }
 
         /// <summary>
         /// The name of this test case. The name is the name of the test method without the return type.
@@ -75,7 +75,7 @@ namespace TestNess.Lib
         {
             TestMethod = method;
             _origin = testCaseOrigin;
-            CallGraph = new GraphBuilder<MethodReference>(CalledMethodsFinder).Build(method);
+            CallGraph = new GraphBuilder<MethodCall>(CalledMethodsFinder).Build(new MethodCall(null, method));
             Framework = frameworks != null ? frameworks.TestFramework : null;
             _mockFrameworks = frameworks != null ? frameworks.MockFrameworks : new IMockFramework[0];
         }
@@ -103,29 +103,29 @@ namespace TestNess.Lib
             }
         }
 
-        private static IEnumerable<MethodReference> CalledMethodsFinder(MethodReference reference)
+        private static IEnumerable<MethodCall> CalledMethodsFinder(MethodCall call)
         {
-            if (!reference.IsDefinition)
-                return new MethodReference[0]; // no body to parse anyway
-            var definition = (MethodDefinition) reference;
-            return definition.CalledMethods().Select(cm => cm.Method).Where(r => !r.Name.Equals(".ctor")).Select(TryResolve);
+            if (!call.HasMethodDefinition)
+                return new MethodCall[0]; // no body to parse anyway
+            var definition = call.MethodDefinition;
+            return definition.CalledMethods().Where(mc => !mc.MethodReference.Name.Equals(".ctor")).Select(TryResolve);
         }
 
-        private static MethodReference TryResolve(MethodReference reference)
+        private static MethodCall TryResolve(MethodCall mc)
         {
-            if (reference.IsDefinition)
-                return reference;
+            if (mc.HasMethodDefinition)
+                return mc;
             MethodReference result;
             try
             {
-                result = reference.Resolve();
+                result = mc.MethodReference.Resolve();
             }
             catch (AssemblyResolutionException)
             {
                 // resolution is best-effort, keep the reference
-                result = reference;
+                result = mc.MethodReference;
             }
-            return result;
+            return new MethodCall(mc.Instruction, result);
         }
 
         public override bool Equals(object obj)
@@ -152,36 +152,36 @@ namespace TestNess.Lib
         /// assering method is called multiple times, it will be included multiple times in the collection.
         /// </summary>
         /// <returns>A collection of methods.</returns>
-        public ICollection<MethodDefinition> GetCalledAssertingMethods()
+        public ICollection<MethodCall> GetCalledAssertingMethods()
         {
             if (_assertingMethods != null)
                 return _assertingMethods;
             var paths = CallGraph.Walk().SelectMany(AddPathsToRoot);
             // It's safe to cast to MethodDefinition, since if the method wasn't resolved, we
             // hadn't been able to determine that it was an asserting method.
-            var definitions = paths.Select(path => path[path.Count - 2] as MethodDefinition);
-            _assertingMethods = new ReadOnlyCollection<MethodDefinition>(definitions.ToList());
+            var calls = paths.Select(path => path[path.Count - 2]);
+            _assertingMethods = new ReadOnlyCollection<MethodCall>(calls.ToList());
             return _assertingMethods;
         }
-        
-        private IEnumerable<IList<MethodReference>> AddPathsToRoot(MethodReference reference)
+
+        private IEnumerable<IList<MethodCall>> AddPathsToRoot(MethodCall call)
         {
-            if (!DoesContainAssertion(reference))
-                return new IList<MethodReference>[0];
+            if (!DoesContainAssertion(call))
+                return new IList<MethodCall>[0];
             var graph = CallGraph;
             // Create a graph with edges in the other direction so we can
             // backtrack from this method to the test method (root).
-            var builder = new GraphBuilder<MethodReference>(graph.TailsFor);
-            var backGraph = builder.Build(reference);
-            return backGraph.FindPaths(reference, graph.Root);
+            var builder = new GraphBuilder<MethodCall>(graph.TailsFor);
+            var backGraph = builder.Build(call);
+            return backGraph.FindPaths(call, graph.Root);
         }
 
-        private bool DoesContainAssertion(MethodReference method)
+        private bool DoesContainAssertion(MethodCall methodCall)
         {
-            if (!method.IsDefinition || !((MethodDefinition)method).HasBody)
+            if (!methodCall.HasMethodDefinition || !methodCall.MethodDefinition.HasBody)
                 return false;
             var frameworks = new[] {Framework}.Concat(_mockFrameworks);
-            return frameworks.Any(fw => fw.DoesContainAssertion((MethodDefinition) method));
+            return frameworks.Any(fw => fw.DoesContainAssertion(methodCall.MethodDefinition));
         }
     }
 }

@@ -83,14 +83,14 @@ namespace TestNess.Lib.Test
         [Test]
         public void TestThatTestCaseExposesCallGraph()
         {
-            Assert.AreEqual(typeof(Graph<MethodReference>), _testCase.CallGraph.GetType());
+            Assert.AreEqual(typeof(Graph<MethodCall>), _testCase.CallGraph.GetType());
         }
 
         [Test]
         public void TestThatTestCaseCallGraphContainsMethodCalls()
         {
             var graph = _testCase.CallGraph;
-            var result = graph.Walk().Aggregate("", (str, reference) => str + reference.Name + "\n");
+            var result = graph.Walk().Aggregate("", (str, mc) => str + mc.MethodReference.Name + "\n");
             StringAssert.StartsWith("TestAddBasic\nAdd\nAreEqual\n", result);
         }
 
@@ -98,7 +98,7 @@ namespace TestNess.Lib.Test
         public void TestThatTestCaseExposesCalledAssertingMethods()
         {
             var assertMethods = _testCase.GetCalledAssertingMethods();
-            var names = assertMethods.Select(m => m.Name);
+            var names = assertMethods.Select(mc => mc.MethodReference.Name);
             CollectionAssert.Contains(names, "AreEqual");
         }
 
@@ -114,7 +114,7 @@ namespace TestNess.Lib.Test
         public void TestThatTestCaseCallGraphContainsResolvedMethodsWherePossible()
         {
             var graph = _testCase.CallGraph;
-            var result = graph.Walk().Aggregate("", (str, reference) => str + string.Format("{0} ({1})\n", reference.Name, reference.IsDefinition));
+            var result = graph.Walk().Aggregate("", (str, mc) => str + string.Format("{0} ({1})\n", mc.MethodReference.Name, mc.HasMethodDefinition));
             StringAssert.StartsWith("TestAddBasic (True)\nAdd (True)\nAreEqual (True)\n", result);
         }
 
