@@ -19,7 +19,7 @@ namespace TestNess.Lib.Rule
             var assertingMethods = testCase.GetCalledAssertingMethods();
 
             // Note: The Mono compiler appears to emit multiple sequence points with the same start line,
-            // i.e. so there are multiple instructions with sequence points that refer to the same line.
+            // i.e. there are multiple instructions with sequence points that refer to the same line.
             // Therefore, let's store line numbers and associate line numbers with asserting calls.
 
             var sequencePointsStartLines = new SortedSet<int>();

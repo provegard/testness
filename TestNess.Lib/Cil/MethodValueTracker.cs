@@ -209,9 +209,7 @@ namespace TestNess.Lib.Cil
         /// graphs produced by this tracker.</exception>
         public IEnumerable<Value> FindSourceValues(Value value)
         {
-            var graph = ValueGraphs.Where(vg => vg.Contains(value)).FirstOrDefault();
-            //if (graph == null)
-            //    throw new ArgumentException("Unknown value.");
+            var graph = ValueGraphs.FirstOrDefault(vg => vg.Contains(value));
             return graph.Walk(value).Where(v => v.Parents.Count == 0);
         }
 
