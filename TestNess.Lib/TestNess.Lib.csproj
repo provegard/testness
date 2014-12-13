@@ -63,6 +63,7 @@
     <Compile Include="Analysis\TestCaseRuleApplication.cs" />
     <Compile Include="Analysis\ViolationScorer.cs" />
     <Compile Include="Arguments.cs" />
+    <Compile Include="AssemblyLoader.cs" />
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Cil\InstructionGraph.cs" />
     <Compile Include="Cil\TrackerHelper.cs" />

@@ -184,7 +184,8 @@ namespace TestNess.Lib.Test
             var callingType = callingMethod.DeclaringType;
 
             var path = new Uri(callingType.Assembly.CodeBase).LocalPath;
-            var mm = AssemblyDefinition.ReadAssembly(path).MainModule;
+            var assemblyDef = AssemblyLoader.Load(path);
+            var mm = assemblyDef.MainModule;
 
             var typeOfCaller = mm.Types.First(t => t.FullName == callingType.FullName);
             var meth = typeOfCaller.Methods.First(m => m.MetadataToken.ToInt32() == callingMethod.MetadataToken).Resolve();

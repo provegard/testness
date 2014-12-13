@@ -82,34 +82,7 @@ namespace TestNess.Lib
         /// <returns>A test case repository that fetches test cases from the loaded assembly.</returns>
         public static TestCases LoadFromFile(string fileName)
         {
-            var resolver = new DefaultAssemblyResolver();
-            resolver.AddSearchDirectory(new FileInfo(fileName).DirectoryName);
-            var parameters = new ReaderParameters
-            {
-                SymbolReaderProvider = new PdbReaderProvider(),
-                ReadingMode = ReadingMode.Immediate,
-                AssemblyResolver = resolver
-            };
-            AssemblyDefinition assemblyDef;
-            try
-            {
-                assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
-            } 
-            catch (FileNotFoundException)
-            {
-                // Perhaps we have an MDB file (Mono), or there is no symbol file to load.
-                // Try MDB first!
-                parameters.SymbolReaderProvider = new MdbReaderProvider();
-                try
-                {
-                    assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
-                }
-                catch (FileNotFoundException)
-                {
-                    parameters.SymbolReaderProvider = null;
-                    assemblyDef = AssemblyDefinition.ReadAssembly(fileName, parameters);
-                }
-            }
+            var assemblyDef = AssemblyLoader.Load(fileName);
             if (assemblyDef.Modules.Count > 1)
                 throw new NotImplementedException("Multi-module assemblies not supported yet!");
 
