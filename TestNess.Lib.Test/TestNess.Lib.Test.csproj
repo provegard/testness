@@ -86,6 +86,7 @@
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="MethodCallTest.cs" />
     <Compile Include="RelatedFrameworksHelper.cs" />
+    <Compile Include="Rule\AvoidAssertBooleanRuleTest.cs" />
     <Compile Include="Rule\IgnoredTestCaseRuleTest.cs" />
     <Compile Include="Signature.cs" />
     <Compile Include="TestFramework\NSubstituteMockFrameworkTest.cs" />

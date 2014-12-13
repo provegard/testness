@@ -79,6 +79,7 @@
     <Compile Include="Feature\StatementCount.cs" />
     <Compile Include="MethodCall.cs" />
     <Compile Include="RelatedFrameworks.cs" />
+    <Compile Include="Rule\AvoidAssertBooleanRule.cs" />
     <Compile Include="Rule\IgnoredTestCaseRule.cs" />
     <Compile Include="TestFramework\IMockFramework.cs" />
     <Compile Include="TestFramework\NSubstituteMockFramework.cs" />
