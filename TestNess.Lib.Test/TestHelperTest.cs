@@ -16,6 +16,11 @@ namespace TestNess.Lib.Test
             return ins => ins.OpCode == OpCodes.Ldstr && ((string) ins.Operand) == s;
         }
 
+        private string InstructionToString(Instruction i)
+        {
+            return i.ToString().Split(new[] {": "}, 2, StringSplitOptions.None)[1];
+        }
+
         [Test]
         public void ShouldProduceTestCaseFromStaticAction()
         {
@@ -23,7 +28,8 @@ namespace TestNess.Lib.Test
             Action a = () => Console.WriteLine("foo");
             var tc = a.AsTestCase(new NUnitTestFramework());
 
-            Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("foo")));
+            var instructionStrings = tc.TestMethod.Body.Instructions.Select(InstructionToString);
+            CollectionAssert.Contains(instructionStrings, "ldstr \"foo\"");
         }
 
         [Test]
@@ -34,7 +40,8 @@ namespace TestNess.Lib.Test
             Action a = () => Console.WriteLine("bar" + x);
             var tc = a.AsTestCase(new NUnitTestFramework());
 
-            Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("bar")));
+            var instructionStrings = tc.TestMethod.Body.Instructions.Select(InstructionToString);
+            CollectionAssert.Contains(instructionStrings, "ldstr \"bar\"");
         }
 
         [Test]
@@ -42,7 +49,8 @@ namespace TestNess.Lib.Test
         {
             var tc = sa.AsTestCase(new NUnitTestFramework());
 
-            Assert.True(tc.TestMethod.Body.Instructions.Any(IsLoadStringWith("sfoo")));
+            var instructionStrings = tc.TestMethod.Body.Instructions.Select(InstructionToString);
+            CollectionAssert.Contains(instructionStrings, "ldstr \"sfoo\"");
         }
     }
 }
